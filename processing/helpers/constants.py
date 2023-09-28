@@ -1,0 +1,3 @@
+CHLOE_PROVIDER_SUPPORTED_RASTER_EXTENSIONS: list[str] = ["asc", "tif"]
+
+JAVA: str = "JAVA"

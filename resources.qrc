@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/plugins/Chloe5/images" >
+        <file>chloe_logo.png</file>
+        <file>images/chloe_logo.png</file>
+    </qresource>
+</RCC>

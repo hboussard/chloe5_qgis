@@ -42,3 +42,8 @@ Class-Path: ../bin/apiland-1.0.jar
  ../lib/unit-api-2.1.3.jar 
  ../lib/uom-lib-common-1.0.2.jar 
  ../lib/uom-se-1.0.8.jar 
+ ../lib/jaxb-api-2.2.11.jar 
+ ../lib/jaxb-core-2.2.11.jar 
+ ../lib/jaxb-impl-2.2.11.jar 
+ ../lib/activation-1.1.1.jar 
+

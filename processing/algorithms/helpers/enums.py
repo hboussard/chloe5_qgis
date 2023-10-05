@@ -7,8 +7,15 @@ from enum import Enum
 class AnalyzeType(Enum):
     """Analyze type enum"""
 
-    THRESHOLD = "threshold"
-    WEIGHTED_DISTANCE = "weighted distance"
+    THRESHOLD = "THRESHOLD"
+    WEIGHTED = "WEIGHTED"
+
+
+class AnalyzeTypeFastMode(Enum):
+    """Analyze type enum for fast mode"""
+
+    FAST_GAUSSIAN = "FAST GAUSSIAN"
+    FAST_SQUARE = "FAST SQUARE"
 
 
 class DistanceType(Enum):

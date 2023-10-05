@@ -1,10 +1,12 @@
-from .double_cmb_box_selection_panel import DoubleCmbBoxSelectionPanel
+from functools import partial
 from processing.gui.wrappers import (
     WidgetWrapper,
     DIALOG_MODELER,
     DIALOG_BATCH,
     DIALOG_STANDARD,
 )
+from .double_cmb_box_selection_panel import DoubleCmbBoxSelectionPanel
+from ....algorithms.helpers.constants import FAST
 
 
 class ChloeDoubleComboboxWidgetWrapper(WidgetWrapper):
@@ -15,58 +17,54 @@ class ChloeDoubleComboboxWidgetWrapper(WidgetWrapper):
         else:
             return super().createLabel()
 
+    def postInitialize(self, wrappers):
+        # Find the wrapper for the 'FAST' parameter
+        for wrapper in wrappers:
+            if wrapper.parameterDefinition().name() == FAST:
+                # Connect to the `widgetValueHasChanged` signal of the 'FAST' wrapper
+                if self.dialogType == DIALOG_STANDARD:
+                    wrapper.widget.stateChanged.connect(
+                        partial(self.set_fast_mode, wrapper)
+                    )
+                else:
+                    wrapper.widget.currentIndexChanged.connect(
+                        partial(self.set_fast_mode, wrapper)
+                    )
+                break
+
     def createWidget(
-        self, dictValues, initialValue, rasterLayerParamName, parentWidgetConfig=None
+        self,
+        default_selected_metric,
+        input_raster_layer_param_name,
+        parentWidgetConfig=None,
     ):
         """Widget creation to put like panel in dialog"""
         self.parentWidgetConfig = parentWidgetConfig
-        # STANDARD GUI
-        if self.dialogType == DIALOG_STANDARD:
-            return DoubleCmbBoxSelectionPanel(
-                self.dialog,
-                self.param.algorithm(),
-                dictValues,
-                initialValue,
-                rasterLayerParamName,
-            )
-        # BATCH GUI
-        elif self.dialogType in (DIALOG_BATCH, DIALOG_MODELER):
-            return DoubleCmbBoxSelectionPanel(
-                self.dialog,
-                self.param.algorithm(),
-                dictValues,
-                initialValue,
-                rasterLayerParamName,
-                False,
-            )
-            # get raster values
-        # MODELER GUI
-        # else:
-        #     widget = QLineEdit()
-        #     widget.setPlaceholderText("")
-        #     if self.parameterDefinition().defaultValue():
-        #         widget.setText(self.parameterDefinition().defaultValue())
-        #     return widget
+
+        return DoubleCmbBoxSelectionPanel(
+            dialog=self.dialog,
+            dialog_type=self.dialogType,
+            default_selected_metric=default_selected_metric,
+            input_raster_layer_param_name=input_raster_layer_param_name,
+        )
 
     def setValue(self, value):
         """Set value on the widget/component."""
         if value is None:
             return
-        if self.dialogType == DIALOG_STANDARD:
-            self.widget.setValue(str(value))
-        else:
-            self.widget.setValue(str(value))
+        self.widget.setValue(str(value))
 
     def value(self):
         """Get value on the widget/component."""
-        if self.dialogType == DIALOG_STANDARD:
-            return self.widget.getValue()
-        else:
-            return self.widget.getValue()
+        return self.widget.getValue()
 
     def getParentWidgetConfig(self):
         return self.parentWidgetConfig
 
-    def refreshMappingCombobox(self):
-        self.widget.calculate_metrics()
-        self.widget.update_metrics()
+    def refresh_metrics_combobox(self):
+        self.widget.set_metrics()
+        self.widget.populate_metric_filter_combobox()
+
+    def set_fast_mode(self, fast_param_wrapper):
+        is_fast_value: bool = fast_param_wrapper.parameterValue()
+        self.widget.set_fast_mode(is_fast_value)

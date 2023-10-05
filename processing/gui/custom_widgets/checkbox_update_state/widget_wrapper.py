@@ -4,6 +4,13 @@ from processing.gui.wrappers import (
     EnumWidgetWrapper,
 )
 
+from processing.gui.wrappers import (
+    WidgetWrapper,
+    DIALOG_MODELER,
+    DIALOG_BATCH,
+    DIALOG_STANDARD,
+)
+
 
 class ChloeCheckboxUpdateStateWidgetWrapper(BooleanWidgetWrapper):
     """A widget wrapper for a custom enum selection widget."""
@@ -14,10 +21,15 @@ class ChloeCheckboxUpdateStateWidgetWrapper(BooleanWidgetWrapper):
         return super().createWidget()
 
     def postInitialize(self, widgetWrapperList):
-        self.widget.stateChanged.connect(
-            lambda x: self.updateDependantWidget(widgetWrapperList)
-        )
-        self.updateDependantWidget(widgetWrapperList)
+        if self.dialogType == DIALOG_STANDARD:
+            self.widget.stateChanged.connect(
+                lambda x: self.updateDependantWidget(widgetWrapperList)
+            )
+        else:
+            self.widget.currentIndexChanged.connect(
+                lambda x: self.updateDependantWidget(widgetWrapperList)
+            )
+        # self.updateDependantWidget(widgetWrapperList)
 
     def updateDependantWidget(self, wrapperList):
         if self.dependantWidgetConfig:

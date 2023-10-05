@@ -32,13 +32,13 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_1">
      <item>
-      <widget class="QComboBox" name="cbFilter"/>
+      <widget class="QComboBox" name="combobox_filter"/>
      </item>
      <item>
-      <widget class="QComboBox" name="cbValue"/>
+      <widget class="QComboBox" name="combobox_metric"/>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="lineEdit_selected_metric"/>
      </item>
     </layout>
    </item>

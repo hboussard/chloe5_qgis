@@ -1,0 +1,973 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ChloeDialogGrain</class>
+ <widget class="QDialog" name="ChloeDialogGrain">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>940</width>
+    <height>680</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Chloé - Analyse écopaysagère</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <property name="leftMargin">
+    <number>12</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>12</number>
+   </property>
+   <property name="bottomMargin">
+    <number>12</number>
+   </property>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <property name="tabBarAutoHide">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="tab_zone_etude">
+      <attribute name="title">
+       <string>Zone d'étude</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="2,1">
+       <property name="leftMargin">
+        <number>8</number>
+       </property>
+       <property name="topMargin">
+        <number>8</number>
+       </property>
+       <property name="rightMargin">
+        <number>8</number>
+       </property>
+       <property name="bottomMargin">
+        <number>8</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <widget class="QGroupBox" name="groupBox_MNHC">
+           <property name="title">
+            <string>MNHC</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="radioButton_rasterMNHC">
+              <property name="text">
+               <string>Fichier raster</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="radioButton_dirMNHC">
+              <property name="text">
+               <string>Dossier de tuiles</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QgsFileWidget" name="mQgsFileWidget_dirMNHC"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>190</height>
+            </size>
+           </property>
+           <property name="title">
+            <string>Emprise</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QgsExtentGroupBox" name="mExtentGroupBox">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>135</height>
+               </size>
+              </property>
+              <property name="syncGroup">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>Buffer</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QgsDoubleSpinBox" name="mQgsDoubleSpinBox_buffer">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="textBrowser_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="html">
+          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Lorem Ipsum&lt;/span&gt;&lt;/h1&gt;
+&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:medium; font-weight:600;&quot;&gt;&amp;quot;Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...&amp;quot;&lt;/span&gt;&lt;/h4&gt;
+&lt;h5 style=&quot; margin-top:12px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:small; font-weight:600;&quot;&gt;&amp;quot;Il n'y a personne qui n'aime la souffrance pour elle-même, qui ne la recherche et qui ne la veuille pour elle-même...&amp;quot; &lt;/span&gt;&lt;/h5&gt;
+&lt;hr /&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;Content&quot;&gt;&lt;/a&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at dolor nec tortor efficitur pulvinar. Quisque facilisis, massa id efficitur hendrerit, arcu magna semper magna, eget tristique leo diam id quam. Nulla nisl augue, imperdiet et augue et, laoreet eleifend massa. Aliquam erat volutpat. Aliquam id metus nec erat consectetur porttitor ut in augue. Morbi et varius elit. Vivamus molestie egestas sapien ac suscipit. Duis rutrum ligula non libero egestas molestie. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Ut at tempor elit. Quisque in quam sodales, imperdiet nibh sed, hendrerit nibh. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut vel felis nec felis gravida vestibulum. Nunc est nulla, posuere vel venenatis at, facilisis et ipsum. Nullam pulvinar feugiat suscipit. Nulla malesuada ut mauris a consectetur. Phasellus vel erat a orci euismod convallis. Nunc accumsan magna augue, sed auctor mi vulputate eget. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Quisque odio orci, dignissim a nisi imperdiet, dictum malesuada quam. Quisque vel neque ut orci posuere pretium. Nulla tristique congue erat sodales venenatis. In viverra quam justo, et lacinia orci rhoncus non. Etiam aliquam augue dolor, eu vestibulum leo aliquam et. Nunc tortor dui, cursus eget turpis ut, tincidunt ornare ante. Nunc pretium nibh in diam egestas tempor. Praesent metus odio, venenatis non mi quis, iaculis mattis neque. Aenean vitae dui vel erat interdum aliquam et eget nisi. Curabitur vel urna nunc. Sed vehicula efficitur rhoncus. Maecenas lobortis, sapien et accumsan bibendum, risus tellus ullamcorper urna, vel efficitur ex enim vitae purus. Morbi sagittis ornare nulla ut volutpat. In malesuada erat vitae egestas sagittis. Proin pharetra, purus eu lacinia viverra, turpis mauris molestie leo, id condimentum leo mi et risus. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Vivamus pulvinar rutrum orci non semper. Aenean a magna eu ligula facilisis luctus. Fusce vel leo lectus. Quisque lacinia dolor id bibendum fermentum. Aenean id pellentesque neque. Aliquam imperdiet varius consectetur. Vestibulum a massa bibendum, efficitur magna eget, vehicula dolor. Vestibulum ornare ligula leo, ac sodales dui luctus at. Suspendisse et nunc blandit, tincidunt lectus nec, semper neque. Fusce orci elit, eleifend sed ultricies non, tincidunt scelerisque felis. Maecenas laoreet et ipsum quis aliquet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ut sapien nec ipsum aliquet viverra nec et diam. Nunc porttitor egestas porttitor. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Vivamus sit amet porta erat. Etiam cursus lacus id enim sollicitudin vestibulum. Mauris malesuada dui vel leo tempus, non dictum magna ullamcorper. Donec interdum lacus nec sapien cursus, ut venenatis felis viverra. Maecenas diam nisi, ullamcorper ut diam non, lacinia ultricies augue. Duis rhoncus orci ultrices nisl pulvinar ultricies. Suspendisse risus metus, sodales et augue non, semper fermentum diam. Sed consequat condimentum felis sit amet congue. Nam ornare magna sit amet eros placerat, in rhoncus libero maximus. Integer ac hendrerit ex. Aliquam feugiat nec eros in sagittis. Nulla id tellus in metus ultricies ornare. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_amenagements">
+      <attribute name="title">
+       <string>Aménagements</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,1">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_9">
+         <item>
+          <widget class="QGroupBox" name="groupBox_plantations">
+           <property name="title">
+            <string>Plantations</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QWidget" name="widget_2" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="radioButton_valeurHauteurVegetation">
+                 <property name="text">
+                  <string>Hauteur de végétation :</string>
+                 </property>
+                 <attribute name="buttonGroup">
+                  <string notr="true">buttonGroup</string>
+                 </attribute>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="lineEdit_hauteurVegetation"/>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="widget_3" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="radioButton_champHauteurVegetation">
+                 <property name="text">
+                  <string>champ hauteur :</string>
+                 </property>
+                 <attribute name="buttonGroup">
+                  <string notr="true">buttonGroup</string>
+                 </attribute>
+                </widget>
+               </item>
+               <item>
+                <widget class="QgsFieldComboBox" name="mFieldComboBox_hauteurVegetation">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_arasements">
+           <property name="title">
+            <string>Arasements</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_5"/>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="textBrowser">
+         <property name="html">
+          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Lorem Ipsum&lt;/span&gt;&lt;/h1&gt;
+&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:medium; font-weight:600;&quot;&gt;&amp;quot;Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...&amp;quot;&lt;/span&gt;&lt;/h4&gt;
+&lt;h5 style=&quot; margin-top:12px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:small; font-weight:600;&quot;&gt;&amp;quot;Il n'y a personne qui n'aime la souffrance pour elle-même, qui ne la recherche et qui ne la veuille pour elle-même...&amp;quot; &lt;/span&gt;&lt;/h5&gt;
+&lt;hr /&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;Content&quot;&gt;&lt;/a&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at dolor nec tortor efficitur pulvinar. Quisque facilisis, massa id efficitur hendrerit, arcu magna semper magna, eget tristique leo diam id quam. Nulla nisl augue, imperdiet et augue et, laoreet eleifend massa. Aliquam erat volutpat. Aliquam id metus nec erat consectetur porttitor ut in augue. Morbi et varius elit. Vivamus molestie egestas sapien ac suscipit. Duis rutrum ligula non libero egestas molestie. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Ut at tempor elit. Quisque in quam sodales, imperdiet nibh sed, hendrerit nibh. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut vel felis nec felis gravida vestibulum. Nunc est nulla, posuere vel venenatis at, facilisis et ipsum. Nullam pulvinar feugiat suscipit. Nulla malesuada ut mauris a consectetur. Phasellus vel erat a orci euismod convallis. Nunc accumsan magna augue, sed auctor mi vulputate eget. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Quisque odio orci, dignissim a nisi imperdiet, dictum malesuada quam. Quisque vel neque ut orci posuere pretium. Nulla tristique congue erat sodales venenatis. In viverra quam justo, et lacinia orci rhoncus non. Etiam aliquam augue dolor, eu vestibulum leo aliquam et. Nunc tortor dui, cursus eget turpis ut, tincidunt ornare ante. Nunc pretium nibh in diam egestas tempor. Praesent metus odio, venenatis non mi quis, iaculis mattis neque. Aenean vitae dui vel erat interdum aliquam et eget nisi. Curabitur vel urna nunc. Sed vehicula efficitur rhoncus. Maecenas lobortis, sapien et accumsan bibendum, risus tellus ullamcorper urna, vel efficitur ex enim vitae purus. Morbi sagittis ornare nulla ut volutpat. In malesuada erat vitae egestas sagittis. Proin pharetra, purus eu lacinia viverra, turpis mauris molestie leo, id condimentum leo mi et risus. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Vivamus pulvinar rutrum orci non semper. Aenean a magna eu ligula facilisis luctus. Fusce vel leo lectus. Quisque lacinia dolor id bibendum fermentum. Aenean id pellentesque neque. Aliquam imperdiet varius consectetur. Vestibulum a massa bibendum, efficitur magna eget, vehicula dolor. Vestibulum ornare ligula leo, ac sodales dui luctus at. Suspendisse et nunc blandit, tincidunt lectus nec, semper neque. Fusce orci elit, eleifend sed ultricies non, tincidunt scelerisque felis. Maecenas laoreet et ipsum quis aliquet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ut sapien nec ipsum aliquet viverra nec et diam. Nunc porttitor egestas porttitor. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Vivamus sit amet porta erat. Etiam cursus lacus id enim sollicitudin vestibulum. Mauris malesuada dui vel leo tempus, non dictum magna ullamcorper. Donec interdum lacus nec sapien cursus, ut venenatis felis viverra. Maecenas diam nisi, ullamcorper ut diam non, lacinia ultricies augue. Duis rhoncus orci ultrices nisl pulvinar ultricies. Suspendisse risus metus, sodales et augue non, semper fermentum diam. Sed consequat condimentum felis sit amet congue. Nam ornare magna sit amet eros placerat, in rhoncus libero maximus. Integer ac hendrerit ex. Aliquam feugiat nec eros in sagittis. Nulla id tellus in metus ultricies ornare. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_parametres">
+      <attribute name="title">
+       <string>Paramètres du grain</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1">
+       <property name="leftMargin">
+        <number>8</number>
+       </property>
+       <property name="topMargin">
+        <number>8</number>
+       </property>
+       <property name="rightMargin">
+        <number>8</number>
+       </property>
+       <property name="bottomMargin">
+        <number>8</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="widget_params" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>64</height>
+             </size>
+            </property>
+            <property name="title">
+             <string>Grain</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_pixelSize">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="decimals">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <double>5.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>Taille de pixel</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_enjeux">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="title">
+             <string>Enjeux globaux</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Taille de pixel</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Rayon</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_pixelEnjeux">
+               <property name="decimals">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <double>50.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QSpinBox" name="spinBox_radiusEnjeux">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximum">
+                <number>100000</number>
+               </property>
+               <property name="value">
+                <number>1000</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QgsCollapsibleGroupBox" name="mGroupBox">
+            <property name="title">
+             <string>Avancé</string>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+            <property name="collapsed">
+             <bool>true</bool>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QGroupBox" name="groupBox_seuils">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="title">
+                <string>Seuils de fonctionalité du grain</string>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>0 &lt; fermé &lt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_seuilFonctionnel">
+                  <property name="maximum">
+                   <double>1.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.010000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.200000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>&lt; fonctionnel &lt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_seuilPotentiel">
+                  <property name="maximum">
+                   <double>1.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.010000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.330000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_5">
+                  <property name="text">
+                   <string>&lt; potentiel &lt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QDoubleSpinBox" name="doubleSpinBox_seuilOuvert">
+                  <property name="maximum">
+                   <double>1.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.010000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>0.450000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>&lt; ouvert &lt; 1</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox_rayonGrain">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>64</height>
+                </size>
+               </property>
+               <property name="title">
+                <string>Grain</string>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_4">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_12">
+                  <property name="text">
+                   <string>Rayon</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QSpinBox" name="spinBox_radius_2">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximum">
+                   <number>5000</number>
+                  </property>
+                  <property name="value">
+                   <number>250</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="textBrowser_2">
+         <property name="html">
+          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Lorem Ipsum&lt;/span&gt;&lt;/h1&gt;
+&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:medium; font-weight:600;&quot;&gt;&amp;quot;Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...&amp;quot;&lt;/span&gt;&lt;/h4&gt;
+&lt;h5 style=&quot; margin-top:12px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:small; font-weight:600;&quot;&gt;&amp;quot;Il n'y a personne qui n'aime la souffrance pour elle-même, qui ne la recherche et qui ne la veuille pour elle-même...&amp;quot; &lt;/span&gt;&lt;/h5&gt;
+&lt;hr /&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;Content&quot;&gt;&lt;/a&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at dolor nec tortor efficitur pulvinar. Quisque facilisis, massa id efficitur hendrerit, arcu magna semper magna, eget tristique leo diam id quam. Nulla nisl augue, imperdiet et augue et, laoreet eleifend massa. Aliquam erat volutpat. Aliquam id metus nec erat consectetur porttitor ut in augue. Morbi et varius elit. Vivamus molestie egestas sapien ac suscipit. Duis rutrum ligula non libero egestas molestie. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Ut at tempor elit. Quisque in quam sodales, imperdiet nibh sed, hendrerit nibh. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut vel felis nec felis gravida vestibulum. Nunc est nulla, posuere vel venenatis at, facilisis et ipsum. Nullam pulvinar feugiat suscipit. Nulla malesuada ut mauris a consectetur. Phasellus vel erat a orci euismod convallis. Nunc accumsan magna augue, sed auctor mi vulputate eget. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Quisque odio orci, dignissim a nisi imperdiet, dictum malesuada quam. Quisque vel neque ut orci posuere pretium. Nulla tristique congue erat sodales venenatis. In viverra quam justo, et lacinia orci rhoncus non. Etiam aliquam augue dolor, eu vestibulum leo aliquam et. Nunc tortor dui, cursus eget turpis ut, tincidunt ornare ante. Nunc pretium nibh in diam egestas tempor. Praesent metus odio, venenatis non mi quis, iaculis mattis neque. Aenean vitae dui vel erat interdum aliquam et eget nisi. Curabitur vel urna nunc. Sed vehicula efficitur rhoncus. Maecenas lobortis, sapien et accumsan bibendum, risus tellus ullamcorper urna, vel efficitur ex enim vitae purus. Morbi sagittis ornare nulla ut volutpat. In malesuada erat vitae egestas sagittis. Proin pharetra, purus eu lacinia viverra, turpis mauris molestie leo, id condimentum leo mi et risus. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Vivamus pulvinar rutrum orci non semper. Aenean a magna eu ligula facilisis luctus. Fusce vel leo lectus. Quisque lacinia dolor id bibendum fermentum. Aenean id pellentesque neque. Aliquam imperdiet varius consectetur. Vestibulum a massa bibendum, efficitur magna eget, vehicula dolor. Vestibulum ornare ligula leo, ac sodales dui luctus at. Suspendisse et nunc blandit, tincidunt lectus nec, semper neque. Fusce orci elit, eleifend sed ultricies non, tincidunt scelerisque felis. Maecenas laoreet et ipsum quis aliquet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ut sapien nec ipsum aliquet viverra nec et diam. Nunc porttitor egestas porttitor. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Vivamus sit amet porta erat. Etiam cursus lacus id enim sollicitudin vestibulum. Mauris malesuada dui vel leo tempus, non dictum magna ullamcorper. Donec interdum lacus nec sapien cursus, ut venenatis felis viverra. Maecenas diam nisi, ullamcorper ut diam non, lacinia ultricies augue. Duis rhoncus orci ultrices nisl pulvinar ultricies. Suspendisse risus metus, sodales et augue non, semper fermentum diam. Sed consequat condimentum felis sit amet congue. Nam ornare magna sit amet eros placerat, in rhoncus libero maximus. Integer ac hendrerit ex. Aliquam feugiat nec eros in sagittis. Nulla id tellus in metus ultricies ornare. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_sorties">
+      <attribute name="title">
+       <string>Sorties</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="2,1">
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <property name="bottomMargin">
+        <number>12</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_11">
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QGroupBox" name="groupBox_6">
+           <property name="title">
+            <string>Dossier Résultats</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <widget class="QgsFileWidget" name="mQgsFileWidget_resultDir">
+              <property name="storageMode">
+               <enum>QgsFileWidget::GetDirectory</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Préfixe fichier</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_resultPrefix">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>200</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_7">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="title">
+            <string>Sorties</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_14">
+            <property name="spacing">
+             <number>-1</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="checkBox_grain">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Grain bocager</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_grain4classes">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Grain bocager à quatre classes</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_grainMask">
+              <property name="text">
+               <string>Masque de grain bocager fonctionnel</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_clusters">
+              <property name="text">
+               <string>Clusters fonctionnels</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_enjeux">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>16</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Carte des enjeux globaux</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_11">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="title">
+            <string>Sorties - Etapes</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QCheckBox" name="checkBox_hauteurBoisements">
+              <property name="text">
+               <string>Hauteurs de boisements</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_typesBoisements">
+              <property name="text">
+               <string>Types de boisements</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_distanceInfluence">
+              <property name="text">
+               <string>Distances d'influence</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTextBrowser" name="textBrowser_4">
+         <property name="html">
+          <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Lorem Ipsum&lt;/span&gt;&lt;/h1&gt;
+&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:medium; font-weight:600;&quot;&gt;&amp;quot;Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...&amp;quot;&lt;/span&gt;&lt;/h4&gt;
+&lt;h5 style=&quot; margin-top:12px; margin-bottom:4px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:small; font-weight:600;&quot;&gt;&amp;quot;Il n'y a personne qui n'aime la souffrance pour elle-même, qui ne la recherche et qui ne la veuille pour elle-même...&amp;quot; &lt;/span&gt;&lt;/h5&gt;
+&lt;hr /&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a name=&quot;Content&quot;&gt;&lt;/a&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at dolor nec tortor efficitur pulvinar. Quisque facilisis, massa id efficitur hendrerit, arcu magna semper magna, eget tristique leo diam id quam. Nulla nisl augue, imperdiet et augue et, laoreet eleifend massa. Aliquam erat volutpat. Aliquam id metus nec erat consectetur porttitor ut in augue. Morbi et varius elit. Vivamus molestie egestas sapien ac suscipit. Duis rutrum ligula non libero egestas molestie. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Ut at tempor elit. Quisque in quam sodales, imperdiet nibh sed, hendrerit nibh. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut vel felis nec felis gravida vestibulum. Nunc est nulla, posuere vel venenatis at, facilisis et ipsum. Nullam pulvinar feugiat suscipit. Nulla malesuada ut mauris a consectetur. Phasellus vel erat a orci euismod convallis. Nunc accumsan magna augue, sed auctor mi vulputate eget. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Quisque odio orci, dignissim a nisi imperdiet, dictum malesuada quam. Quisque vel neque ut orci posuere pretium. Nulla tristique congue erat sodales venenatis. In viverra quam justo, et lacinia orci rhoncus non. Etiam aliquam augue dolor, eu vestibulum leo aliquam et. Nunc tortor dui, cursus eget turpis ut, tincidunt ornare ante. Nunc pretium nibh in diam egestas tempor. Praesent metus odio, venenatis non mi quis, iaculis mattis neque. Aenean vitae dui vel erat interdum aliquam et eget nisi. Curabitur vel urna nunc. Sed vehicula efficitur rhoncus. Maecenas lobortis, sapien et accumsan bibendum, risus tellus ullamcorper urna, vel efficitur ex enim vitae purus. Morbi sagittis ornare nulla ut volutpat. In malesuada erat vitae egestas sagittis. Proin pharetra, purus eu lacinia viverra, turpis mauris molestie leo, id condimentum leo mi et risus. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Vivamus pulvinar rutrum orci non semper. Aenean a magna eu ligula facilisis luctus. Fusce vel leo lectus. Quisque lacinia dolor id bibendum fermentum. Aenean id pellentesque neque. Aliquam imperdiet varius consectetur. Vestibulum a massa bibendum, efficitur magna eget, vehicula dolor. Vestibulum ornare ligula leo, ac sodales dui luctus at. Suspendisse et nunc blandit, tincidunt lectus nec, semper neque. Fusce orci elit, eleifend sed ultricies non, tincidunt scelerisque felis. Maecenas laoreet et ipsum quis aliquet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ut sapien nec ipsum aliquet viverra nec et diam. Nunc porttitor egestas porttitor. &lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Vivamus sit amet porta erat. Etiam cursus lacus id enim sollicitudin vestibulum. Mauris malesuada dui vel leo tempus, non dictum magna ullamcorper. Donec interdum lacus nec sapien cursus, ut venenatis felis viverra. Maecenas diam nisi, ullamcorper ut diam non, lacinia ultricies augue. Duis rhoncus orci ultrices nisl pulvinar ultricies. Suspendisse risus metus, sodales et augue non, semper fermentum diam. Sed consequat condimentum felis sit amet congue. Nam ornare magna sit amet eros placerat, in rhoncus libero maximus. Integer ac hendrerit ex. Aliquam feugiat nec eros in sagittis. Nulla id tellus in metus ultricies ornare. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="button_box">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsCollapsibleGroupBox</class>
+   <extends>QGroupBox</extends>
+   <header>qgscollapsiblegroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QgsDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>qgsdoublespinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsExtentGroupBox</class>
+   <extends>QgsCollapsibleGroupBox</extends>
+   <header>qgsextentgroupbox.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QgsFieldComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgsfieldcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsFileWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsfilewidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>button_box</sender>
+   <signal>accepted()</signal>
+   <receiver>ChloeDialogGrain</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>button_box</sender>
+   <signal>rejected()</signal>
+   <receiver>ChloeDialogGrain</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
+</ui>

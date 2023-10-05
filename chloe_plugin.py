@@ -29,6 +29,7 @@ from qgis.PyQt.QtWidgets import QAction, QWidget, QMenu, QToolBar, QMenuBar
 from qgis.PyQt.QtGui import QIcon
 from .processing.chloe_algorithm_provider import ChloeAlgorithmProvider
 from .settings.settings_dialog import SettingsDialog
+from .dialogs.chloe_grain import ChloeGrainDialog
 
 
 class ChloePlugin:
@@ -88,7 +89,16 @@ class ChloePlugin:
             add_to_toolbar=False,
             parent=self.iface.mainWindow(),
         )
-
+        grainIcon_path= Path(__file__).resolve() / "images" / "chloe_icon.png"
+        print(grainIcon_path)
+        self.add_action(
+            self.menu,
+            QIcon(str(grainIcon_path)),
+            text=self.tr(u'Chloé 5 : Grain'),
+            callback=self.runGrain,
+            parent=self.iface.mainWindow())
+        self.first_start_grain = True
+        
         qgis_menu_bar: QMenuBar = self.iface.mainWindow().menuBar()
         menu = qgis_menu_bar
         for child in qgis_menu_bar.children():
@@ -209,3 +219,25 @@ class ChloePlugin:
         for action in self.actions:
             self.iface.removePluginMenu(self.menu_name, action)
             self.iface.removeToolBarIcon(action)
+
+
+
+    def runGrain(self):
+        """Run method that performs all the real work"""
+
+        # Create the dialog with elements (after translation) and keep reference
+        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
+        if self.first_start_grain == True:
+            self.first_start_grain = False
+            self.dlg_grain = ChloeGrainDialog()
+
+        # show the dialog
+        if not self.dlg_grain.isVisible():
+            self.dlg_grain.show()
+            # Run the dialog event loop
+            result = self.dlg_grain.exec_()
+            # See if OK was pressed
+            if result:
+                # Do something useful here - delete the line containing pass and
+                # substitute with your code.
+                self.dlg_grain.makePropertiesFile()

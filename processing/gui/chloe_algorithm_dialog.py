@@ -207,9 +207,7 @@ class ChloeParametersPanel(ParametersPanel):
                     return
 
             try:
-                command: str = self.algorithm().get_console_command(
-                    parameters, context, feedback, executing=False
-                )
+                command: str = self.algorithm().get_console_command(parameters)
                 self.text.setPlainText(command)
             except QgsProcessingException as e:
                 self.text.setPlainText(str(e))

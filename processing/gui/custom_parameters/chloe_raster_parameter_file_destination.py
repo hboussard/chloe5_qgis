@@ -1,14 +1,21 @@
+from typing import Any
 from qgis.core import (
     QgsProcessingParameters,
     QgsProcessingParameterRasterDestination,
 )
 from qgis.PyQt.QtCore import QCoreApplication
-from pathlib import Path
 
 
 class ChloeRasterParameterFileDestination(QgsProcessingParameterRasterDestination):
-    def __init__(self, name, description):
-        super().__init__(name, description)
+    def __init__(
+        self,
+        name: str,
+        description: str = "",
+        defaultValue: Any = None,
+        optional: bool = False,
+        createByDefault: bool = True,
+    ):
+        super().__init__(name, description, defaultValue, optional, createByDefault)
 
     def clone(self):
         copy = ChloeRasterParameterFileDestination(self.name(), self.description())
@@ -30,7 +37,7 @@ class ChloeRasterParameterFileDestination(QgsProcessingParameterRasterDestinatio
         output_path = QgsProcessingParameters.parameterAsOutputLayer(
             self, value, context
         )
-        print(Path(output_path).suffix.lower())
+
         # if Path(output_path).suffix.lower().endswith((".asc", ".tif")):
         #     return False, QCoreApplication.translate(
         #         "ChloeAlgorithm", "Output filename must use a .asc or .tif extension"

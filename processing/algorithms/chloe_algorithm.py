@@ -29,6 +29,7 @@ import os
 from pathlib import Path
 import re
 from time import gmtime, strftime
+from typing import Any
 
 from ..helpers.helpers import (
     file_get_content,
@@ -54,18 +55,17 @@ from qgis.core import (
     QgsProcessingAlgorithm,
     QgsProcessingException,
     QgsProcessingLayerPostProcessorInterface,
-    QgsExpressionContext,
+    QgsProject,
+    QgsLayerTreeGroup,
 )
 
 from qgis.utils import iface
-
-from processing.core.ProcessingConfig import ProcessingConfig
 
 from processing.tools import dataobjects
 
 from ...helpers.constants import CHLOE_JAR_PATH
 from ...settings.helpers import check_java_path, get_java_path
-from .helpers.constants import SAVE_PROPERTIES, OUTPUT_RASTER
+from .helpers.constants import OUTPUT_WINDOWS_PATH_DIR, SAVE_PROPERTIES, OUTPUT_RASTER
 
 # END : Heavy overload
 
@@ -80,7 +80,7 @@ class ChloeOutputLayerPostProcessor(QgsProcessingLayerPostProcessorInterface):
 class ChloeAlgorithm(QgsProcessingAlgorithm):
     def __init__(self):
         super().__init__()
-        self.output_values = {}
+        self.output_values: dict[str, Any] = {}
 
     def icon(self):
         iconPath = os.path.normpath(
@@ -106,17 +106,37 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             | QgsProcessingAlgorithm.FlagNoThreading
         )  # cannot cancel!
 
-    def createPropertiesFile(self, lines: "list[str]"):
+    def get_properties_lines(self) -> "list[str]":
+        """get property lines to write in properties file."""
+        raise QgsProcessingException(
+            f"property lines is not implemented for {self.name()}"
+        )
+
+    def set_properties_values(self, parameters, context) -> None:
+        """set properties values."""
+        raise QgsProcessingException(
+            f"set properties values is not implemented for {self.name()}"
+        )
+
+    def create_properties_file(self, lines: "list[str]"):
         """Create Properties File."""
         if self.output_values[SAVE_PROPERTIES]:
             s_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-            with open(self.output_values[SAVE_PROPERTIES], "w+") as fd:
-                fd.write(f"#{s_time}\n")
-                for line in lines:
-                    fd.write(f"{line}\n")
-                fd.write("visualize_ascii=false\n")
+            try:
+                with open(
+                    self.output_values[SAVE_PROPERTIES], "w+", encoding="utf-8"
+                ) as file:
+                    file.write(f"#{s_time}\n")
+                    for line in lines:
+                        file.write(f"{line}\n")
+            except OSError as exc:
+                raise QgsProcessingException(
+                    self.tr(
+                        f"Cannot create properties file {self.output_values[SAVE_PROPERTIES]}"
+                    )
+                ) from exc
 
-    def get_console_command(self, parameters, context, feedback, executing=True) -> str:
+    def get_console_command(self, parameters) -> str:
         """Get full console command to call Chloe
         return arguments : The full command
         Example of return : java -jar bin/chloe-4.0.jar /tmp/distance_paramsrrVtm9.properties
@@ -133,7 +153,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
 
         arguments.append(CHLOE_JAR_PATH)
 
-        if "SAVE_PROPERTIES" in parameters:
+        if SAVE_PROPERTIES in parameters:
             f_path = parameters[SAVE_PROPERTIES]
         else:
             f_path = getTempFilename(ext="properties")
@@ -148,7 +168,9 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
 
         return " ".join(arguments)
 
-    def setOutputValue(self, name: str, value) -> None:
+    def set_output_parameter_value(
+        self, parameter_name: str, parameter_value: Any
+    ) -> None:
         """
         Sets the value of the specified output parameter.
 
@@ -159,50 +181,102 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         Returns:
             None
         """
-        self.output_values[name] = value
+        self.output_values[parameter_name] = parameter_value
 
     def processAlgorithm(self, parameters, context, feedback):
-        """Process Algorithm."""
-        # check if java path is valid
+        """
+        Process the algorithm.
 
-        self.PreRun(parameters, context, feedback)
-        command: str = self.get_console_command(parameters, context, feedback)
+        Args:
+            parameters (dict): A dictionary of input parameters.
+            context (QgsProcessingContext): The processing context.
+            feedback (QgsProcessingFeedback): The feedback object.
+
+        Returns:
+            dict: A dictionary of output parameters.
+        """
+
+        self.set_properties_values(parameters, context)
+        self.create_properties_file(self.get_properties_lines())
+        command: str = self.get_console_command(parameters)
         run_command(command_line=command, feedback=feedback)
 
-        # Auto generate outputs: dict {'name parameter' : 'value', ...}
-        # for output in self.destinationParameterDefinitions():
-
-        results = {}
-        for o in self.outputDefinitions():
-            if o.name() in parameters:
-                results[o.name()] = parameters[o.name()]
-        for k, v in self.output_values.items():
-            results[k] = v
+        results: dict[str, Any] = {}
+        for definition in self.outputDefinitions():
+            if definition.name() in parameters:
+                results[definition.name()] = parameters[definition.name()]
+        for param_name, param_value in self.output_values.items():
+            results[param_name] = param_value
 
         if OUTPUT_RASTER in parameters:
             # add custom style to OUTPUT_ASC parameter if is to load on completion
-            output_asc_path: str = self.output_values[OUTPUT_RASTER]
-
-            load_on_completion = output_asc_path in context.layersToLoadOnCompletion()
+            output_raster_path: str = self.output_values[OUTPUT_RASTER]
+            load_on_completion = (
+                output_raster_path in context.layersToLoadOnCompletion()
+            )
 
             if load_on_completion:
-                rlayer = QgsRasterLayer(output_asc_path, "hillshade")
+                self.load_output_raster_to_qgis_instance(
+                    output_raster_path=output_raster_path,
+                    context=context,
+                    results=results,
+                )
+
+        if OUTPUT_WINDOWS_PATH_DIR in parameters:
+            output_dir: Path = Path(self.output_values[OUTPUT_WINDOWS_PATH_DIR])
+            self.load_output_windows_to_qgis_instance(output_dir=output_dir)
+
+        return results
+
+    def load_output_raster_to_qgis_instance(
+        self, output_raster_path: str, context, results: dict[str, Any]
+    ):
+        """Load output raster results to QGIS instance."""
+        raster_layer: QgsRasterLayer = QgsRasterLayer(output_raster_path, "hillshade")
+        if not raster_layer.isValid():
+            raise QgsProcessingException(
+                self.tr("""Cannot load the output in the application""")
+            )
+
+        raster_layer_name: str = get_layer_name(
+            layer=raster_layer, default_output=self.name()
+        )
+        set_raster_layer_symbology(layer=raster_layer, qml_file_name="continuous.qml")
+        context.temporaryLayerStore().addMapLayer(raster_layer)
+        raster_layer_details = QgsProcessingContext.LayerDetails(
+            raster_layer_name, context.project(), OUTPUT_RASTER
+        )
+
+        context.addLayerToLoadOnCompletion(raster_layer.id(), raster_layer_details)
+        results[OUTPUT_RASTER] = raster_layer.id()
+
+    def load_output_windows_to_qgis_instance(
+        self,
+        output_dir: Path,
+        group_name: str = "Window paths",
+        group_expanded: bool = False,
+        group_checked: bool = False,
+        qml_file_name: str = "continuous.qml",
+    ):
+        """Load output windows paths results to QGIS instance."""
+        qgs_project = QgsProject.instance()
+        layer_tree = qgs_project.layerTreeRoot()
+
+        # add main group
+        root_group: QgsLayerTreeGroup = layer_tree.addGroup(group_name)
+        root_group.setExpanded(group_expanded)
+        root_group.setItemVisibilityChecked(group_checked)
+
+        for filename in output_dir.iterdir():
+            if filename.suffix == ".asc" or filename.suffix == ".tif":
+                rlayer = QgsRasterLayer(str(filename), filename.stem)
                 if not rlayer.isValid():
                     raise QgsProcessingException(
                         self.tr("""Cannot load the output in the application""")
                     )
-
-                rLayerName = get_layer_name(layer=rlayer, default_output=self.name())
-                set_raster_layer_symbology(layer=rlayer, qml_file_name="continuous.qml")
-                context.temporaryLayerStore().addMapLayer(rlayer)
-                layerDetails = QgsProcessingContext.LayerDetails(
-                    rLayerName, context.project(), OUTPUT_RASTER
-                )
-
-                context.addLayerToLoadOnCompletion(rlayer.id(), layerDetails)
-                results[OUTPUT_RASTER] = rlayer.id()
-
-        return results
+                set_raster_layer_symbology(layer=rlayer, qml_file_name=qml_file_name)
+                qgs_project.addMapLayer(rlayer, False)
+                root_group.addLayer(rlayer)
 
     def helpUrl(self):
         localeName = QLocale.system().name()
@@ -259,9 +333,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             parameters[param.name()] = "1"
         context = QgsProcessingContext()
         feedback = QgsProcessingFeedback()
-        name = self.get_console_command(parameters, context, feedback, executing=False)[
-            0
-        ]
+        name = self.get_console_command(parameters)[0]
         if name.endswith(".py"):
             name = name[:-3]
         return name
@@ -271,7 +343,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             context = self.__class__.__name__
         return QCoreApplication.translate(context, string)
 
-    def createProjectionFile(self, f_prj, crs=None, layer_crs=None, param=None):
+    def create_projection_file(self, file_path, crs=None, layer_crs=None):
         """Create Projection File"""
 
         if crs:  # crs given
@@ -293,13 +365,9 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             # crs_output = iface.mapCanvas().mapRenderer().destinationCrs()
             crs_output = iface.mapCanvas().mapSettings().destinationCrs()
 
-        # with os.open(f_prj,os.O_CREAT|os.O_WRONLY) as fd:
-        #     b_string = str.encode(crs_output.toWkt())
-        #     os.write(fd, b_string)
-
-        with open(f_prj, "w") as fd:
+        with open(file_path, "w", encoding="utf-8") as file:
             # b_string = str.encode(crs_output.toWkt())
-            fd.write(crs_output.toWkt())
+            file.write(crs_output.toWkt())
 
     def prepareMultiProjectionFiles(self):
         # === Projection file
@@ -307,12 +375,12 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             baseOut = os.path.basename(file)
             radical = os.path.splitext(baseOut)[0]
             f_prj = self.output_dir + os.sep + radical + ".prj"
-            self.createProjectionFile(f_prj)
+            self.create_projection_file(f_prj)
 
-    def parameterRasterAsFilePath(self, parameters, paramName, context):
+    def parameterRasterAsFilePath(self, parameters, paramName, context) -> str:
         res = self.parameterAsString(parameters, paramName, context)
 
-        if res is None or res == "" or re.match(r"^[a-zA-Z0-9_]+$", res):
+        if res is None or not res or re.match(r"^[a-zA-Z0-9_]+$", res):
             layer = self.parameterAsRasterLayer(parameters, paramName, context)
             res = layer.dataProvider().dataSourceUri().split("|")[0]
 

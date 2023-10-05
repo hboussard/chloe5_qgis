@@ -4,7 +4,6 @@ from typing import Union
 import numpy as np
 from math import floor
 from osgeo import gdal
-from copy import deepcopy
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
 from qgis.core import (
     QgsRasterLayer,
@@ -18,6 +17,7 @@ from jinja2 import Template
 
 from ...helpers.constants import CHLOE_WORKING_DIRECTORY_PATH
 from ..algorithms.helpers.constants_metrics import (
+    FAST_MODE_EXCLUSION_METRICS,
     TYPES_OF_METRICS_SIMPLE,
     TYPES_OF_METRICS_CROSS,
     TYPES_OF_METRICS,
@@ -35,7 +35,7 @@ def run_command(
     feedback.pushInfo("CHLOE command:")
     feedback.pushCommandInfo(command_line)
     feedback.pushInfo("CHLOE command output:")
-    print(CHLOE_WORKING_DIRECTORY_PATH)
+
     success = False
     retry_count = 0
     while not success:
@@ -74,7 +74,9 @@ def run_command(
 def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_name: str) -> None:
     """Set the layer symbology from a qml file."""
 
-    style_file_path: Path = Path(__file__).resolve().parent / "styles" / qml_file_name
+    style_file_path: Path = (
+        Path(__file__).resolve().parent.parent / "styles" / qml_file_name
+    )
 
     if not layer.isValid():
         QgsMessageLog.logMessage(
@@ -82,7 +84,7 @@ def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_name: str) -> Non
             level=Qgis.Critical,
         )
         return
-
+    print(str(style_file_path))
     layer.loadNamedStyle(str(style_file_path))
 
     # getting statistics from the layer
@@ -92,35 +94,39 @@ def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_name: str) -> Non
     min: float = stats.minimumValue
     max: float = stats.maximumValue
 
-    # adjusting the symbology to equal intervals from the
-    renderer = layer.renderer()
-    shader = renderer.shader()
-    colorRampShader = shader.rasterShaderFunction()
-    if type(colorRampShader) is QgsColorRampShader:
-        colorRampItemList = colorRampShader.colorRampItemList()
-        nbClasses = len(colorRampItemList)
-        newColorRampList = []
-        for i in range(0, nbClasses):
-            val = min + (i * (max - min) / (nbClasses - 1))
-            item = QgsColorRampShader.ColorRampItem(
-                val, (colorRampItemList[i]).color, str(val)
-            )
-            newColorRampList.append(item)
-        colorRampShader.setColorRampItemList(newColorRampList)
+    # # adjusting the symbology to equal intervals from the
+    # renderer = layer.renderer()
+    # shader = renderer.shader()
+    # colorRampShader = shader.rasterShaderFunction()
+    # if type(colorRampShader) is QgsColorRampShader:
+    #     colorRampItemList = colorRampShader.colorRampItemList()
+    #     nbClasses = len(colorRampItemList)
+    #     newColorRampList = []
+    #     for i in range(0, nbClasses):
+    #         val = min + (i * (max - min) / (nbClasses - 1))
+    #         item = QgsColorRampShader.ColorRampItem(
+    #             val, (colorRampItemList[i]).color, str(val)
+    #         )
+    #         newColorRampList.append(item)
+    #     colorRampShader.setColorRampItemList(newColorRampList)
 
 
-def get_non_empty_value(raster_file_path: str) -> list[int]:
-    """Extract values from a raster layer (f_input) and return a list of values"""
-
-    # old extractValueNotNull
-    # === Test algorithm
+def extract_non_zero_non_nodata_values(raster_file_path: str) -> list[int]:
+    """Extract values from a raster layer and return a list of values as integers, removing 0 and nodata values"""
     dataset = gdal.Open(raster_file_path)  # DataSet
+    if dataset is None:
+        QgsMessageLog.logMessage(
+            f"Le fichier raster {raster_file_path} n'est pas valide",
+            level=Qgis.Critical,
+        )
+        return []
+
     band = dataset.GetRasterBand(1)  # -> band
     array = np.array(band.ReadAsArray())  # -> matrice values
     values = np.unique(array)
     nodata = band.GetNoDataValue()
 
-    int_values_and_nodata = [
+    int_values_and_nodata: list[int] = [
         int(floor(x)) for x in values[(values != 0) & (values != nodata)]
     ]
 
@@ -173,16 +179,33 @@ def add_cross_metrics(
     return metrics
 
 
-def get_metrics(raster_values: list[int]) -> dict[str, list[str]]:
+def remove_metrics(
+    input_metrics_dict: dict[str, list[str]], metrics_to_remove: list[str]
+) -> dict[str, list[str]]:
+    """Remove metrics from the metrics dictionnary"""
+    result_metrics_dict = {
+        metric_name: metric_list
+        for metric_name, metric_list in input_metrics_dict.items()
+        if metric_name not in metrics_to_remove
+    }
+
+    return result_metrics_dict
+
+
+def get_metrics(
+    raster_values: list[int], fast_mode: bool = False
+) -> dict[str, list[str]]:
     """Get the metric dictionnary based on the raster values"""
     metrics: dict[str, list[str]] = TYPES_OF_METRICS
 
-    add_simple_metrics(metrics, raster_values)
-    add_cross_metrics(metrics, raster_values)
+    metrics = add_simple_metrics(metrics, raster_values)
+    metrics = add_cross_metrics(metrics, raster_values)
+    if fast_mode:
+        metrics = remove_metrics(metrics, FAST_MODE_EXCLUSION_METRICS)
     return metrics
 
 
-def format_string(input_string: str, is_windows_system: bool = False):
+def format_path_for_properties_file(input_string: str, is_windows_system: bool = False):
     """Format path file for windows"""
     # TODO : check if it is necessary ??
     if is_windows_system:

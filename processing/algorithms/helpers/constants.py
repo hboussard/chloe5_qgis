@@ -1,5 +1,5 @@
 # Constants used in the algorithms
-# Algorithm is fast
+# Parameters names constants
 FAST: str = "FAST"
 # Input parameters names constants
 INPUT_RASTER: str = "INPUT_RASTER"
@@ -65,6 +65,11 @@ OPEN_ALL_ASC: str = "OPEN_ALL_ASC"
 
 # Output parameters names constants
 OUTPUT_DIR: str = "OUTPUT_DIR"
+OUTPUT_WINDOWS_PATH_DIR: str = "OUTPUT_WINDOWS_PATH_DIR"
 OUTPUT_RASTER: str = "OUTPUT_RASTER"
 OUTPUT_CSV: str = "OUTPUT_CSV"
 SAVE_PROPERTIES: str = "SAVE_PROPERTIES"
+
+# point pixel enum parameter options
+
+PIXEL_POINT_SELECTOR_OPTIONS: list[str] = ["pixel(s) file", "point(s) file"]

@@ -1,36 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""
-/***************************************************************************
- Chole
-                                 A QGIS plugin
- description
-                              -------------------
-        begin                : 2017-10-17
-        author : Jean-Charles Naud, Olivier Bedel, Hugues Boussard
-
-        email                : hugues.boussard at inra.fr
- ***************************************************************************/
-
-"""
-
 from pathlib import Path
-from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
-    ChloeRasterParameterFileDestination,
-)
-from ...gui.custom_parameters.chloe_csv_parameter_file_destination import (
-    ChloeCSVParameterFileDestination,
-)
-
-from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
-from ...helpers.helpers import (
-    convert_to_odd,
-    enum_to_list,
-    format_string,
-    get_enum_order_as_int,
-)
-
-
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterRasterLayer,
@@ -40,9 +10,20 @@ from qgis.core import (
     QgsProcessingParameterFile,
     QgsProcessingParameterEnum,
     QgsProcessingParameterFileDestination,
+    QgsProcessingException,
+)
+from qgis.PyQt.QtWidgets import QMessageBox
+from processing.tools.system import isWindows
+
+from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
+    ChloeRasterParameterFileDestination,
+)
+from ...gui.custom_parameters.chloe_csv_parameter_file_destination import (
+    ChloeCSVParameterFileDestination,
 )
 
-from processing.tools.system import isWindows
+from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
+
 
 from ..chloe_algorithm import ChloeAlgorithm
 from ..helpers.constants import (
@@ -64,8 +45,13 @@ from ..helpers.constants import (
     WINDOW_SHAPE,
     WINDOW_SIZES,
 )
-from ..helpers.constants_metrics import TYPES_OF_METRICS
-from ..helpers.enums import AnalyzeType, WindowShapeType
+from ...helpers.helpers import (
+    convert_to_odd,
+    enum_to_list,
+    format_path_for_properties_file,
+    get_enum_order_as_int,
+)
+from ..helpers.enums import AnalyzeType, AnalyzeTypeFastMode, WindowShapeType
 
 
 class SlidingAlgorithm(ChloeAlgorithm):
@@ -74,58 +60,79 @@ class SlidingAlgorithm(ChloeAlgorithm):
     def __init__(self):
         super().__init__()
 
+        # properties values
+        self.input_raster: str = ""
+        self.window_shape: str = ""
+        self.friction_file: str = ""
+        self.window_sizes: int = 0
+        self.analyze_type: str = ""
+        self.distance_formula: str = ""
+        self.delta_displacement: int = 0
+        self.b_interpolate_values: bool = False
+        self.filter_analyze: str = ""
+        self.filter_no_analyze: str = ""
+        self.maximum_rate_missing_values: int = 0
+        self.metrics: str = ""
+        self.output_csv: str = ""
+        self.output_raster: str = ""
+
     def initAlgorithm(self, config=None):
-        # === INPUT PARAMETERS ===
+        self.init_input_params()
+        self.init_algorithm_params()
+        self.init_algorithm_advanced_params()
+        self.init_output_params()
 
-        # algorithm is fast
-        fast_param: QgsProcessingParameterBoolean = QgsProcessingParameterBoolean(
-            name=FAST, description=self.tr("Fast"), defaultValue=False
-        )
-        fast_param.setMetadata(
-            {
-                "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.checkbox_update_state.widget_wrapper.ChloeCheckboxUpdateStateWidgetWrapper",
-                    "dependantWidgetConfig": [
-                        {"paramName": ANALYZE_TYPE, "enableValue": False},
-                    ],
-                }
-            }
-        )
-
-        self.addParameter(fast_param)
-
+    def init_input_params(self):
+        """Init input parameters."""
         # INPUT ASC
-        inputAscParam = QgsProcessingParameterRasterLayer(
+        input_asc_param = QgsProcessingParameterRasterLayer(
             name=INPUT_RASTER, description=self.tr("Input raster layer")
         )
 
-        inputAscParam.setMetadata(
+        input_asc_param.setMetadata(
             {
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.raster_input.widget_wrapper.ChloeAscRasterWidgetWrapper"
                 }
             }
         )
-        self.addParameter(inputAscParam)
+        self.addParameter(input_asc_param)
 
+    def init_algorithm_params(self):
+        """Init algorithm parameters."""
+        # algorithm is fast
+        fast_mode_param: QgsProcessingParameterBoolean = QgsProcessingParameterBoolean(
+            name=FAST, description=self.tr("Fast mode"), defaultValue=False
+        )
+        fast_mode_param.setMetadata(
+            {
+                "widget_wrapper": {
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.checkbox_update_state.widget_wrapper.ChloeCheckboxUpdateStateWidgetWrapper",
+                    "dependantWidgetConfig": [
+                        {"paramName": WINDOW_SHAPE, "enableValue": False},
+                    ],
+                }
+            }
+        )
+
+        self.addParameter(fast_mode_param)
         # METRICS
 
-        metricsParam = QgsProcessingParameterString(
+        metrics_param: QgsProcessingParameterString = QgsProcessingParameterString(
             name=METRICS, description=self.tr("Select metrics")
         )
 
-        metricsParam.setMetadata(
+        metrics_param.setMetadata(
             {
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.double_combobox.widget_wrapper.ChloeDoubleComboboxWidgetWrapper",
-                    "dictValues": TYPES_OF_METRICS,
-                    "initialValue": "diversity metrics",
-                    "rasterLayerParamName": INPUT_RASTER,
+                    "default_selected_metric": "diversity metrics",
+                    "input_raster_layer_param_name": INPUT_RASTER,
                     "parentWidgetConfig": {
                         "linkedParams": [
                             {
                                 "paramName": INPUT_RASTER,
-                                "refreshMethod": "refreshMappingCombobox",
+                                "refreshMethod": "refresh_metrics_combobox",
                             },
                         ]
                     },
@@ -133,19 +140,19 @@ class SlidingAlgorithm(ChloeAlgorithm):
             }
         )
 
-        self.addParameter(metricsParam)
+        self.addParameter(metrics_param)
 
-        ###### ADVANCED PARAMETERS ######
-
+    def init_algorithm_advanced_params(self):
+        """Init algorithm advanced parameters."""
         # WINDOW SHAPE
 
-        windowShapeParam = QgsProcessingParameterEnum(
+        window_shape_param = QgsProcessingParameterEnum(
             name=WINDOW_SHAPE,
             description=self.tr("Window shape"),
             options=enum_to_list(WindowShapeType),
         )
 
-        windowShapeParam.setMetadata(
+        window_shape_param.setMetadata(
             {
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.enum_update_state.widget_wrapper.ChloeEnumUpdateStateWidgetWrapper",
@@ -161,22 +168,22 @@ class SlidingAlgorithm(ChloeAlgorithm):
             }
         )
 
-        windowShapeParam.setFlags(
-            windowShapeParam.flags() | QgsProcessingParameterDefinition.FlagAdvanced
+        window_shape_param.setFlags(
+            window_shape_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
         )
-        self.addParameter(windowShapeParam)
+        self.addParameter(window_shape_param)
 
         # FRICTION FILE (OPTIONAL)
 
-        friction_file = QgsProcessingParameterFile(
+        friction_file_param = QgsProcessingParameterFile(
             name=FRICTION_FILE, description=self.tr("Friction file"), optional=True
         )
-        friction_file.setFileFilter("GeoTIFF (*.tif *.TIF);; ASCII (*.asc *.ASC)")
-        friction_file.setFlags(
-            friction_file.flags() | QgsProcessingParameterDefinition.FlagAdvanced
+        friction_file_param.setFileFilter("GeoTIFF (*.tif *.TIF);; ASCII (*.asc *.ASC)")
+        friction_file_param.setFlags(
+            friction_file_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
         )
 
-        self.addParameter(friction_file)
+        self.addParameter(friction_file_param)
 
         # ANALYZE TYPE
 
@@ -192,12 +199,11 @@ class SlidingAlgorithm(ChloeAlgorithm):
             {
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.enum_update_state.widget_wrapper.ChloeEnumUpdateStateWidgetWrapper",
+                    "fast_mode_options": enum_to_list(AnalyzeTypeFastMode),
                     "dependantWidgetConfig": [
                         {
                             "paramName": DISTANCE_FUNCTION,
-                            "enableValue": get_enum_order_as_int(
-                                AnalyzeType.WEIGHTED_DISTANCE
-                            ),
+                            "enableValue": get_enum_order_as_int(AnalyzeType.WEIGHTED),
                         }
                     ],
                 }
@@ -315,18 +321,25 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
         self.addParameter(window_size_parameter)
 
-        # === OUTPUT PARAMETERS ===
-
-        self.addParameter(
-            ChloeCSVParameterFileDestination(
-                name=OUTPUT_CSV, description=self.tr("Output csv")
-            )
+    def init_output_params(self):
+        """Init output parameters."""
+        csv_output_parameter = QgsProcessingParameterFileDestination(
+            name=OUTPUT_CSV,
+            description=self.tr("Output csv"),
+            fileFilter="CSV (*.csv *.CSV)",
+            optional=True,
+            createByDefault=False,
         )
+        self.addParameter(csv_output_parameter)
 
         raster_output_parameter = ChloeRasterParameterFileDestination(
-            name=OUTPUT_RASTER, description=self.tr("Output Raster")
+            name=OUTPUT_RASTER,
+            description=self.tr("Output Raster"),
+            optional=True,
+            createByDefault=False,
         )
-        self.addParameter(raster_output_parameter, createOutput=True)
+
+        self.addParameter(raster_output_parameter)
 
         self.addParameter(
             QgsProcessingParameterFileDestination(
@@ -351,62 +364,80 @@ class SlidingAlgorithm(ChloeAlgorithm):
     def commandName(self):
         return "java"
 
-    def PreRun(self, parameters, context, feedback, executing=True):
-        """Here is where the processing itself takes place."""
+    def checkParameterValues(self, parameters, context):
+        """Override checkParameterValues base class method. check additional parameters."""
 
-        # === INPUT
-        self.input_raster = self.parameterRasterAsFilePath(
+        output_csv = self.parameterAsOutputLayer(parameters, OUTPUT_CSV, context)
+        output_raster = self.parameterAsOutputLayer(parameters, OUTPUT_RASTER, context)
+
+        if not output_csv and not output_raster:
+            return False, self.tr("You must select at least one output file")
+
+        # If these parameters are valid, call the parent class's checkParameterValues method for the rest
+        return super().checkParameterValues(parameters, context)
+
+    def set_properties_input_values(self, parameters, context):
+        """Set input values."""
+        self.input_raster: str = self.parameterRasterAsFilePath(
             parameters, INPUT_RASTER, context
         )
 
-        self.window_shape = enum_to_list(WindowShapeType)[
+    def set_properties_algorithm_values(self, parameters, context):
+        """Set algorithm parameters."""
+        self.window_shape: str = enum_to_list(WindowShapeType)[
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        self.friction_file = self.parameterAsString(parameters, FRICTION_FILE, context)
+        self.friction_file: str = self.parameterAsString(
+            parameters, FRICTION_FILE, context
+        )
 
-        self.window_sizes = self.parameterAsInt(parameters, WINDOW_SIZES, context)
+        self.window_sizes: int = self.parameterAsInt(parameters, WINDOW_SIZES, context)
 
-        self.analyze_type = enum_to_list(AnalyzeType)[
+        self.analyze_type: str = enum_to_list(AnalyzeType)[
             self.parameterAsEnum(parameters, ANALYZE_TYPE, context)
         ]
 
-        self.distance_formula = self.parameterAsString(
+        self.distance_formula: str = self.parameterAsString(
             parameters, DISTANCE_FUNCTION, context
         )
 
-        self.delta_displacement = self.parameterAsInt(
+        self.delta_displacement: int = self.parameterAsInt(
             parameters, DELTA_DISPLACEMENT, context
         )
 
-        self.b_interpolate_values = self.parameterAsBool(
+        self.b_interpolate_values: bool = self.parameterAsBool(
             parameters, INTERPOLATE_VALUES_BOOL, context
         )
 
-        self.filter_analyze = self.parameterAsString(
+        self.filter_analyze: str = self.parameterAsString(
             parameters, FILTER_ANALYZE, context
         )
-        self.filter_no_analyze = self.parameterAsString(
+        self.filter_no_analyze: str = self.parameterAsString(
             parameters, FILTER_NO_ANALYZE, context
         )
 
-        self.maximum_rate_missing_values = self.parameterAsInt(
+        self.maximum_rate_missing_values: int = self.parameterAsInt(
             parameters, MAXIMUM_RATE_MISSING_VALUES, context
         )
-        self.metrics = self.parameterAsString(parameters, METRICS, context)
+        self.metrics: str = self.parameterAsString(parameters, METRICS, context)
 
-        # === OUTPUT
-        self.output_csv = self.parameterAsOutputLayer(parameters, OUTPUT_CSV, context)
-        self.output_raster = self.parameterAsOutputLayer(
+    def set_properties_output_values(self, parameters, context):
+        """Set output values."""
+        self.output_csv: str = self.parameterAsString(parameters, OUTPUT_CSV, context)
+        self.set_output_parameter_value(OUTPUT_CSV, self.output_csv)
+
+        self.output_raster: str = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
-        self.setOutputValue(OUTPUT_CSV, self.output_csv)
-        self.setOutputValue(OUTPUT_RASTER, self.output_raster)
 
+        self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
+
+        # TODO : move somewhere else
         output_path_raster: Path = Path(self.output_raster)
-        dir_out_raster: Path = output_path_raster.parent
-        base_out_raster: str = output_path_raster.name
-        name_out_raster: str = output_path_raster.stem
+        # === Projection file
+        f_prj: str = str(output_path_raster.parent / f"{output_path_raster.stem}.prj")
+        self.create_projection_file(f_prj)
 
         # === SAVE_PROPERTIES
 
@@ -414,39 +445,44 @@ class SlidingAlgorithm(ChloeAlgorithm):
             parameters, SAVE_PROPERTIES, context
         )
 
-        self.setOutputValue(SAVE_PROPERTIES, f_save_properties)
+        self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 
-        print(self.output_values)
-        # === Properties files
-        self.createProperties()
+    def set_properties_values(self, parameters, context):
+        """set properties values."""
 
-        # === Projection file
-        f_prj: str = str(dir_out_raster / f"{name_out_raster}.prj")
-        self.createProjectionFile(f_prj)
+        self.set_properties_input_values(parameters, context)
 
-    def createProperties(self):
-        """Create Properties File."""
+        self.set_properties_algorithm_values(parameters, context)
+
+        self.set_properties_output_values(parameters, context)
+
+    def get_properties_lines(self) -> list[str]:
+        """get properties lines."""
         properties_lines: list[str] = []
 
         properties_lines.append("treatment=sliding\n")
         properties_lines.append(
-            format_string(
+            format_path_for_properties_file(
                 input_string=f"input_raster={self.input_raster}\n",
                 is_windows_system=isWindows(),
             )
         )
-        properties_lines.append(
-            format_string(
-                input_string=f"output_csv={self.output_csv}\n",
-                is_windows_system=isWindows(),
+
+        if self.output_csv:
+            properties_lines.append(
+                format_path_for_properties_file(
+                    input_string=f"output_csv={self.output_csv}\n",
+                    is_windows_system=isWindows(),
+                )
             )
-        )
-        properties_lines.append(
-            format_string(
-                input_string=f"output_raster={self.output_raster}\n",
-                is_windows_system=isWindows(),
+
+        if self.output_raster:
+            properties_lines.append(
+                format_path_for_properties_file(
+                    input_string=f"output_raster={self.output_raster}\n",
+                    is_windows_system=isWindows(),
+                )
             )
-        )
 
         properties_lines.append(
             f"sizes={{{str(convert_to_odd(input_integer=self.window_sizes))}}}\n"
@@ -455,13 +491,13 @@ class SlidingAlgorithm(ChloeAlgorithm):
             f"maximum_nodata_value_rate={str(self.maximum_rate_missing_values)}\n"
         )
 
-        if self.analyze_type == "weighted distance":
+        if self.analyze_type == AnalyzeType.WEIGHTED.value:
             properties_lines.append(f"distance_function={str(self.distance_formula)}\n")
 
         properties_lines.append(f"metrics={{{self.metrics}}}\n")
         properties_lines.append(f"delta_displacement={str(self.delta_displacement)}\n")
         properties_lines.append(f"shape={str(self.window_shape)}\n")
-        if self.window_shape == "FUNCTIONAL":
+        if self.window_shape == WindowShapeType.FUNCTIONAL.value:
             properties_lines.append(f"friction={self.friction_file}\n")
 
         if self.b_interpolate_values:
@@ -474,15 +510,4 @@ class SlidingAlgorithm(ChloeAlgorithm):
         if self.filter_no_analyze:
             properties_lines.append(f"unfilters={{{self.filter_no_analyze}}}\n")
 
-        # Writing the second part of the properties file
-        if self.output_csv:
-            properties_lines.append("export_csv=true\n")
-        else:
-            properties_lines.append("export_csv=false\n")
-
-        if self.output_raster:
-            properties_lines.append("export_ascii=true\n")
-        else:
-            properties_lines.append("export_ascii=false\n")
-
-        self.createPropertiesFile(properties_lines)
+        return properties_lines

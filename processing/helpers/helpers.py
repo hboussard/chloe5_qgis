@@ -1,92 +1,23 @@
 from enum import Enum
-import os
-import signal
-import platform
+
 from pathlib import Path
 from typing import Union
 import numpy as np
 from math import floor
 from osgeo import gdal
-from subprocess import Popen, PIPE, STDOUT, DEVNULL, call
 from qgis.core import (
     QgsRasterLayer,
     QgsRasterBandStats,
-    QgsColorRampShader,
     QgsMessageLog,
     Qgis,
-    QgsProcessingFeedback,
 )
 from jinja2 import Template
-
-from ...helpers.constants import CHLOE_WORKING_DIRECTORY_PATH
 from ..algorithms.helpers.constants_metrics import (
     FAST_MODE_EXCLUSION_METRICS,
     TYPES_OF_METRICS_SIMPLE,
     TYPES_OF_METRICS_CROSS,
     TYPES_OF_METRICS,
 )
-
-
-def run_command(
-    command_line: str,
-    feedback: Union[QgsProcessingFeedback, None] = None,
-) -> None:
-    if feedback is None:
-        feedback = QgsProcessingFeedback()
-
-    QgsMessageLog.logMessage(command_line, "Processing", Qgis.Info)
-    feedback.pushInfo("CHLOE command:")
-    feedback.pushCommandInfo(command_line)
-    feedback.pushInfo("CHLOE command output:")
-
-    success = False
-    retry_count = 0
-    while not success:
-        loglines = []
-        loglines.append("CHLOE execution console output")
-        try:
-            with Popen(
-                command_line,
-                shell=True,
-                stdout=PIPE,
-                stdin=DEVNULL,
-                stderr=STDOUT,
-                # universal_newlines=True,
-                cwd=str(CHLOE_WORKING_DIRECTORY_PATH),
-            ) as process:
-                success = True
-
-                for byte_line in process.stdout:
-                    if feedback.isCanceled():
-                        if platform.system() == "Windows":
-                            call(
-                                [
-                                    "taskkill",
-                                    "/F",
-                                    "/T",
-                                    "/PID",
-                                    str(process.pid),
-                                ]
-                            )
-                        else:
-                            os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-                        return
-                    line = byte_line.decode("utf8", errors="backslashreplace").replace(
-                        "\r", ""
-                    )
-                    feedback.pushConsoleInfo(line)
-                    loglines.append(line)
-        except IOError as error:
-            if retry_count < 5:
-                # print('retry ' + str(retry_count))
-                retry_count += 1
-            else:
-                raise IOError(
-                    str(error)
-                    + f'\nTried 5 times without success. Last iteration stopped after reading {len(loglines)} line(s).\nLast line(s):\n{",".join(loglines[-10:])}'
-                ) from error
-
-        QgsMessageLog.logMessage("\n".join(loglines), "Processing", Qgis.Info)
 
 
 def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_name: str) -> None:

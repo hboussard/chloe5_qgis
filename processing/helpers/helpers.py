@@ -1,10 +1,13 @@
 from enum import Enum
+import os
+import signal
+import platform
 from pathlib import Path
 from typing import Union
 import numpy as np
 from math import floor
 from osgeo import gdal
-from subprocess import Popen, PIPE, STDOUT, DEVNULL
+from subprocess import Popen, PIPE, STDOUT, DEVNULL, call
 from qgis.core import (
     QgsRasterLayer,
     QgsRasterBandStats,
@@ -51,13 +54,28 @@ def run_command(
                 # universal_newlines=True,
                 cwd=str(CHLOE_WORKING_DIRECTORY_PATH),
             ) as process:
+                success = True
+
                 for byte_line in process.stdout:
+                    if feedback.isCanceled():
+                        if platform.system() == "Windows":
+                            call(
+                                [
+                                    "taskkill",
+                                    "/F",
+                                    "/T",
+                                    "/PID",
+                                    str(process.pid),
+                                ]
+                            )
+                        else:
+                            os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+                        return
                     line = byte_line.decode("utf8", errors="backslashreplace").replace(
                         "\r", ""
                     )
                     feedback.pushConsoleInfo(line)
                     loglines.append(line)
-                success = True
         except IOError as error:
             if retry_count < 5:
                 # print('retry ' + str(retry_count))

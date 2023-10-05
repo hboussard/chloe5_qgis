@@ -103,7 +103,8 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
     def flags(self):
         return (
             QgsProcessingAlgorithm.FlagSupportsBatch
-            | QgsProcessingAlgorithm.FlagNoThreading
+            | QgsProcessingAlgorithm.FlagCanCancel
+            # | QgsProcessingAlgorithm.FlagNoThreading
         )  # cannot cancel!
 
     def get_properties_lines(self) -> "list[str]":

@@ -3,6 +3,7 @@ import signal
 import platform
 from typing import Protocol, Union
 from re import search
+from subprocess import Popen, PIPE, STDOUT, DEVNULL
 from qgis.core import QgsMessageLog, Qgis, QgsProcessingFeedback
 from .constants import CHLOE_WORKING_DIRECTORY_PATH
 

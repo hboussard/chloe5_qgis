@@ -76,6 +76,14 @@ class ChloePlugin:
         self.menu.setObjectName(self.menu_name)
         self.menu.setTitle(self.menu_name)
 
+        grainIcon_path = Path(__file__).resolve().parent / "images" / "chloe_icon.png"
+        self.add_action(
+            self.menu,
+            QIcon(str(grainIcon_path)),
+            text=self.tr("Chloé 5 : Grain"),
+            callback=self.runGrain,
+            parent=self.iface.mainWindow(),
+        )
         # plugin settings separator
         separator = QAction()
         separator.setSeparator(True)
@@ -89,16 +97,8 @@ class ChloePlugin:
             add_to_toolbar=False,
             parent=self.iface.mainWindow(),
         )
-        grainIcon_path= Path(__file__).resolve() / "images" / "chloe_icon.png"
-        print(grainIcon_path)
-        self.add_action(
-            self.menu,
-            QIcon(str(grainIcon_path)),
-            text=self.tr(u'Chloé 5 : Grain'),
-            callback=self.runGrain,
-            parent=self.iface.mainWindow())
         self.first_start_grain = True
-        
+
         qgis_menu_bar: QMenuBar = self.iface.mainWindow().menuBar()
         menu = qgis_menu_bar
         for child in qgis_menu_bar.children():
@@ -219,8 +219,6 @@ class ChloePlugin:
         for action in self.actions:
             self.iface.removePluginMenu(self.menu_name, action)
             self.iface.removeToolBarIcon(action)
-
-
 
     def runGrain(self):
         """Run method that performs all the real work"""

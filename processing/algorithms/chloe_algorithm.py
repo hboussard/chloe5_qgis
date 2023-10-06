@@ -34,15 +34,16 @@ from typing import Any
 from ..helpers.helpers import (
     file_get_content,
     get_layer_name,
-    run_command,
     set_raster_layer_symbology,
 )
 from ..gui.chloe_algorithm_dialog import ChloeAlgorithmDialog
 
+from ...helpers.helpers import run_command
+
 from processing.tools.system import isWindows, getTempFilename
 from qgis.utils import iface
 
-# Heavy overload
+
 from qgis.PyQt.QtCore import QCoreApplication, QLocale
 from qgis.PyQt.QtGui import QIcon
 
@@ -67,14 +68,12 @@ from ...helpers.constants import CHLOE_JAR_PATH
 from ...settings.helpers import check_java_path, get_java_path
 from .helpers.constants import OUTPUT_WINDOWS_PATH_DIR, SAVE_PROPERTIES, OUTPUT_RASTER
 
-# END : Heavy overload
 
-
-class ChloeOutputLayerPostProcessor(QgsProcessingLayerPostProcessorInterface):
-    def postProcessLayer(self, layer, context, feedback):
-        # print("postProcessing " + layer.name())
-        if isinstance(layer, QgsRasterLayer):
-            set_raster_layer_symbology(layer=layer, qml_file_name="continuous.qml")
+# class ChloeOutputLayerPostProcessor(QgsProcessingLayerPostProcessorInterface):
+#     def postProcessLayer(self, layer, context, feedback):
+#         # print("postProcessing " + layer.name())
+#         if isinstance(layer, QgsRasterLayer):
+#             set_raster_layer_symbology(layer=layer, qml_file_name="continuous.qml")
 
 
 class ChloeAlgorithm(QgsProcessingAlgorithm):
@@ -104,8 +103,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         return (
             QgsProcessingAlgorithm.FlagSupportsBatch
             | QgsProcessingAlgorithm.FlagCanCancel
-            # | QgsProcessingAlgorithm.FlagNoThreading
-        )  # cannot cancel!
+        )
 
     def get_properties_lines(self) -> "list[str]":
         """get property lines to write in properties file."""

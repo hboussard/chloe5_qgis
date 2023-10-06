@@ -11,6 +11,7 @@ from qgis.core import (
     QgsMessageLog,
     Qgis,
 )
+
 from jinja2 import Template
 from ..algorithms.helpers.constants_metrics import (
     FAST_MODE_EXCLUSION_METRICS,

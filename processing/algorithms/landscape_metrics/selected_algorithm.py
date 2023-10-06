@@ -73,7 +73,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
     def init_input_params(self):
         """Init input parameters."""
         input_raster_param = QgsProcessingParameterRasterLayer(
-            name=INPUT_RASTER, description=self.tr("Input layer asc")
+            name=INPUT_RASTER, description=self.tr("Input layer asc"), optional=True
         )
 
         input_raster_param.setMetadata(
@@ -268,6 +268,17 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
     def commandName(self):
         return "selected"
+
+    def checkParameterValues(self, parameters, context):
+        """Override checkParameterValues base class method. check additional parameters."""
+
+        input_raster = self.parameterAsString(parameters, INPUT_RASTER, context)
+
+        if not input_raster:
+            return False, self.tr("You must select an input raster file")
+
+        # If these parameters are valid, call the parent class's checkParameterValues method for the rest
+        return super().checkParameterValues(parameters, context)
 
     def set_properties_input_values(self, parameters, context):
         """Set input values."""

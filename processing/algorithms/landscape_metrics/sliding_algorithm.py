@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from enum import Enum
 from pathlib import Path
+from re import search, IGNORECASE
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterRasterLayer,
@@ -29,7 +31,6 @@ from ..chloe_algorithm import ChloeAlgorithm
 from ..helpers.constants import (
     ANALYZE_TYPE,
     DELTA_DISPLACEMENT,
-    DISTANCE_FRICTION,
     DISTANCE_FUNCTION,
     FAST,
     FILTER_ANALYZE,
@@ -87,7 +88,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         """Init input parameters."""
         # INPUT ASC
         input_asc_param = QgsProcessingParameterRasterLayer(
-            name=INPUT_RASTER, description=self.tr("Input raster layer")
+            name=INPUT_RASTER, description=self.tr("Input raster layer"), optional=True
         )
 
         input_asc_param.setMetadata(
@@ -369,6 +370,11 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
     def checkParameterValues(self, parameters, context):
         """Override checkParameterValues base class method. check additional parameters."""
+
+        input_raster = self.parameterAsString(parameters, INPUT_RASTER, context)
+
+        if not input_raster:
+            return False, self.tr("You must select an input raster file")
 
         output_csv = self.parameterAsOutputLayer(parameters, OUTPUT_CSV, context)
         output_raster = self.parameterAsOutputLayer(parameters, OUTPUT_RASTER, context)

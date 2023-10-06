@@ -68,6 +68,7 @@ from ...helpers.constants import CHLOE_JAR_PATH
 from ...settings.helpers import check_java_path, get_java_path
 from .helpers.constants import OUTPUT_WINDOWS_PATH_DIR, SAVE_PROPERTIES, OUTPUT_RASTER
 
+from ...helpers.constants import CHLOE_PLUGIN_PATH
 
 # class ChloeOutputLayerPostProcessor(QgsProcessingLayerPostProcessorInterface):
 #     def postProcessLayer(self, layer, context, feedback):
@@ -289,35 +290,13 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
     def helpString(self):
         """Generation de l'onglet help"""
         helpfile = self.helpUrl()
-        plugin_path = os.path.dirname(__file__)
+        plugin_path: Path = CHLOE_PLUGIN_PATH
 
-        if isWindows():
-            context = {
-                "plugin_path": "file:///" + (plugin_path + os.sep).replace("/", "\\"),
-                "image_path": "file:///"
-                + (
-                    plugin_path
-                    + os.sep
-                    + "."
-                    + os.sep
-                    + "help_algorithm"
-                    + os.sep
-                    + "images"
-                    + os.sep
-                ).replace("/", "\\"),
-            }
-        else:
-            context = {
-                "plugin_path": plugin_path + os.sep,
-                "image_path": plugin_path
-                + os.sep
-                + "."
-                + os.sep
-                + "help_algorithm"
-                + os.sep
-                + "images"
-                + os.sep,
-            }
+        context = {
+            "plugin_path": f"file://{plugin_path.as_posix()}/",
+            "image_path": f"file://{plugin_path / 'processing' / 'algorithms' / 'documentation' / 'images'}/",
+        }
+
         # print(helpfile)
         content = file_get_content(helpfile, encoding="utf-8", context=context)
 

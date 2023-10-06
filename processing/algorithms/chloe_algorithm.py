@@ -30,51 +30,37 @@ from pathlib import Path
 from re import search, IGNORECASE, match
 from time import gmtime, strftime
 from typing import Any
-
-from ..helpers.helpers import (
-    file_get_content,
-    get_layer_name,
-    set_raster_layer_symbology,
-)
-from ..gui.chloe_algorithm_dialog import ChloeAlgorithmDialog
-
-from ...helpers.helpers import run_command
-
-from processing.tools.system import isWindows, getTempFilename
-from qgis.utils import iface
-
-
 from qgis.PyQt.QtCore import QCoreApplication, QLocale
 from qgis.PyQt.QtGui import QIcon
 
 from qgis.core import (
     QgsProcessingContext,
     QgsProcessingFeedback,
-    QgsApplication,
     QgsRasterLayer,
-    QgsVectorLayer,
     QgsProcessingAlgorithm,
     QgsProcessingException,
-    QgsProcessingLayerPostProcessorInterface,
     QgsProject,
     QgsLayerTreeGroup,
 )
 
 from qgis.utils import iface
 
-from processing.tools import dataobjects
+from processing.tools.system import getTempFilename
 
-from ...helpers.constants import CHLOE_JAR_PATH
-from ...settings.helpers import check_java_path, get_java_path
+from ...helpers.helpers import run_command
+from ...helpers.constants import CHLOE_JAR_PATH, CHLOE_PLUGIN_PATH
+
+from ...settings.helpers import check_java_path, get_java_path, run_command
+
+from ..helpers.helpers import (
+    file_get_content,
+    get_layer_name,
+    set_raster_layer_symbology,
+)
+
+from ..gui.chloe_algorithm_dialog import ChloeAlgorithmDialog
+
 from .helpers.constants import OUTPUT_WINDOWS_PATH_DIR, SAVE_PROPERTIES, OUTPUT_RASTER
-
-from ...helpers.constants import CHLOE_PLUGIN_PATH
-
-# class ChloeOutputLayerPostProcessor(QgsProcessingLayerPostProcessorInterface):
-#     def postProcessLayer(self, layer, context, feedback):
-#         # print("postProcessing " + layer.name())
-#         if isinstance(layer, QgsRasterLayer):
-#             set_raster_layer_symbology(layer=layer, qml_file_name="continuous.qml")
 
 
 class ChloeAlgorithm(QgsProcessingAlgorithm):

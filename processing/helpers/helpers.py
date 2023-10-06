@@ -10,6 +10,9 @@ from qgis.core import (
     QgsRasterBandStats,
     QgsMessageLog,
     Qgis,
+    QgsSingleBandPseudoColorRenderer,
+    QgsRasterShader,
+    QgsColorRampShader,
 )
 
 from jinja2 import Template
@@ -44,20 +47,24 @@ def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_name: str) -> Non
     max: float = stats.maximumValue
 
     # # adjusting the symbology to equal intervals from the
-    # renderer = layer.renderer()
-    # shader = renderer.shader()
-    # colorRampShader = shader.rasterShaderFunction()
-    # if type(colorRampShader) is QgsColorRampShader:
-    #     colorRampItemList = colorRampShader.colorRampItemList()
-    #     nbClasses = len(colorRampItemList)
-    #     newColorRampList = []
-    #     for i in range(0, nbClasses):
-    #         val = min + (i * (max - min) / (nbClasses - 1))
-    #         item = QgsColorRampShader.ColorRampItem(
-    #             val, (colorRampItemList[i]).color, str(val)
-    #         )
-    #         newColorRampList.append(item)
-    #     colorRampShader.setColorRampItemList(newColorRampList)
+    renderer: QgsSingleBandPseudoColorRenderer = layer.renderer()
+
+    shader: QgsRasterShader = renderer.shader()
+
+    color_ramp_shader = shader.rasterShaderFunction()
+
+    if isinstance(color_ramp_shader, QgsColorRampShader):
+        current_color_ramp_item_list = color_ramp_shader.colorRampItemList()
+        classes_count: int = len(current_color_ramp_item_list)
+        new_color_ramp_list = []
+
+        for i in range(0, classes_count):
+            val = min + (i * (max - min) / (classes_count - 1))
+            item = QgsColorRampShader.ColorRampItem(
+                val, (current_color_ramp_item_list[i]).color, str(val)
+            )
+            new_color_ramp_list.append(item)
+        color_ramp_shader.setColorRampItemList(new_color_ramp_list)
 
 
 def extract_non_zero_non_nodata_values(raster_file_path: str) -> list[int]:

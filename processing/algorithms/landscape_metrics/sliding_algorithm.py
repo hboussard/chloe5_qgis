@@ -145,6 +145,28 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
         self.addParameter(metrics_param)
 
+        # WINDOW SIZE
+        window_size_parameter = QgsProcessingParameterNumber(
+            name=WINDOW_SIZES,
+            description=self.tr("Windows sizes (pixels)"),
+            defaultValue=3,
+            minValue=3,
+        )
+
+        window_size_parameter.setMetadata(
+            {
+                "widget_wrapper": {
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.int_spin_box.widget_wrapper.ChloeOddEvenIntSpinboxWrapper",
+                    "initial_value": 3,
+                    "min_value": 3,
+                    "max_value": 100001,
+                    "odd_mode": True,
+                }
+            }
+        )
+
+        self.addParameter(window_size_parameter)
+
     def init_algorithm_advanced_params(self):
         """Init algorithm advanced parameters."""
         # WINDOW SHAPE
@@ -314,16 +336,6 @@ class SlidingAlgorithm(ChloeAlgorithm):
         )
 
         self.addParameter(max_rate_missing_values_parameteer)
-
-        # WINDOW SIZE
-        window_size_parameter = QgsProcessingParameterNumber(
-            name=WINDOW_SIZES,
-            description=self.tr("Windows sizes (pixels)"),
-            defaultValue=3,
-            minValue=3,
-        )
-
-        self.addParameter(window_size_parameter)
 
     def init_output_params(self):
         """Init output parameters."""

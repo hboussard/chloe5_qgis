@@ -121,6 +121,18 @@ class SelectedAlgorithm(ChloeAlgorithm):
             defaultValue=3,
             minValue=3,
         )
+
+        window_size_param.setMetadata(
+            {
+                "widget_wrapper": {
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.int_spin_box.widget_wrapper.ChloeOddEvenIntSpinboxWrapper",
+                    "initial_value": 3,
+                    "min_value": 3,
+                    "max_value": 100001,
+                    "odd_mode": True,
+                }
+            }
+        )
         self.addParameter(window_size_param)
 
         # PIXELS POINTS SELECT

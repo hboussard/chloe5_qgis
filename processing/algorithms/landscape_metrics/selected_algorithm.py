@@ -334,44 +334,45 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
         properties_lines: list[str] = []
 
-        properties_lines.append(f"treatment={self.name()}\n")
+        properties_lines.append(f"treatment={self.name()}")
         properties_lines.append(
             format_path_for_properties_file(
-                f"input_raster={self.input_raster_layer}\n", isWindows()
+                f"input_raster={self.input_raster_layer}", isWindows()
             )
         )
 
         properties_lines.append(
-            f"sizes={{{str(convert_to_odd(input_integer=self.window_sizes))}}}\n"
+            f"sizes={{{str(convert_to_odd(input_integer=self.window_sizes))}}}"
         )
 
-        properties_lines.append(f"metrics={{{self.metrics}}}\n")
+        properties_lines.append(f"metrics={{{self.metrics}}}")
 
+        properties_lines.append(f"distance_type={str(self.analyze_type)}")
         if self.analyze_type == AnalyzeType.WEIGHTED.value:
-            properties_lines.append(f"distance_function={str(self.distance_formula)}\n")
-        properties_lines.append(f"shape={str(self.window_shape)}\n")
+            properties_lines.append(f"distance_function={str(self.distance_formula)}")
+        properties_lines.append(f"shape={str(self.window_shape)}")
         if self.window_shape == WindowShapeType.FUNCTIONAL.value:
-            properties_lines.append(f"friction={self.friction_file}\n")
+            properties_lines.append(f"friction={self.friction_file}")
 
         pixels_points_files = format_path_for_properties_file(
             self.pixels_points_file, isWindows()
         )
 
         if self.pixels_point_selection == 0:  # pixel(s) file
-            properties_lines.append(f"pixels={pixels_points_files}\n")
+            properties_lines.append(f"pixels={pixels_points_files}")
         elif self.pixels_point_selection == 1:  # point(s) file
-            properties_lines.append(f"points={pixels_points_files}\n")
+            properties_lines.append(f"points={pixels_points_files}")
 
         properties_lines.append(
             format_path_for_properties_file(
-                f"output_csv={self.output_csv}\n", isWindows()
+                f"output_csv={self.output_csv}", isWindows()
             )
         )
 
         if self.output_windows_path_dir:
             properties_lines.append(
                 format_path_for_properties_file(
-                    f"windows_path={self.output_windows_path_dir}\\\n",
+                    f"windows_path={self.output_windows_path_dir}\\",
                     isWindows(),
                 )
             )

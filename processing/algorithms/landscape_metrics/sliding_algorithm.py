@@ -62,6 +62,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
         # properties values
         self.input_raster: str = ""
+        self.is_fast_mode: bool = False
         self.window_shape: str = ""
         self.friction_file: str = ""
         self.window_sizes: int = 0
@@ -190,11 +191,9 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
         analyze_type_param = QgsProcessingParameterEnum(
             name=ANALYZE_TYPE,
-            description=self.tr("Analyze type"),
+            description=self.tr("Prise en compte des distances"),
             options=enum_to_list(AnalyzeType),
         )
-
-        # analyze_type_param.setUsesStaticStrings(True)
 
         analyze_type_param.setMetadata(
             {
@@ -382,56 +381,61 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
     def set_properties_input_values(self, parameters, context):
         """Set input values."""
-        self.input_raster: str = self.parameterRasterAsFilePath(
+        self.input_raster = self.parameterRasterAsFilePath(
             parameters, INPUT_RASTER, context
         )
 
     def set_properties_algorithm_values(self, parameters, context):
         """Set algorithm parameters."""
-        self.window_shape: str = enum_to_list(WindowShapeType)[
+
+        self.is_fast_mode = self.parameterAsBool(parameters, FAST, context)
+
+        self.window_shape = enum_to_list(WindowShapeType)[
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        self.friction_file: str = self.parameterAsString(
-            parameters, FRICTION_FILE, context
-        )
+        self.friction_file = self.parameterAsString(parameters, FRICTION_FILE, context)
 
-        self.window_sizes: int = self.parameterAsInt(parameters, WINDOW_SIZES, context)
+        self.window_sizes = self.parameterAsInt(parameters, WINDOW_SIZES, context)
 
-        self.analyze_type: str = enum_to_list(AnalyzeType)[
-            self.parameterAsEnum(parameters, ANALYZE_TYPE, context)
-        ]
+        analyze_enum_class: Enum = AnalyzeType
+        if self.is_fast_mode:
+            analyze_enum_class = AnalyzeTypeFastMode
 
-        self.distance_formula: str = self.parameterAsString(
+        self.analyze_type = enum_to_list(
+            enum_class=analyze_enum_class, return_enum_names=True
+        )[self.parameterAsEnum(parameters, ANALYZE_TYPE, context)]
+
+        self.distance_formula = self.parameterAsString(
             parameters, DISTANCE_FUNCTION, context
         )
 
-        self.delta_displacement: int = self.parameterAsInt(
+        self.delta_displacement = self.parameterAsInt(
             parameters, DELTA_DISPLACEMENT, context
         )
 
-        self.b_interpolate_values: bool = self.parameterAsBool(
+        self.b_interpolate_values = self.parameterAsBool(
             parameters, INTERPOLATE_VALUES_BOOL, context
         )
 
-        self.filter_analyze: str = self.parameterAsString(
+        self.filter_analyze = self.parameterAsString(
             parameters, FILTER_ANALYZE, context
         )
-        self.filter_no_analyze: str = self.parameterAsString(
+        self.filter_no_analyze = self.parameterAsString(
             parameters, FILTER_NO_ANALYZE, context
         )
 
-        self.maximum_rate_missing_values: int = self.parameterAsInt(
+        self.maximum_rate_missing_values = self.parameterAsInt(
             parameters, MAXIMUM_RATE_MISSING_VALUES, context
         )
-        self.metrics: str = self.parameterAsString(parameters, METRICS, context)
+        self.metrics = self.parameterAsString(parameters, METRICS, context)
 
     def set_properties_output_values(self, parameters, context):
         """Set output values."""
-        self.output_csv: str = self.parameterAsString(parameters, OUTPUT_CSV, context)
+        self.output_csv = self.parameterAsString(parameters, OUTPUT_CSV, context)
         self.set_output_parameter_value(OUTPUT_CSV, self.output_csv)
 
-        self.output_raster: str = self.parameterAsOutputLayer(
+        self.output_raster = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
 
@@ -464,10 +468,10 @@ class SlidingAlgorithm(ChloeAlgorithm):
         """get properties lines."""
         properties_lines: list[str] = []
 
-        properties_lines.append("treatment=sliding\n")
+        properties_lines.append("treatment=sliding")
         properties_lines.append(
             format_path_for_properties_file(
-                input_string=f"input_raster={self.input_raster}\n",
+                input_string=f"input_raster={self.input_raster}",
                 is_windows_system=isWindows(),
             )
         )
@@ -475,7 +479,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         if self.output_csv:
             properties_lines.append(
                 format_path_for_properties_file(
-                    input_string=f"output_csv={self.output_csv}\n",
+                    input_string=f"output_csv={self.output_csv}",
                     is_windows_system=isWindows(),
                 )
             )
@@ -483,35 +487,38 @@ class SlidingAlgorithm(ChloeAlgorithm):
         if self.output_raster:
             properties_lines.append(
                 format_path_for_properties_file(
-                    input_string=f"output_raster={self.output_raster}\n",
+                    input_string=f"output_raster={self.output_raster}",
                     is_windows_system=isWindows(),
                 )
             )
 
         properties_lines.append(
-            f"sizes={{{str(convert_to_odd(input_integer=self.window_sizes))}}}\n"
+            f"sizes={{{str(convert_to_odd(input_integer=self.window_sizes))}}}"
         )
         properties_lines.append(
-            f"maximum_nodata_value_rate={str(self.maximum_rate_missing_values)}\n"
+            f"maximum_nodata_value_rate={str(self.maximum_rate_missing_values)}"
         )
 
-        if self.analyze_type == AnalyzeType.WEIGHTED.value:
-            properties_lines.append(f"distance_function={str(self.distance_formula)}\n")
+        properties_lines.append(f"distance_type={str(self.analyze_type)}")
 
-        properties_lines.append(f"metrics={{{self.metrics}}}\n")
-        properties_lines.append(f"delta_displacement={str(self.delta_displacement)}\n")
-        properties_lines.append(f"shape={str(self.window_shape)}\n")
+        if self.analyze_type == AnalyzeType.WEIGHTED.value:
+            properties_lines.append(f"distance_function={str(self.distance_formula)}")
+
+        properties_lines.append(f"metrics={{{self.metrics}}}")
+        properties_lines.append(f"delta_displacement={str(self.delta_displacement)}")
+        properties_lines.append(f"shape={str(self.window_shape)}")
+
         if self.window_shape == WindowShapeType.FUNCTIONAL.value:
-            properties_lines.append(f"friction={self.friction_file}\n")
+            properties_lines.append(f"friction={self.friction_file}")
 
         if self.b_interpolate_values:
-            properties_lines.append("interpolation=true\n")
+            properties_lines.append("interpolation=true")
         else:
-            properties_lines.append("interpolation=false\n")
+            properties_lines.append("interpolation=false")
 
         if self.filter_analyze:
-            properties_lines.append(f"filters={{{self.filter_analyze}}}\n")
+            properties_lines.append(f"filters={{{self.filter_analyze}}}")
         if self.filter_no_analyze:
-            properties_lines.append(f"unfilters={{{self.filter_no_analyze}}}\n")
+            properties_lines.append(f"unfilters={{{self.filter_no_analyze}}}")
 
         return properties_lines

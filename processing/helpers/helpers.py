@@ -34,7 +34,6 @@ def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_name: str) -> Non
             level=Qgis.Critical,
         )
         return
-    print(str(style_file_path))
     layer.loadNamedStyle(str(style_file_path))
 
     # getting statistics from the layer
@@ -223,9 +222,14 @@ def enum_to_dict(
     return enum_dict
 
 
-def enum_to_list(enum_class: Enum) -> list[Union[str, int, float]]:
+def enum_to_list(
+    enum_class: Enum, return_enum_names: bool = False
+) -> list[Union[str, int, float]]:
     """convert enum class to list"""
-    return [element.value for element in enum_class]
+    if return_enum_names:
+        return [element.name for element in enum_class]
+    else:
+        return [element.value for element in enum_class]
 
 
 def get_enum_order_as_int(enum_element: Enum) -> int:

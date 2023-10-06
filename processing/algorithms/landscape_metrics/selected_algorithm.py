@@ -156,10 +156,10 @@ class SelectedAlgorithm(ChloeAlgorithm):
             {
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.enum_update_state.widget_wrapper.ChloeEnumUpdateStateWidgetWrapper",
-                    "dependantWidgetConfig": [
+                    "enabled_widgets_configs": [
                         {
-                            "paramName": FRICTION_FILE,
-                            "enableValue": get_enum_order_as_int(
+                            "param_name": FRICTION_FILE,
+                            "enabled_by_value": get_enum_order_as_int(
                                 WindowShapeType.FUNCTIONAL
                             ),
                         }
@@ -193,10 +193,12 @@ class SelectedAlgorithm(ChloeAlgorithm):
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.enum_update_state.widget_wrapper.ChloeEnumUpdateStateWidgetWrapper",
                     "fast_mode_options": enum_to_list(AnalyzeTypeFastMode),
-                    "dependantWidgetConfig": [
+                    "enabled_widgets_configs": [
                         {
-                            "paramName": DISTANCE_FUNCTION,
-                            "enableValue": get_enum_order_as_int(AnalyzeType.WEIGHTED),
+                            "param_name": DISTANCE_FUNCTION,
+                            "enabled_by_value": get_enum_order_as_int(
+                                AnalyzeType.WEIGHTED
+                            ),
                         }
                     ],
                 }

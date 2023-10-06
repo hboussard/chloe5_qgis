@@ -1,3 +1,5 @@
+from functools import partial
+from typing import Any, Union
 from processing.gui.wrappers import (
     FileWidgetWrapper,
     BooleanWidgetWrapper,
@@ -11,46 +13,38 @@ from processing.gui.wrappers import (
     DIALOG_STANDARD,
 )
 
+from ..helpers import get_widget_wrapper_from_param_name
+
 
 class ChloeCheckboxUpdateStateWidgetWrapper(BooleanWidgetWrapper):
     """A widget wrapper for a custom enum selection widget."""
 
-    def createWidget(self, dependantWidgetConfig=None):
+    def createWidget(self, enabled_widgets_configs: list[dict[str, Any]] = []):
         """ """
-        self.dependantWidgetConfig = dependantWidgetConfig
+        # self.enabled_widgets_configs = enabled_widgets_configs
+        self.enabled_widgets_configs: list[dict[str, Any]] = enabled_widgets_configs
         return super().createWidget()
 
-    def postInitialize(self, widgetWrapperList):
+    def postInitialize(self, wrappers):
         if self.dialogType == DIALOG_STANDARD:
             self.widget.stateChanged.connect(
-                lambda x: self.updateDependantWidget(widgetWrapperList)
+                partial(self.update_enabled_widgets, wrappers)
             )
         else:
             self.widget.currentIndexChanged.connect(
-                lambda x: self.updateDependantWidget(widgetWrapperList)
+                partial(self.update_enabled_widgets, wrappers)
             )
-        # self.updateDependantWidget(widgetWrapperList)
 
-    def updateDependantWidget(self, wrapperList):
-        if self.dependantWidgetConfig:
-            for c in self.dependantWidgetConfig:
-                param_name: str = c["paramName"]
-                enable_value = c["enableValue"]
-
-                dependant_wrapper_list = [
-                    wrapper
-                    for wrapper in wrapperList
-                    if wrapper.parameterDefinition().name() == param_name
-                ]
-
-                if dependant_wrapper_list:
-                    dependant_wrapper = dependant_wrapper_list[0]
-                    dependant_widget = (
-                        dependant_wrapper.widget
-                        if isinstance(
-                            dependant_wrapper, (FileWidgetWrapper, EnumWidgetWrapper)
-                        )
-                        else dependant_wrapper.wrappedWidget()
-                    )
-
-                    dependant_widget.setEnabled(self.value() == enable_value)
+    def update_enabled_widgets(self, wrappers):
+        for enabled_widget_config in self.enabled_widgets_configs:
+            # Find the wrapper for the parameter that will be impacted
+            wrapper: Union[WidgetWrapper, None] = get_widget_wrapper_from_param_name(
+                wrappers, enabled_widget_config["param_name"]
+            )
+            if not wrapper:
+                continue
+            if isinstance(wrapper, (FileWidgetWrapper, EnumWidgetWrapper)):
+                widget = wrapper.widget
+            else:
+                widget = wrapper.wrappedWidget()
+            widget.setEnabled(self.value() == enabled_widget_config["enabled_by_value"])

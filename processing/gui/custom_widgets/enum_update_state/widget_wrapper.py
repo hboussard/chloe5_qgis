@@ -1,4 +1,5 @@
 from functools import partial
+from typing import Any, Union
 from processing.gui.wrappers import (
     FileWidgetWrapper,
     EnumWidgetWrapper,
@@ -10,26 +11,32 @@ from processing.gui.wrappers import (
     DIALOG_STANDARD,
 )
 from ....algorithms.helpers.constants import FAST
+from ..helpers import get_widget_wrapper_from_param_name
 
 
 class ChloeEnumUpdateStateWidgetWrapper(EnumWidgetWrapper):
     """A widget wrapper for a custom enum selection widget."""
 
-    def createWidget(self, fast_mode_options=[], dependantWidgetConfig=None):
-        self.fast_mode_options = fast_mode_options
+    def createWidget(
+        self,
+        fast_mode_options: list[Any] = [],
+        enabled_widgets_configs: list[dict[str, Any]] = [],
+    ):
+        self.fast_mode_options: list[Any] = fast_mode_options
         # create a copy of the default options
-        self.default_mode_options = self.parameterDefinition().options()
-        self.dependantWidgetConfig = dependantWidgetConfig
+        self.default_mode_options: list[Any] = self.parameterDefinition().options()
+        self.enabled_widgets_configs: list[dict[str, Any]] = enabled_widgets_configs
+
         return super().createWidget()
 
-    def postInitialize(self, widgetWrapperList):
+    def postInitialize(self, wrappers):
         self.widget.currentIndexChanged.connect(
-            lambda x: self.updateDependantWidget(widgetWrapperList)
+            partial(self.update_enabled_widgets, wrappers)
         )
-        self.updateDependantWidget(widgetWrapperList)
+        self.update_enabled_widgets(wrappers)
 
         # Find the wrapper for the 'FAST' parameter
-        for wrapper in widgetWrapperList:
+        for wrapper in wrappers:
             if wrapper.parameterDefinition().name() == FAST:
                 # Connect to the `widgetValueHasChanged` signal of the 'FAST' wrapper
                 if self.dialogType == DIALOG_STANDARD:
@@ -42,25 +49,36 @@ class ChloeEnumUpdateStateWidgetWrapper(EnumWidgetWrapper):
                     )
                 break
 
-    def updateDependantWidget(self, wrapperList):
-        if self.dependantWidgetConfig:
-            for c in self.dependantWidgetConfig:
-                dependantWrapperList = list(
-                    filter(
-                        lambda w: w.parameterDefinition().name() == c["paramName"],
-                        wrapperList,
-                    )
-                )
-                if len(dependantWrapperList) > 0:
-                    dependantWrapper = dependantWrapperList[0]
-                    if isinstance(dependantWrapper, FileWidgetWrapper):
-                        dependantWidget = dependantWrapper.widget
-                    else:
-                        dependantWidget = dependantWrapper.wrappedWidget()
-                    dependantWidget.setEnabled(self.value() == c["enableValue"])
+    def update_enabled_widgets(self, wrappers):
+        """Update the impacted widgets based on the current value of the widget"""
+
+        # Find the wrapper for the 'FAST' parameter
+        fast_mode_wrapper: Union[
+            None, WidgetWrapper
+        ] = get_widget_wrapper_from_param_name(wrappers, FAST)
+
+        for enabled_widget_config in self.enabled_widgets_configs:
+            # Find the wrapper for the parameter that will be impacted
+            wrapper: Union[WidgetWrapper, None] = get_widget_wrapper_from_param_name(
+                wrappers, enabled_widget_config["param_name"]
+            )
+            if not wrapper:
+                continue
+            # If the parameter enable state is controlled by the fast mode parameter
+            if "disabled_by_fast_mode" in enabled_widget_config and fast_mode_wrapper:
+                if (
+                    enabled_widget_config["disabled_by_fast_mode"]
+                    == fast_mode_wrapper.parameterValue()
+                ):
+                    wrapper.wrappedWidget().setEnabled(False)
+                    continue
+            if isinstance(wrapper, (FileWidgetWrapper, EnumWidgetWrapper)):
+                widget = wrapper.widget
+            else:
+                widget = wrapper.wrappedWidget()
+            widget.setEnabled(self.value() == enabled_widget_config["enabled_by_value"])
 
     def refresh_widget_options(self):
-        print(self.widget)
         self.widget.clear()
         for i, option in enumerate(self.parameterDefinition().options()):
             self.widget.addItem(option, i)
@@ -85,9 +103,7 @@ class ChloeEnumUpdateStateWidgetWrapper(EnumWidgetWrapper):
         is_fast_value: bool = fast_param_wrapper.parameterValue()
         if not self.fast_mode_options:
             return
-        print(f"fast mode: {is_fast_value}")
         if is_fast_value:
-            print(f"options: {self.fast_mode_options}")
             self.parameterDefinition().setOptions(self.fast_mode_options)
         else:
             self.parameterDefinition().setOptions(self.default_mode_options)

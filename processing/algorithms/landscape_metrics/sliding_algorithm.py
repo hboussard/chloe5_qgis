@@ -108,8 +108,9 @@ class SlidingAlgorithm(ChloeAlgorithm):
             {
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.checkbox_update_state.widget_wrapper.ChloeCheckboxUpdateStateWidgetWrapper",
-                    "dependantWidgetConfig": [
-                        {"paramName": WINDOW_SHAPE, "enableValue": False},
+                    "enabled_widgets_configs": [
+                        {"param_name": WINDOW_SHAPE, "enabled_by_value": False},
+                        {"param_name": DISTANCE_FUNCTION, "enabled_by_value": False},
                     ],
                 }
             }
@@ -156,10 +157,10 @@ class SlidingAlgorithm(ChloeAlgorithm):
             {
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.enum_update_state.widget_wrapper.ChloeEnumUpdateStateWidgetWrapper",
-                    "dependantWidgetConfig": [
+                    "enabled_widgets_configs": [
                         {
-                            "paramName": FRICTION_FILE,
-                            "enableValue": get_enum_order_as_int(
+                            "param_name": FRICTION_FILE,
+                            "enabled_by_value": get_enum_order_as_int(
                                 WindowShapeType.FUNCTIONAL
                             ),
                         }
@@ -200,11 +201,14 @@ class SlidingAlgorithm(ChloeAlgorithm):
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.enum_update_state.widget_wrapper.ChloeEnumUpdateStateWidgetWrapper",
                     "fast_mode_options": enum_to_list(AnalyzeTypeFastMode),
-                    "dependantWidgetConfig": [
+                    "enabled_widgets_configs": [
                         {
-                            "paramName": DISTANCE_FUNCTION,
-                            "enableValue": get_enum_order_as_int(AnalyzeType.WEIGHTED),
-                        }
+                            "param_name": DISTANCE_FUNCTION,
+                            "enabled_by_value": get_enum_order_as_int(
+                                AnalyzeType.WEIGHTED
+                            ),
+                            "disabled_by_fast_mode": True,
+                        },
                     ],
                 }
             }

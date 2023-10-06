@@ -50,7 +50,7 @@ from processing.tools.system import getTempFilename
 from ...helpers.helpers import run_command
 from ...helpers.constants import CHLOE_JAR_PATH, CHLOE_PLUGIN_PATH
 
-from ...settings.helpers import check_java_path, get_java_path, run_command
+from ...settings.helpers import check_java_path, get_java_path
 
 from ..helpers.helpers import (
     file_get_content,

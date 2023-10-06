@@ -36,6 +36,7 @@ from processing.gui.wrappers import (
     DIALOG_STANDARD,
 )
 from ....helpers.helpers import get_metrics, extract_non_zero_non_nodata_values
+from ....algorithms.chloe_algorithm import ChloeAlgorithm
 
 WIDGET, BASE = uic.loadUiType(
     Path(__file__).resolve().parent / "WgtDoubleCmbBoxSelector.ui"
@@ -87,7 +88,7 @@ class DoubleCmbBoxSelectionPanel(BASE, WIDGET):
         if selected_metric:
             self.lineEdit_selected_metric.setText(selected_metric)
         else:
-            self.lineEdit_selected_metric_selected_metric.setText("")
+            self.lineEdit_selected_metric.setText("")
 
     def populate_metric_filter_combobox(self):
         """Populate the combobox_filter based on the keys in the metrics dict"""
@@ -107,16 +108,31 @@ class DoubleCmbBoxSelectionPanel(BASE, WIDGET):
         """Get the input raster layer path"""
 
         if self.dialog_type == DIALOG_MODELER:
-            widget = self.dialog.widget()
+            # no need to access the input raster layer path in modeler
+            return ""
         else:
             widget = self.dialog.mainWidget()
 
         if not widget:
             return ""
 
-        input_raster_layer_param = widget.wrappers[
-            self.input_raster_layer_param_name
-        ].value()
+        input_raster_layer_param = None
+
+        # in batch mode the wrapper of the input raster layer is accessible through a list of wrappers
+        if self.dialog_type == DIALOG_BATCH:
+            for wrapper in widget.wrappers[0]:
+                if (
+                    wrapper is not None
+                    and wrapper.parameterDefinition().name()
+                    == self.input_raster_layer_param_name
+                ):
+                    input_raster_layer_param = wrapper.value()
+                    break
+        else:
+            input_raster_layer_param = widget.wrappers[
+                self.input_raster_layer_param_name
+            ].value()
+
         if input_raster_layer_param is None:
             return ""
         input_raster_layer_path: str = ""

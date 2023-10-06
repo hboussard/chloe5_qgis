@@ -438,20 +438,12 @@ class SlidingAlgorithm(ChloeAlgorithm):
         self.output_raster = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
-
+        self.create_projection_file(output_path_raster=Path(self.output_raster))
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
-
-        # TODO : move somewhere else
-        output_path_raster: Path = Path(self.output_raster)
-        # === Projection file
-        f_prj: str = str(output_path_raster.parent / f"{output_path_raster.stem}.prj")
-        self.create_projection_file(f_prj)
 
         # === SAVE_PROPERTIES
 
-        f_save_properties: str = self.parameterAsString(
-            parameters, SAVE_PROPERTIES, context
-        )
+        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
 
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 

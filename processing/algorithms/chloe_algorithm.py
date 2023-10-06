@@ -27,7 +27,7 @@ __revision__ = "$Format:%H$"
 
 import os
 from pathlib import Path
-import re
+from re import search, IGNORECASE, match
 from time import gmtime, strftime
 from typing import Any
 
@@ -321,44 +321,20 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             context = self.__class__.__name__
         return QCoreApplication.translate(context, string)
 
-    def create_projection_file(self, file_path, crs=None, layer_crs=None):
+    def create_projection_file(self, output_path_raster: Path):
         """Create Projection File"""
-
-        if crs:  # crs given
-            crs_output = crs
-        elif layer_crs:  # crs from layer
-            # Constrution des chemins de sortie des fichiers
-            dir_in = os.path.dirname(layer_crs)
-            base_in = os.path.basename(layer_crs)
-            name_in = os.path.splitext(base_in)[0]
-            path_prj_in = dir_in + os.sep + name_in + ".prj"
-
-            if os.path.isfile(path_prj_in):
-                crs_output = dataobjects.getObjectFromUri(layer_crs).crs()
-
-            else:  # crs project
-                # crs_output = iface.mapCanvas().mapRenderer().destinationCrs()
-                crs_output = iface.mapCanvas().mapSettings().destinationCrs()
-        else:  # crs project
-            # crs_output = iface.mapCanvas().mapRenderer().destinationCrs()
-            crs_output = iface.mapCanvas().mapSettings().destinationCrs()
-
-        with open(file_path, "w", encoding="utf-8") as file:
+        if not search(r"asc", output_path_raster.suffix, IGNORECASE):
+            return
+        f_prj = str(output_path_raster.parent / f"{output_path_raster.stem}.prj")
+        crs_output = iface.mapCanvas().mapSettings().destinationCrs()
+        with open(f_prj, "w", encoding="utf-8") as file:
             # b_string = str.encode(crs_output.toWkt())
             file.write(crs_output.toWkt())
-
-    def prepareMultiProjectionFiles(self):
-        # === Projection file
-        for file in self.outputFilenames:
-            baseOut = os.path.basename(file)
-            radical = os.path.splitext(baseOut)[0]
-            f_prj = self.output_dir + os.sep + radical + ".prj"
-            self.create_projection_file(f_prj)
 
     def parameterRasterAsFilePath(self, parameters, paramName, context) -> str:
         res = self.parameterAsString(parameters, paramName, context)
 
-        if res is None or not res or re.match(r"^[a-zA-Z0-9_]+$", res):
+        if res is None or not res or match(r"^[a-zA-Z0-9_]+$", res):
             layer = self.parameterAsRasterLayer(parameters, paramName, context)
             res = layer.dataProvider().dataSourceUri().split("|")[0]
 

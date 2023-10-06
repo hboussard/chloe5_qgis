@@ -25,7 +25,7 @@ class ChloeRasterParameterFileDestination(QgsProcessingParameterRasterDestinatio
         return "tif"
 
     def createFileFilter(self):
-        return f"{QCoreApplication.translate('ChloeAlgorithm', 'Raster files')} GeoTIFF (*.tif *.TIF);; ASCII (*.asc *.ASC)"
+        return f"{QCoreApplication.translate('ChloeAlgorithm', 'Raster files')} GeoTIFF (*.tif);; ASCII (*.asc)"
 
     def supportedOutputRasterLayerExtensions(self):
         return ["asc", "tif"]

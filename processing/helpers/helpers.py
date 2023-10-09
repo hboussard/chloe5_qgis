@@ -71,10 +71,6 @@ def extract_non_zero_non_nodata_values(raster_file_path: str) -> list[int]:
     """Extract values from a raster layer and return a list of values as integers, removing 0 and nodata values"""
     dataset = gdal.Open(raster_file_path)  # DataSet
     if dataset is None:
-        QgsMessageLog.logMessage(
-            f"Le fichier raster {raster_file_path} n'est pas valide",
-            level=Qgis.Critical,
-        )
         return []
 
     band = dataset.GetRasterBand(1)  # -> band

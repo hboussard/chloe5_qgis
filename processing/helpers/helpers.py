@@ -1,19 +1,5 @@
 from enum import Enum
-
-from pathlib import Path
 from typing import Union
-import numpy as np
-from math import floor
-from osgeo import gdal
-from qgis.core import (
-    QgsRasterLayer,
-    QgsRasterBandStats,
-    QgsMessageLog,
-    Qgis,
-    QgsSingleBandPseudoColorRenderer,
-    QgsRasterShader,
-    QgsColorRampShader,
-)
 
 from jinja2 import Template
 from ..algorithms.helpers.constants_metrics import (
@@ -22,67 +8,6 @@ from ..algorithms.helpers.constants_metrics import (
     TYPES_OF_METRICS_CROSS,
     TYPES_OF_METRICS,
 )
-
-
-def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_name: str) -> None:
-    """Set the layer symbology from a qml file."""
-
-    style_file_path: Path = (
-        Path(__file__).resolve().parent.parent / "styles" / qml_file_name
-    )
-
-    if not layer.isValid():
-        QgsMessageLog.logMessage(
-            f"Fichier raster non valide : {layer.source()} ",
-            level=Qgis.Critical,
-        )
-        return
-    layer.loadNamedStyle(str(style_file_path))
-
-    # getting statistics from the layer
-    stats: QgsRasterBandStats = layer.dataProvider().bandStatistics(
-        1, QgsRasterBandStats.All, layer.extent()
-    )
-    min: float = stats.minimumValue
-    max: float = stats.maximumValue
-
-    # # adjusting the symbology to equal intervals from the
-    renderer: QgsSingleBandPseudoColorRenderer = layer.renderer()
-
-    shader: QgsRasterShader = renderer.shader()
-
-    color_ramp_shader = shader.rasterShaderFunction()
-
-    if isinstance(color_ramp_shader, QgsColorRampShader):
-        current_color_ramp_item_list = color_ramp_shader.colorRampItemList()
-        classes_count: int = len(current_color_ramp_item_list)
-        new_color_ramp_list = []
-
-        for i in range(0, classes_count):
-            val = min + (i * (max - min) / (classes_count - 1))
-            item = QgsColorRampShader.ColorRampItem(
-                val, (current_color_ramp_item_list[i]).color, str(val)
-            )
-            new_color_ramp_list.append(item)
-        color_ramp_shader.setColorRampItemList(new_color_ramp_list)
-
-
-def extract_non_zero_non_nodata_values(raster_file_path: str) -> list[int]:
-    """Extract values from a raster layer and return a list of values as integers, removing 0 and nodata values"""
-    dataset = gdal.Open(raster_file_path)  # DataSet
-    if dataset is None:
-        return []
-
-    band = dataset.GetRasterBand(1)  # -> band
-    array = np.array(band.ReadAsArray())  # -> matrice values
-    values = np.unique(array)
-    nodata = band.GetNoDataValue()
-
-    int_values_and_nodata: list[int] = [
-        int(floor(x)) for x in values[(values != 0) & (values != nodata)]
-    ]
-
-    return int_values_and_nodata
 
 
 def add_simple_metrics(
@@ -165,30 +90,6 @@ def format_path_for_properties_file(input_string: str, is_windows_system: bool =
     return input_string
 
 
-def convert_to_odd(input_integer: int) -> int:
-    """returns a odd number if input number is even"""
-    if int(input_integer) % 2 == 0:
-        return int(input_integer) + 1
-    else:
-        return int(input_integer)
-
-
-def get_layer_name(layer, default_output: str = "output") -> str:
-    """Get layer name from QgsRasterLayer or str"""
-    res: str = default_output
-    if layer is None:
-        return res
-    if not (layer is None):
-        if isinstance(layer, QgsRasterLayer):
-            layer_source = layer.dataProvider().dataSourceUri()
-            res = str(Path(layer_source).stem)
-        elif isinstance(layer, str):
-            res = str(Path(layer).stem)
-        else:
-            res = str(layer)
-    return res
-
-
 def file_get_content(filename, encoding="utf-8", context=None) -> str:
     """Get file content and return it as a string"""
     try:
@@ -228,23 +129,33 @@ def enum_to_dict(
 def enum_to_list(
     enum_class: Enum, return_enum_names: bool = False
 ) -> list[Union[str, int, float]]:
-    """convert enum class to list"""
+    """
+    Convert an Enum class to a list of its values or names.
+
+    Args:
+        enum_class (Enum): The Enum class to convert.
+        return_enum_names (bool, optional): Whether to return the names of the Enum elements instead of their values. Defaults to False.
+
+    Returns:
+        list[Union[str, int, float]]: A list of the Enum elements' values or names.
+    """
     if return_enum_names:
         return [element.name for element in enum_class]
     else:
         return [element.value for element in enum_class]
 
 
-def get_enum_order_as_int(enum_element: Enum) -> int:
+def get_enum_element_index(enum_element: Enum) -> int:
     """
-    Returns the order number of an element in an enum class.
+    Returns the index of an Enum element within its class.
 
-    Args:
-        enum_element (Enum): The enum element to search for.
+    Parameters:
+    enum_element (Enum): The Enum element to get the index of.
 
     Returns:
-        int: The order number of the element in the enum class.
+    int: The index of the Enum element within its class.
     """
+
     enum_class = type(enum_element)
     enum_dict = enum_to_dict(enum_class)
     return list(enum_dict.keys()).index(enum_element.name)

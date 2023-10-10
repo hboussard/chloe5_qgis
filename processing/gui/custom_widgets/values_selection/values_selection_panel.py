@@ -20,25 +20,38 @@ __copyright__ = "(C) 2017, Jean-Charles Naud"
 __revision__ = "$Format:%H$"
 
 import os
+from pathlib import Path
+from typing import Union
 import warnings
-from osgeo import gdal
-import numpy as np
-from math import floor
-from re import match
-
+from processing.gui.BatchPanel import BatchPanel
+from processing.gui.wrappers import (
+    DIALOG_MODELER,
+    DIALOG_BATCH,
+    DIALOG_STANDARD,
+)
 from qgis.PyQt import uic
 
-from qgis.core import QgsRasterLayer, QgsApplication, QgsProject
+from qgis.core import QgsApplication, QgsMessageLog, Qgis
 
 from ..custom_dialogs.DialListCheckBox import DialListCheckBox
 from ....algorithms.helpers.constants import INPUT_RASTER
+from ....gui.chloe_algorithm_dialog import ChloeParametersPanel
+from .....helpers.helpers import extract_non_zero_non_nodata_values
+from ..helpers import extract_raster_layer_path, get_parameter_value_from_batch_panel
 
-pluginPath = str(QgsApplication.pkgDataPath())
+plugin_path = str(QgsApplication.pkgDataPath())
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     WIDGET, BASE = uic.loadUiType(
-        os.path.join(
-            pluginPath, "python", "plugins", "processing", "ui", "widgetBaseSelector.ui"
+        str(
+            Path(
+                plugin_path,
+                "python",
+                "plugins",
+                "processing",
+                "ui",
+                "widgetBaseSelector.ui",
+            )
         )
     )
 
@@ -48,76 +61,87 @@ class ValuesSelectionPanel(BASE, WIDGET):
 
     def __init__(
         self,
-        dialog,
-        alg,
-        default=None,
-        raster_input_param_name: str = INPUT_RASTER,
-        is_batch_gui: bool = False,
+        parent,
+        input_raster_param_name: str = INPUT_RASTER,
+        dialog_type: str = DIALOG_STANDARD,
     ):
-        super(ValuesSelectionPanel, self).__init__(None)
+        super().__init__(None)
         self.setupUi(self)
-        self.dialog = dialog
-        self.alg = alg
-        self._is_batch_gui = is_batch_gui
-        # getting rasterLayer param from its name
-        self.rasterLayerParamName = raster_input_param_name
+        self.dialog = parent
+        self.dialog_type: str = dialog_type
+        self.raster_input_param_name: str = input_raster_param_name
 
         if hasattr(self.leText, "setPlaceholderText"):
             self.leText.setPlaceholderText("1;2;5;6")
 
-        self.btnSelect.clicked.connect(self.selectRangeValues)  # Bouton "..."
+        self.btnSelect.clicked.connect(
+            self.display_value_selection_dialog
+        )  # Bouton "..."
 
-    def selectRangeValues(self):
-        """Ranges Values selector
-        return item (duck typing)
-        """
-        # Get initial value
-        previous_text = self.leText.text()
-        try:
-            int_checked_values = list(map(int, previous_text.split(";")))
-        except:
-            int_checked_values = []
-        values = ""
+    def get_input_raster_param_path(self) -> str:
+        """Get the input raster layer path"""
 
-        try:
-            if self._is_batch_gui:
-                p = self.dialog.mainWidget().wrappers[0][0].value()
-            else:
-                p = self.dialog.mainWidget().wrappers[self.rasterLayerParamName].value()
+        if self.dialog_type == DIALOG_MODELER:
+            return ""
 
-            if p is None:
-                return
-            elif isinstance(p, QgsRasterLayer):
-                f_input = p.dataProvider().dataSourceUri()
-            elif isinstance(p, str):
-                # if p is not a correct path then it is already loaded in QgsProject instance, get the QgsRasterLayer object and the file's full path
-                if match(r"^[a-zA-Z0-9_]+$", p):
-                    selectedLayer = QgsProject.instance().mapLayer(p)
-                    f_input = selectedLayer.dataProvider().dataSourceUri()
-                else:
-                    f_input = p
-            else:
-                f_input = str(p)
+        widget: Union[BatchPanel, ChloeParametersPanel] = self.dialog.mainWidget()
 
-            # === Test algorithm
-            ds = gdal.Open(f_input)  # DataSet
-            band = ds.GetRasterBand(1)  # -> band
-            array = np.array(band.ReadAsArray())  # -> matrice values
-            values = np.unique(array)
-            # Add nodata values in numpy array
-            values_and_nodata = np.insert(values, 0, band.GetNoDataValue())
-            int_values_and_nodata = np.unique(
-                [int(floor(x)) for x in values_and_nodata]
+        if not widget:
+            return ""
+
+        input_raster_layer_param_value = self.get_input_raster_parameter_value(widget)
+
+        if input_raster_layer_param_value is None:
+            return ""
+
+        return extract_raster_layer_path(input_raster_layer_param_value)
+
+    def get_input_raster_parameter_value(
+        self, widget: Union[BatchPanel, ChloeParametersPanel]
+    ) -> Union[str, None]:
+        """Retrieve the input raster layer parameter"""
+
+        if self.dialog_type == DIALOG_BATCH:
+            return get_parameter_value_from_batch_panel(
+                widget=widget, parameter_name=self.raster_input_param_name
             )
+        else:
+            return widget.wrappers[self.raster_input_param_name].value()
 
-            # Dialog list check box
-            dial = DialListCheckBox(int_values_and_nodata, int_checked_values)
-            result = dial.run()
-        except:
-            result = ""
-            raise
-        # result
-        self.leText.setText(result)
+    def display_value_selection_dialog(self):
+        """Display the value selection dialog"""
+        raster_file_path: str = self.get_input_raster_param_path()
+
+        # don't show dialog if no raster is selected in input parameter
+        if not raster_file_path:
+            return
+
+        int_values_and_nodata: list[int] = extract_non_zero_non_nodata_values(
+            raster_file_path=raster_file_path
+        )
+        current_values: list[int] = self.get_current_selected_values()
+
+        dial = DialListCheckBox(int_values_and_nodata, current_values)
+        result: list[int] = dial.run()
+
+        self.leText.setText(";".join(str(value) for value in result))
+
+    def get_current_selected_values(self) -> list[int]:
+        """Get the current selected values"""
+        current_values: list[int] = []
+
+        if not self.leText.text():
+            return current_values
+
+        for value in self.leText.text().split(";"):
+            try:
+                current_values.append(int(value))
+            except ValueError:
+                QgsMessageLog.logMessage(
+                    self.tr(f"The value {value} is not an integer"),
+                    level=Qgis.Critical,
+                )
+        return current_values
 
     def getValue(self):
         return str(self.leText.text())

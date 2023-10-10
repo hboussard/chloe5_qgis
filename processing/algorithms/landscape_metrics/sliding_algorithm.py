@@ -2,7 +2,6 @@
 
 from enum import Enum
 from pathlib import Path
-from re import search, IGNORECASE
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterRasterLayer,
@@ -12,20 +11,22 @@ from qgis.core import (
     QgsProcessingParameterFile,
     QgsProcessingParameterEnum,
     QgsProcessingParameterFileDestination,
-    QgsProcessingException,
 )
-from qgis.PyQt.QtWidgets import QMessageBox
+
 from processing.tools.system import isWindows
 
+from ....helpers.helpers import convert_int_to_odd
 from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
     ChloeRasterParameterFileDestination,
-)
-from ...gui.custom_parameters.chloe_csv_parameter_file_destination import (
-    ChloeCSVParameterFileDestination,
 )
 
 from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
 
+from ...helpers.helpers import (
+    enum_to_list,
+    format_path_for_properties_file,
+    get_enum_element_index,
+)
 
 from ..chloe_algorithm import ChloeAlgorithm
 from ..helpers.constants import (
@@ -45,12 +46,6 @@ from ..helpers.constants import (
     SAVE_PROPERTIES,
     WINDOW_SHAPE,
     WINDOW_SIZES,
-)
-from ...helpers.helpers import (
-    convert_to_odd,
-    enum_to_list,
-    format_path_for_properties_file,
-    get_enum_order_as_int,
 )
 from ..helpers.enums import AnalyzeType, AnalyzeTypeFastMode, WindowShapeType
 
@@ -184,7 +179,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
                     "enabled_widgets_configs": [
                         {
                             "param_name": FRICTION_FILE,
-                            "enabled_by_value": get_enum_order_as_int(
+                            "enabled_by_value": get_enum_element_index(
                                 WindowShapeType.FUNCTIONAL
                             ),
                         }
@@ -226,7 +221,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
                     "enabled_widgets_configs": [
                         {
                             "param_name": DISTANCE_FUNCTION,
-                            "enabled_by_value": get_enum_order_as_int(
+                            "enabled_by_value": get_enum_element_index(
                                 AnalyzeType.WEIGHTED
                             ),
                             "disabled_by_fast_mode": True,
@@ -503,7 +498,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
             )
 
         properties_lines.append(
-            f"sizes={{{str(convert_to_odd(input_integer=self.window_sizes))}}}"
+            f"sizes={{{str(convert_int_to_odd(input_integer=self.window_sizes))}}}"
         )
         properties_lines.append(
             f"maximum_nodata_value_rate={str(self.maximum_rate_missing_values)}"

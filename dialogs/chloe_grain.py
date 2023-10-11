@@ -27,11 +27,12 @@ import os,datetime
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets,QtCore
 from qgis.core import QgsMapLayerProxyModel
-from qgis.PyQt.QtWidgets import QWidget,QVBoxLayout,QLabel,QHBoxLayout,QPushButton,QFileDialog
+from qgis.PyQt.QtWidgets import QWidget,QVBoxLayout,QLabel,QHBoxLayout,QPushButton,QFileDialog,QDialogButtonBox
+from qgis.PyQt.QtGui import QTextCursor
 from qgis.gui import QgsMapLayerComboBox
-from .helpers.InputLayerFileWidget import InputLayerFileWidget
+from .helpers.helpers import InputLayerFileWidget,get_console_command
 
-
+from ..helpers.helpers import run_command
 
 
 
@@ -61,15 +62,22 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
         self.inputarasementslayerfile.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.groupBox_arasements.layout().insertWidget(0,self.inputarasementslayerfile)
 
+        self.cursor = QTextCursor(self.textEdit_journal.document())
+        self.pushButton_interrupt.clicked.connect(self.interruptWork)
+
+        self.pushButton_run = QPushButton("Run")
+        self.button_box.addButton(self.pushButton_run,QDialogButtonBox.ActionRole)
+        self.pushButton_run.clicked.connect(self.run_grain)
+
         #self.mMapLayerComboBox_Plantations.mMapLayer.setFilters(QgsMapLayerProxyModel.VectorLayer)
         #self.mMapLayerComboBox_Plantations.layerChanged.connect(self.mFieldComboBox_hauteurVegetation.setLayer)
     
-    def makePropertiesFile(self):
+    def create_properties_file(self) -> str:
         # récupérer dossier courant
-        propFile = self.mQgsFileWidget_resultDir.filePath() + '/chloe_grain_'+datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S.%f")+'.properties'
+        prop_file = self.mQgsFileWidget_resultDir.filePath() + '/chloe_grain_'+datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S.%f")+'.properties'
 
         # créer le fichier properties
-        with open(propFile, "w") as f:
+        with open(prop_file, "w") as f:
             f.write('procedure=grain_bocager\n')
 
             # les variables de la boite de dialogue :
@@ -87,18 +95,20 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
             dirPath = self.mQgsFileWidget_resultDir.filePath()
             prefix = self.lineEdit_resultPrefix.text()
             filepath = dirPath+'/'+prefix+'_'
-            f.write('procedure=grain_bocager'+'\n')
             f.write('output_path="'+dirPath+'"'+'\n')
             f.write('name="'+prefix+'"'+'\n')
 
-            extent = mExtentGroupBox.currentExtent()
-            f.write("territoire={"+str(extent.xMinimum)+";"+str(extent.xMinimum)+";"+str(extent.xMinimum)+";"+str(extent.xMinimum)+"}")
+            extent = self.mExtentGroupBox.currentExtent()
+            f.write("territoire={"+str(extent.xMinimum())+";"+str(extent.xMaximum())+";"+str(extent.yMinimum())+";"+str(extent.yMaximum())+"}\n")
 
             # self.mExtentGroupBox.currentExtent()
-            if not self.lineEdit_bufferEmprise.text().isspace():
-                f.write( 'buffer_area='+self.mQgsDoubleSpinBox_buffer.text()+'\n')
+            if not self.mQgsDoubleSpinBox_buffer.text().isspace():
+                f.write( 'buffer_area='+str(self.mQgsDoubleSpinBox_buffer.value())+'\n')
 
-            f.write( 'bocage="'+self.inputMNHClayerfile.currentLayer().source()+'"' +'\n')
+            if self.radioButton_rasterMNHC.isChecked():
+                f.write( 'bocage="'+self.inputMNHClayerfile.currentLayer().source()+'"' +'\n')
+            else:
+                f.write( 'bocage="'+self.mQgsFileWidget_dirMNHC.filePath()+'"' +'\n')
 
             # scénario (onglet 3)
             if self.groupBox_arasements.isChecked():
@@ -152,4 +162,38 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
             f.write('treatment='+treatment+'\n')
 
         f.close()
+        return prop_file
 
+    def run_grain(self)-> None:
+        # init
+        self.isInterrupted = False
+        self.pushButton_interrupt.setEnabled(True)
+
+        # run
+        prop_file:str = self.create_properties_file()
+        command: str = get_console_command(prop_file)
+        run_command(command_line=command, feedback=self)
+
+        # end
+        self.pushButton_interrupt.setEnabled(False)
+        self.setProgress(0)
+
+
+    def interruptWork(self)-> None:
+        self.isInterrupted = True
+        self.pushButton_interrupt.setEnabled(False)
+
+    def pushInfo(self, message: str) -> None:
+        self.cursor.insertHtml( message + "<br/>\n")
+
+    def pushCommandInfo(self, message: str) -> None:
+        self.pushInfo('<span style="color:blue">**' + message + '**</span>\n')
+
+    def pushConsoleInfo(self, message: str) -> None:
+        self.pushInfo('<span style="color:grey">' + message + '</span>\n')
+
+    def setProgress(self, progress: float) -> None:
+        self.progressBar.setValue(progress)
+
+    def isCanceled(self) -> bool:
+        return self.isInterrupted

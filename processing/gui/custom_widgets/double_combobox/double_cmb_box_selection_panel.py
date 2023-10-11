@@ -26,17 +26,19 @@
 
 
 from pathlib import Path
-import re
+from typing import Union
+
 from qgis.PyQt import uic
-from qgis.core import QgsRasterLayer, QgsProject
+from processing.gui.BatchPanel import BatchPanel
 from processing.gui.wrappers import (
-    WidgetWrapper,
     DIALOG_MODELER,
     DIALOG_BATCH,
     DIALOG_STANDARD,
 )
-from ....helpers.helpers import get_metrics, extract_non_zero_non_nodata_values
-from ....algorithms.chloe_algorithm import ChloeAlgorithm
+from .....helpers.helpers import extract_non_zero_non_nodata_values
+from ....helpers.helpers import get_metrics
+from ....gui.chloe_algorithm_dialog import ChloeParametersPanel
+from ..helpers import extract_raster_layer_path, get_parameter_value_from_batch_panel
 
 WIDGET, BASE = uic.loadUiType(
     Path(__file__).resolve().parent / "WgtDoubleCmbBoxSelector.ui"
@@ -46,14 +48,14 @@ WIDGET, BASE = uic.loadUiType(
 class DoubleCmbBoxSelectionPanel(BASE, WIDGET):
     def __init__(
         self,
-        dialog,
+        parent,
         dialog_type: str,
         default_selected_metric: str = "",
         input_raster_layer_param_name: str = "",
     ):
-        super(DoubleCmbBoxSelectionPanel, self).__init__(None)
+        super().__init__(None)
         self.setupUi(self)
-        self.dialog = dialog
+        self.dialog = parent
         self.dialog_type: str = dialog_type
         self.default_selected_metric: str = default_selected_metric
         self.input_raster_layer_param_name: str = input_raster_layer_param_name
@@ -108,50 +110,31 @@ class DoubleCmbBoxSelectionPanel(BASE, WIDGET):
         """Get the input raster layer path"""
 
         if self.dialog_type == DIALOG_MODELER:
-            # no need to access the input raster layer path in modeler
             return ""
-        else:
-            widget = self.dialog.mainWidget()
+
+        widget: Union[BatchPanel, ChloeParametersPanel] = self.dialog.mainWidget()
 
         if not widget:
             return ""
 
-        input_raster_layer_param = None
+        input_raster_layer_param_value = self.get_input_raster_parameter_value(widget)
 
-        # in batch mode the wrapper of the input raster layer is accessible through a list of wrappers
-        if self.dialog_type == DIALOG_BATCH:
-            for wrapper in widget.wrappers[0]:
-                if (
-                    wrapper is not None
-                    and wrapper.parameterDefinition().name()
-                    == self.input_raster_layer_param_name
-                ):
-                    input_raster_layer_param = wrapper.value()
-                    break
-        else:
-            input_raster_layer_param = widget.wrappers[
-                self.input_raster_layer_param_name
-            ].value()
-
-        if input_raster_layer_param is None:
+        if input_raster_layer_param_value is None:
             return ""
-        input_raster_layer_path: str = ""
 
-        if re.match(r"^[a-zA-Z0-9_]+$", input_raster_layer_param):
-            selected_layer: QgsRasterLayer = QgsProject.instance().mapLayer(
-                input_raster_layer_param
+        return extract_raster_layer_path(input_raster_layer_param_value)
+
+    def get_input_raster_parameter_value(
+        self, widget: Union[BatchPanel, ChloeParametersPanel]
+    ) -> Union[str, None]:
+        """Retrieve the input raster layer parameter"""
+
+        if self.dialog_type == DIALOG_BATCH:
+            return get_parameter_value_from_batch_panel(
+                widget=widget, parameter_name=self.input_raster_layer_param_name
             )
-            input_raster_layer_path = selected_layer.dataProvider().dataSourceUri()
-        elif isinstance(input_raster_layer_param, QgsRasterLayer):
-            input_raster_layer_path = (
-                input_raster_layer_param.dataProvider().dataSourceUri()
-            )
-        elif not isinstance(input_raster_layer_param, str):
-            input_raster_layer_path = str(input_raster_layer_param)
         else:
-            input_raster_layer_path = input_raster_layer_param
-
-        return input_raster_layer_path
+            return widget.wrappers[self.input_raster_layer_param_name].value()
 
     def set_metrics(self):
         """Set the metrics dictionnary based on the input raster layer"""

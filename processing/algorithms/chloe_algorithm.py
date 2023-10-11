@@ -1,30 +1,4 @@
 # -*- coding: utf-8 -*-
-
-"""
-***************************************************************************
-    ChloeAlgorithm.py
-    ---------------------
-    Date                 : August 2012
-    Copyright            : (C) 2012 by Victor Olaya
-    Email                : volayaf at gmail dot com
-***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************
-"""
-
-__author__ = "Jean-Charles Naud/Alkante"
-__date__ = "August 2012"
-__copyright__ = "(C) 2012, Victor Olaya"
-
-# This will get replaced with a git SHA1 when you do a git archive
-
-__revision__ = "$Format:%H$"
-
 import os
 from pathlib import Path
 from re import search, IGNORECASE, match
@@ -35,29 +9,28 @@ from qgis.PyQt.QtGui import QIcon
 
 from qgis.core import (
     QgsProcessingContext,
-    QgsProcessingFeedback,
     QgsRasterLayer,
     QgsProcessingAlgorithm,
     QgsProcessingException,
-    QgsProject,
-    QgsLayerTreeGroup,
 )
 
 from qgis.utils import iface
 
 from processing.tools.system import getTempFilename
 
-from ...helpers.helpers import run_command
-from ...helpers.constants import CHLOE_JAR_PATH, CHLOE_PLUGIN_PATH
-
-from ...settings.helpers import check_java_path, get_java_path
+from ...helpers.helpers import (
+    RasterLoadConfig,
+    load_rasters_from_directory_to_qgis_instance,
+    set_raster_layer_symbology,
+    get_layer_name,
+)
+from ...helpers.helpers import run_command, get_console_command
+from ...helpers.constants import CHLOE_PLUGIN_PATH
 
 from ..helpers.helpers import (
     file_get_content,
-    get_layer_name,
-    set_raster_layer_symbology,
 )
-
+from ..styles.constants import STYLES_PATH
 from ..gui.chloe_algorithm_dialog import ChloeAlgorithmDialog
 
 from .helpers.constants import OUTPUT_WINDOWS_PATH_DIR, SAVE_PROPERTIES, OUTPUT_RASTER
@@ -122,37 +95,28 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
                     )
                 ) from exc
 
-    def get_console_command(self, parameters) -> str:
-        """Get full console command to call Chloe
-        return arguments : The full command
-        Example of return : java -jar bin/chloe-4.0.jar /tmp/distance_paramsrrVtm9.properties
-        """
+    def get_properties_file_path(self, parameters) -> str:
+        """Get properties file path."""
 
-        arguments: list[str] = []
-
-        java_path: Path = get_java_path()
-
-        if not check_java_path(java_path):
-            arguments.append("")
-        else:
-            arguments.append(f'"{str(java_path)}"')
-
-        arguments.append(CHLOE_JAR_PATH)
+        properties_file_path: str = ""
 
         if SAVE_PROPERTIES in parameters:
-            f_path = parameters[SAVE_PROPERTIES]
+            properties_file_param_value: str = parameters[SAVE_PROPERTIES]
         else:
-            f_path = getTempFilename(ext="properties")
+            properties_file_param_value = getTempFilename(ext="properties")
 
-        if f_path and f_path != "TEMPORARY_OUTPUT":
+        if (
+            properties_file_param_value
+            and properties_file_param_value != "TEMPORARY_OUTPUT"
+        ):
             # if f_path is defined in widget append to command line to show in command line prompt
-            arguments.append(f_path)
+            properties_file_path = properties_file_param_value
         else:
             # if f_path is TEMPORARY get it from the self.output_values (values set when user click on execute algorithm) when Chloe command is executed
             if SAVE_PROPERTIES in self.output_values:
-                arguments.append(self.output_values[SAVE_PROPERTIES])
+                properties_file_param_value = self.output_values[SAVE_PROPERTIES]
 
-        return " ".join(arguments)
+        return properties_file_path
 
     def set_output_parameter_value(
         self, parameter_name: str, parameter_value: Any
@@ -184,7 +148,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
 
         self.set_properties_values(parameters, context)
         self.create_properties_file(self.get_properties_lines())
-        command: str = self.get_console_command(parameters)
+        command: str = get_console_command(self.get_properties_file_path(parameters))
         run_command(command_line=command, feedback=feedback)
 
         results: dict[str, Any] = {}
@@ -210,14 +174,29 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
 
         if OUTPUT_WINDOWS_PATH_DIR in parameters:
             output_dir: Path = Path(self.output_values[OUTPUT_WINDOWS_PATH_DIR])
-            self.load_output_windows_to_qgis_instance(output_dir=output_dir)
+            output_dir_rasters_config: RasterLoadConfig = RasterLoadConfig(
+                raster_directory=output_dir,
+                group_name="Windows_paths",
+                qml_file_path=STYLES_PATH / "continuous.qml",
+            )
+            load_rasters_from_directory_to_qgis_instance(output_dir_rasters_config)
 
         return results
 
     def load_output_raster_to_qgis_instance(
         self, output_raster_path: str, context, results: dict[str, Any]
-    ):
-        """Load output raster results to QGIS instance."""
+    ) -> None:
+        """
+        Load output raster results to QGIS instance.
+
+        Args:
+            output_raster_path (str): The path to the output raster.
+            context: The processing context.
+            results (dict[str, Any]): The dictionary of results.
+
+        Raises:
+            QgsProcessingException: If the output raster cannot be loaded in the application.
+        """
         raster_layer: QgsRasterLayer = QgsRasterLayer(output_raster_path, "hillshade")
         if not raster_layer.isValid():
             raise QgsProcessingException(
@@ -227,7 +206,9 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         raster_layer_name: str = get_layer_name(
             layer=raster_layer, default_output=self.name()
         )
-        set_raster_layer_symbology(layer=raster_layer, qml_file_name="continuous.qml")
+        set_raster_layer_symbology(
+            layer=raster_layer, qml_file_path=STYLES_PATH / "continuous.qml"
+        )
         context.temporaryLayerStore().addMapLayer(raster_layer)
         raster_layer_details = QgsProcessingContext.LayerDetails(
             raster_layer_name, context.project(), OUTPUT_RASTER
@@ -235,34 +216,6 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
 
         context.addLayerToLoadOnCompletion(raster_layer.id(), raster_layer_details)
         results[OUTPUT_RASTER] = raster_layer.id()
-
-    def load_output_windows_to_qgis_instance(
-        self,
-        output_dir: Path,
-        group_name: str = "Window paths",
-        group_expanded: bool = False,
-        group_checked: bool = False,
-        qml_file_name: str = "continuous.qml",
-    ):
-        """Load output windows paths results to QGIS instance."""
-        qgs_project = QgsProject.instance()
-        layer_tree = qgs_project.layerTreeRoot()
-
-        # add main group
-        root_group: QgsLayerTreeGroup = layer_tree.addGroup(group_name)
-        root_group.setExpanded(group_expanded)
-        root_group.setItemVisibilityChecked(group_checked)
-
-        for filename in output_dir.iterdir():
-            if filename.suffix == ".asc" or filename.suffix == ".tif":
-                rlayer = QgsRasterLayer(str(filename), filename.stem)
-                if not rlayer.isValid():
-                    raise QgsProcessingException(
-                        self.tr("""Cannot load the output in the application""")
-                    )
-                set_raster_layer_symbology(layer=rlayer, qml_file_name=qml_file_name)
-                qgs_project.addMapLayer(rlayer, False)
-                root_group.addLayer(rlayer)
 
     def helpUrl(self):
         localeName = QLocale.system().name()
@@ -295,9 +248,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         parameters = {}
         for param in self.parameterDefinitions():
             parameters[param.name()] = "1"
-        context = QgsProcessingContext()
-        feedback = QgsProcessingFeedback()
-        name = self.get_console_command(parameters)[0]
+        name = get_console_command(self.get_properties_file_path(parameters))[0]
         if name.endswith(".py"):
             name = name[:-3]
         return name

@@ -42,7 +42,7 @@ class ChloeDoubleComboboxWidgetWrapper(WidgetWrapper):
         self.parentWidgetConfig = parentWidgetConfig
 
         return DoubleCmbBoxSelectionPanel(
-            dialog=self.dialog,
+            parent=self.dialog,
             dialog_type=self.dialogType,
             default_selected_metric=default_selected_metric,
             input_raster_layer_param_name=input_raster_layer_param_name,

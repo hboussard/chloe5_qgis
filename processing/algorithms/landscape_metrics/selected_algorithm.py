@@ -14,6 +14,8 @@ from qgis.core import (
 
 from processing.tools.system import isWindows
 
+from ....helpers.helpers import convert_int_to_odd
+
 from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
 
 
@@ -35,10 +37,9 @@ from ..helpers.constants import (
 )
 
 from ...helpers.helpers import (
-    convert_to_odd,
     enum_to_list,
     format_path_for_properties_file,
-    get_enum_order_as_int,
+    get_enum_element_index,
 )
 from ..helpers.enums import AnalyzeType, AnalyzeTypeFastMode, WindowShapeType
 
@@ -171,7 +172,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
                     "enabled_widgets_configs": [
                         {
                             "param_name": FRICTION_FILE,
-                            "enabled_by_value": get_enum_order_as_int(
+                            "enabled_by_value": get_enum_element_index(
                                 WindowShapeType.FUNCTIONAL
                             ),
                         }
@@ -208,7 +209,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
                     "enabled_widgets_configs": [
                         {
                             "param_name": DISTANCE_FUNCTION,
-                            "enabled_by_value": get_enum_order_as_int(
+                            "enabled_by_value": get_enum_element_index(
                                 AnalyzeType.WEIGHTED
                             ),
                         }
@@ -365,7 +366,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
         )
 
         properties_lines.append(
-            f"sizes={{{str(convert_to_odd(input_integer=self.window_sizes))}}}"
+            f"sizes={{{str(convert_int_to_odd(input_integer=self.window_sizes))}}}"
         )
 
         properties_lines.append(f"metrics={{{self.metrics}}}")

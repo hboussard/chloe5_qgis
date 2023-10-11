@@ -199,7 +199,10 @@ class ChloePlugin:
         if add_to_toolbar and self.toolbar:
             # Adds plugin icon to Plugins toolbar
             self.toolbar.addAction(action)
-
+        elif add_to_toolbar:
+            # Adds plugin icon to Plugins toolbar
+            self.iface.addToolBarIcon(action)
+            
         if add_to_menu:
             menu.addAction(action)
 

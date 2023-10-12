@@ -171,14 +171,24 @@ def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_path: Path) -> No
     """
 
     if not qml_file_path.exists() or qml_file_path == Path():
-        QgsMessageLog.logMessage(
-            f"Fichier qml non trouvé : {qml_file_path}", level=Qgis.Critical
+        error_message: str = f"Fichier qml non trouvé : {qml_file_path}"
+        QgsMessageLog.logMessage(error_message, level=Qgis.Critical)
+        iface.messageBar().pushMessage(
+            "Erreur",
+            error_message,
+            level=Qgis.Critical,
         )
         return
 
     if not layer.isValid():
+        error_message: str = f"Fichier raster non valide : {layer.source()} "
         QgsMessageLog.logMessage(
-            f"Fichier raster non valide : {layer.source()} ",
+            error_message,
+            level=Qgis.Critical,
+        )
+        iface.messageBar().pushMessage(
+            "Erreur",
+            error_message,
             level=Qgis.Critical,
         )
         return

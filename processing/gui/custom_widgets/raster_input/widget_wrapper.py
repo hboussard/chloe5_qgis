@@ -5,7 +5,6 @@ from processing.gui.wrappers import (
 )
 from qgis.core import QgsSettings
 from qgis.PyQt.QtWidgets import QFileDialog
-from qgis.PyQt.QtCore import QCoreApplication
 
 
 class ChloeAscRasterWidgetWrapper(RasterWidgetWrapper):

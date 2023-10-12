@@ -5,6 +5,7 @@ from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QIcon
 from .algorithms.landscape_metrics.sliding_algorithm import SlidingAlgorithm
 from .algorithms.landscape_metrics.selected_algorithm import SelectedAlgorithm
+from .algorithms.tools.combine_algorithm import CombineAlgorithm
 from .helpers.constants import CHLOE_PROVIDER_SUPPORTED_RASTER_EXTENSIONS
 
 
@@ -62,6 +63,7 @@ class ChloeAlgorithmProvider(QgsProcessingProvider):
         self.algs = [
             SlidingAlgorithm(),
             SelectedAlgorithm(),
+            CombineAlgorithm(),
         ]
 
         [self.addAlgorithm(alg) for alg in self.algs]

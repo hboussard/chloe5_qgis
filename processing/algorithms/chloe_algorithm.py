@@ -71,7 +71,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             f"property lines is not implemented for {self.name()}"
         )
 
-    def set_properties_values(self, parameters, context) -> None:
+    def set_properties_values(self, parameters, context, feedback) -> None:
         """set properties values."""
         raise QgsProcessingException(
             f"set properties values is not implemented for {self.name()}"
@@ -146,7 +146,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             dict: A dictionary of output parameters.
         """
 
-        self.set_properties_values(parameters, context)
+        self.set_properties_values(parameters, context, feedback)
         self.create_properties_file(self.get_properties_lines())
         command: str = get_console_command(self.get_properties_file_path(parameters))
         run_command(command_line=command, feedback=feedback)

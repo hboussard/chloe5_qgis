@@ -114,7 +114,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         else:
             # if f_path is TEMPORARY get it from the self.output_values (values set when user click on execute algorithm) when Chloe command is executed
             if SAVE_PROPERTIES in self.output_values:
-                properties_file_param_value = self.output_values[SAVE_PROPERTIES]
+                properties_file_path = self.output_values[SAVE_PROPERTIES]
 
         return properties_file_path
 

@@ -324,12 +324,11 @@ def get_layer_name(
     res: str = default_output
     if layer is None:
         return res
-    if not (layer is None):
-        if isinstance(layer, QgsRasterLayer):
-            layer_source = layer.dataProvider().dataSourceUri()
-            res = str(Path(layer_source).stem)
-        elif isinstance(layer, str):
-            res = str(Path(layer).stem)
-        else:
-            res = str(layer)
+    if isinstance(layer, QgsRasterLayer):
+        layer_source = layer.dataProvider().dataSourceUri()
+        res = str(Path(layer_source).stem)
+    elif isinstance(layer, str):
+        res = str(Path(layer).stem)
+    else:
+        res = str(layer)
     return res

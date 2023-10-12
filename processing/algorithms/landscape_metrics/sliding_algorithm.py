@@ -392,13 +392,13 @@ class SlidingAlgorithm(ChloeAlgorithm):
         # If these parameters are valid, call the parent class's checkParameterValues method for the rest
         return super().checkParameterValues(parameters, context)
 
-    def set_properties_input_values(self, parameters, context):
+    def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
         self.input_raster = self.parameterRasterAsFilePath(
             parameters, INPUT_RASTER, context
         )
 
-    def set_properties_algorithm_values(self, parameters, context):
+    def set_properties_algorithm_values(self, parameters, context, feedback):
         """Set algorithm parameters."""
 
         self.is_fast_mode = self.parameterAsBool(parameters, FAST, context)
@@ -443,7 +443,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         )
         self.metrics = self.parameterAsString(parameters, METRICS, context)
 
-    def set_properties_output_values(self, parameters, context):
+    def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
         self.output_csv = self.parameterAsString(parameters, OUTPUT_CSV, context)
         self.set_output_parameter_value(OUTPUT_CSV, self.output_csv)
@@ -460,14 +460,14 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 
-    def set_properties_values(self, parameters, context):
+    def set_properties_values(self, parameters, context, feedback):
         """set properties values."""
 
-        self.set_properties_input_values(parameters, context)
+        self.set_properties_input_values(parameters, context, feedback)
 
-        self.set_properties_algorithm_values(parameters, context)
+        self.set_properties_algorithm_values(parameters, context, feedback)
 
-        self.set_properties_output_values(parameters, context)
+        self.set_properties_output_values(parameters, context, feedback)
 
     def get_properties_lines(self) -> list[str]:
         """get properties lines."""

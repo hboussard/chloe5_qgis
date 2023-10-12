@@ -293,14 +293,14 @@ class SelectedAlgorithm(ChloeAlgorithm):
         # If these parameters are valid, call the parent class's checkParameterValues method for the rest
         return super().checkParameterValues(parameters, context)
 
-    def set_properties_input_values(self, parameters, context):
+    def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
 
         self.input_raster_layer = self.parameterRasterAsFilePath(
             parameters, INPUT_RASTER, context
         )
 
-    def set_properties_algorithm_values(self, parameters, context):
+    def set_properties_algorithm_values(self, parameters, context, feedback):
         """Set algorithm parameters."""
         self.window_shape = enum_to_list(WindowShapeType)[
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
@@ -328,7 +328,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
         self.metrics = self.parameterAsString(parameters, METRICS, context)
 
-    def set_properties_output_values(self, parameters, context):
+    def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
         self.output_csv = self.parameterAsString(parameters, OUTPUT_CSV, context)
 
@@ -344,7 +344,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
         f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 
-    def set_properties_values(self, parameters, context):
+    def set_properties_values(self, parameters, context, feedback):
         """set properties values."""
 
         self.set_properties_input_values(parameters, context)

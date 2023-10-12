@@ -160,5 +160,7 @@ class DoubleCmbBoxSelectionPanel(BASE, WIDGET):
         else:
             return self.lineEdit_selected_metric.text()
 
-    def setValue(self):
-        self.populate_metric_combobox()
+    def setValue(self, value: str):
+        # TODO : also set the value of the combobox_metric + combobox_filter based on the value
+        self.lineEdit_selected_metric.setText(value)
+        # self.populate_metric_combobox()

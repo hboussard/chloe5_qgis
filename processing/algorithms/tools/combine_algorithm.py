@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import os
 from pathlib import Path
-from typing import Tuple
-
+from dataclasses import dataclass
 from qgis.core import (
     QgsRasterLayer,
     QgsProcessing,
@@ -12,7 +10,6 @@ from qgis.core import (
     QgsProcessingParameterMatrix,
     QgsExpressionContext,
     QgsExpressionContextScope,
-    QgsProcessingContext,
 )
 
 from processing.tools.system import isWindows
@@ -27,6 +24,14 @@ from ...helpers.helpers import (
 )
 from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
 from ...gui.custom_widgets.factor_table.dataclasses import CombineFactorElement
+
+
+@dataclass
+class RasterLayerInContext:
+    """Raster layer in context."""
+
+    raster_layer: QgsRasterLayer
+    raster_id: str
 
 
 class CombineAlgorithm(ChloeAlgorithm):
@@ -120,14 +125,14 @@ class CombineAlgorithm(ChloeAlgorithm):
     def replace_combine_factor_element_empty_layer_path(
         self,
         factors: list[CombineFactorElement],
-        scoped_raster_layers: list[Tuple[QgsRasterLayer, str]],
+        raster_layers_in_context: list[RasterLayerInContext],
     ) -> list[CombineFactorElement]:
         """
         Replaces the empty Path provided by the domain parameter in MODELER mode by the raster layers in context.
 
         Args:
             factors (list[CombineFactorElement]): List of CombineFactorElement objects.
-            scoped_raster_layers (list[Tuple[QgsRasterLayer, str]]): List of tuples containing QgsRasterLayer and input name.
+            raster_layers_in_context (list[RasterLayerInContext]): List of RasterLayerInContext objects storing each QgsRasterLayer and layer_id.
 
         Returns:
             list[CombineFactorElement]: List of updated CombineFactorElement objects.
@@ -137,11 +142,11 @@ class CombineAlgorithm(ChloeAlgorithm):
         updated_factors: list[CombineFactorElement] = []
         # Loop through each factor
         for factor in factors:
-            # If the factor's layer path is empty, search for the corresponding layer in the scoped raster_layers list
+            # If the factor's layer path is empty, search for the corresponding layer in the list of raster layers in context
             if factor.layer_path == Path():
-                for raster_layer, input_name in scoped_raster_layers:
-                    if factor.layer_id == input_name:
-                        factor.layer_path = Path(raster_layer.source())
+                for raster in raster_layers_in_context:
+                    if factor.layer_id == raster.raster_id:
+                        factor.layer_path = Path(raster.raster_layer.source())
 
             updated_factors.append(factor)
 
@@ -149,7 +154,7 @@ class CombineAlgorithm(ChloeAlgorithm):
 
     def get_raster_layers_in_algorithm_inputs_scope(
         self, context: QgsExpressionContext
-    ) -> list[Tuple[QgsRasterLayer, str]]:
+    ) -> list[RasterLayerInContext]:
         """
         # TODO : move this method to helpers if needed in other algorithms
         Returns a list of tuples containing QgsRasterLayer and variable names that are in the scope of the algorithm_inputs
@@ -162,7 +167,7 @@ class CombineAlgorithm(ChloeAlgorithm):
             list[Tuple[QgsRasterLayer, str]]: A list of tuples containing QgsRasterLayer and variable names that are in the
             scope of the algorithm_inputs expression context.
         """
-        scope_layer_list: list[Tuple[QgsRasterLayer, str]] = []
+        scope_layer_list: list[RasterLayerInContext] = []
 
         index_of_scope: int = context.expressionContext().indexOfScope(
             "algorithm_inputs"
@@ -178,7 +183,11 @@ class CombineAlgorithm(ChloeAlgorithm):
                     variable_name
                 )
                 if isinstance(layer_in_context, QgsRasterLayer):
-                    scope_layer_list.append((layer_in_context, variable_name))
+                    scope_layer_list.append(
+                        RasterLayerInContext(
+                            raster_layer=layer_in_context, raster_id=variable_name
+                        )
+                    )
 
         return scope_layer_list
 

@@ -16,22 +16,22 @@
 # This will get replaced with a git SHA1 when you do a git archive
 
 from pathlib import Path
-from typing import Tuple
+from typing import Union
+
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QMessageBox, QHeaderView
 
 
-from qgis.core import (
-    QgsProcessingParameterDefinition,
-)
-
-from processing.gui.wrappers import (
-    DIALOG_MODELER,
-    DIALOG_STANDARD,
-)
+from qgis.core import QgsProcessingParameterDefinition, QgsMessageLog, Qgis
+from processing.gui.BatchPanel import BatchPanel
+from processing.gui.wrappers import DIALOG_MODELER, DIALOG_STANDARD, DIALOG_BATCH
 from .....helpers.helpers import get_layer_name
 from ....algorithms.helpers.constants import INPUTS_MATRIX
+from ....gui.chloe_algorithm_dialog import ChloeParametersPanel
+from ..helpers import (
+    get_parameter_widget_from_batch_panel,
+)
 from .dataclasses import CombineFactorElement, LayerInfo
 from .models import FactorTableModel
 
@@ -44,8 +44,7 @@ class FactorTablePanel(BASE, WIDGET):
     A widget containing a table view to edit raster combinations.
 
     Attributes:
-        dialog (QgsProcessingAlgorithmDialog): The parent dialog.
-        alg (QgsProcessingAlgorithm): The algorithm.
+        parent (QgsProcessingAlgorithmDialog): The parent dialog.
         input_matrix_parameter_name (str): The name of the input matrix parameter.
         dialog_type (int): The dialog type (standard or modeler).
         is_modeler_dialog (bool): Whether the dialog is in modeler mode.
@@ -54,8 +53,7 @@ class FactorTablePanel(BASE, WIDGET):
 
     def __init__(
         self,
-        dialog,
-        alg,
+        parent,
         input_matrix_parameter_name: str = INPUTS_MATRIX,
         dialog_type=DIALOG_STANDARD,
     ):
@@ -67,10 +65,9 @@ class FactorTablePanel(BASE, WIDGET):
 
         super(FactorTablePanel, self).__init__(None)
         self.setupUi(self)
-        self.dialog = dialog
-        self.alg = alg
-        self.input_matrix_parameter_name = input_matrix_parameter_name
-        self.dialog_type = dialog_type
+        self.parent_dialog = parent
+        self.input_matrix_parameter_name: str = input_matrix_parameter_name
+        self.dialog_type: str = dialog_type
 
         # Determine whether the dialog is in modeler mode.
         self.is_modeler_dialog: bool = False
@@ -79,7 +76,7 @@ class FactorTablePanel(BASE, WIDGET):
 
         self.init_gui()
 
-    def init_gui(self):
+    def init_gui(self) -> None:
         """Initializes the GUI."""
         # Create and set the table model.
         self._table_model: FactorTableModel = FactorTableModel()
@@ -104,32 +101,14 @@ class FactorTablePanel(BASE, WIDGET):
         # Connect the populate button to the populateTableModel method.
         self.button_load_layers.clicked.connect(self.populate_table_model)
 
-    def populate_table_model(self):
+    def populate_table_model(self) -> None:
         """Populates the table model."""
         if self.is_modeler_dialog:
-            self.populate_table_model_for_modeler()
+            list_layers: list[LayerInfo] = self.get_list_layers_for_modeler()
         else:
-            self.populate_table_model_for_standard_batch()
-
-    def populate_table_model_for_modeler(self):
-        """Populates the table model for the modeler dialog."""
-        try:
-            list_layers = self.get_list_layers_for_modeler()
-        except KeyError:
-            print("Error: no modeler wrapper found")
-            return
-
-        self.populate_table_model_with_data(list_layers)
-
-    def populate_table_model_for_standard_batch(self):
-        """Populates the table model for the standard batch dialog."""
-        try:
             list_layers = self.get_list_layers_for_standard_batch()
-        except KeyError:
-            print("Error: no standard wrapper found")
-            return
 
-        self.populate_table_model_with_data(list_layers)
+        self.populate_table_model_with_data(list_layers=list_layers)
 
     def get_list_layers_for_modeler(self) -> list[LayerInfo]:
         """
@@ -146,16 +125,18 @@ class FactorTablePanel(BASE, WIDGET):
         list_layers: list[LayerInfo] = []
 
         # TODO : Accessing the modeler widget that way is a bit hacky, find a better way to do this
-        modeler_widget = self.dialog.widget.widget.wrappers[
+        modeler_widget = self.parent_dialog.widget.widget.wrappers[
             self.input_matrix_parameter_name
         ]
         if modeler_widget is None or not isinstance(modeler_widget.value(), list):
+            error_message: str = self.tr("Error: no modeler wrapper found")
+            QgsMessageLog.logMessage(error_message, level=Qgis.Critical)
             return list_layers
 
         # Iterate over the values of the INPUTS_MATRIX widgets in the dialog
         for value in modeler_widget.value():
             # Get the path of the layer
-            layer_path: str = self.dialog.resolveValueDescription(value)
+            layer_path: str = self.parent_dialog.resolveValueDescription(value)
             # Initialize layer_id to an empty string
             layer_id: str = ""
             # Get the algorithm child id of the current layer to check if it is a algorithm output
@@ -163,11 +144,11 @@ class FactorTablePanel(BASE, WIDGET):
 
             # Check if the current layer is a modeler input
             if isinstance(
-                self.dialog.model.parameterDefinition(value.parameterName()),
+                self.parent_dialog.model.parameterDefinition(value.parameterName()),
                 QgsProcessingParameterDefinition,
             ):
                 # If it is, set layer_id to the name of the input parameter
-                layer_id = self.dialog.model.parameterDefinition(
+                layer_id = self.parent_dialog.model.parameterDefinition(
                     value.parameterName()
                 ).name()
 
@@ -175,7 +156,7 @@ class FactorTablePanel(BASE, WIDGET):
             if value_algorithm_child_id:
                 # TODO : this is a bit hacky, maybe there is a better way to do this
                 # If it is, get the algorithm associated with the output and generate a unique layer ID
-                alg = self.dialog.model.childAlgorithm(value_algorithm_child_id)
+                alg = self.parent_dialog.model.childAlgorithm(value_algorithm_child_id)
                 # the layer ID is a combination of the algorithm display name and the selected output name
                 # this string is the same than the one generated by context.expressionContext().indexOfScope("algorithm_inputs") in the algorithm post process. Allows the matching of the layers in the processAlgorithm
                 layer_id = f'{alg.algorithm().displayName().replace(" ", "_")}_{value.outputName()}'

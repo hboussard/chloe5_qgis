@@ -8,16 +8,15 @@ class ChloeFactorTableWidgetWrapper(WidgetWrapper):
         """Widget creation to put like panel in dialog"""
         self.parentWidgetConfig = parentWidgetConfig
         return FactorTablePanel(
-            dialog=self.dialog,
-            alg=self.param.algorithm(),
+            parent=self.dialog,
             input_matrix_parameter_name=input_matrix_param_name,
             dialog_type=self.dialogType,
         )
 
-    def setValue(self, value: "list[list[CombineFactorElement] | str]"):
+    def setValue(self, value: "list[list[CombineFactorElement | list[str]] | str]"):
         """Set value on the widget/component.
         list[list[CombineFactorElement] | str] input value type is constrained by the modeler xml file's data passed to the widget.
-        usefull allowed option types in the model3 xml file are: List, QString (no tuples or complex objects allowed)
+        usefull option types in the model3 xml file are: List, QString (no tuples, dict or other complex objects allowed)
         """
 
         if value is None:

@@ -58,3 +58,17 @@ def get_parameter_value_from_batch_panel(
         ):
             return wrapper.value()
     return None
+
+
+def get_parameter_widget_from_batch_panel(
+    widget: BatchPanel, parameter_name: str
+) -> Union[WidgetWrapper, None]:
+    """Get a widget wrapper of a parameter from the processign batch panel"""
+
+    for wrapper in widget.wrappers[0]:
+        if (
+            wrapper is not None
+            and wrapper.parameterDefinition().name() == parameter_name
+        ):
+            return wrapper
+    return None

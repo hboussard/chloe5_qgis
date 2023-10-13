@@ -195,22 +195,27 @@ class FactorTablePanel(BASE, WIDGET):
         """
         list_layers: list[LayerInfo] = []
 
-        standard_widget = self.dialog.mainWidget().wrappers[
-            self.input_matrix_parameter_name
-        ]
+        if self.dialog_type == DIALOG_BATCH:
+            widget = get_parameter_widget_from_batch_panel(
+                widget=self.parent_dialog.mainWidget(),
+                parameter_name=self.input_matrix_parameter_name,
+            )
+        else:
+            widget = self.parent_dialog.mainWidget().wrappers[
+                self.input_matrix_parameter_name
+            ]
 
-        if standard_widget is None:
+        if widget is None:
+            error_message: str = self.tr("Error: no standard/batch wrapper found")
+            QgsMessageLog.logMessage(error_message, level=Qgis.Critical)
             return list_layers
-        standard_widget_values = standard_widget.widgetValue()
 
-        if standard_widget_values is None:
+        widget_values = widget.widgetValue()
+
+        if widget_values is None:
             return list_layers
 
-        for val in (
-            self.dialog.mainWidget()
-            .wrappers[self.input_matrix_parameter_name]
-            .widgetValue()
-        ):
+        for val in widget_values:
             # in standard mode no need to provide a modeler_input_id
             list_layers.append(LayerInfo(layer_path=val, modeler_input_id=""))
 

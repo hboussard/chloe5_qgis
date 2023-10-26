@@ -26,7 +26,7 @@ class InputLayerFileWidget(QWidget):
     def setFilters(self,filters):
         self.mlcb.setFilters(filters)
         if filters == QgsMapLayerProxyModel.RasterLayer:
-            self.filters = '*.tif,*.asc'
+            self.filters = '*.tif;*.asc'
         else:
             self.filters = '*.shp'
 
@@ -36,6 +36,9 @@ class InputLayerFileWidget(QWidget):
             self.mlcb.setAdditionalItems([file_name[0]])
             self.mlcb.setCurrentIndex(self.mlcb.model().rowCount()-1)
                 
+    def currentText(self):
+        return self.mlcb.currentText()
+    
     def currentLayer(self):
         layer = self.mlcb.currentLayer()
         if layer is not None:

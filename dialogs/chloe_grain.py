@@ -23,6 +23,7 @@
 """
 
 import os,datetime
+from typing import Union
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets,QtCore
@@ -99,7 +100,8 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
             f.write('name="'+prefix+'"'+'\n')
 
             extent = self.mExtentGroupBox.currentExtent()
-            f.write("territoire={"+str(extent.xMinimum())+";"+str(extent.xMaximum())+";"+str(extent.yMinimum())+";"+str(extent.yMaximum())+"}\n")
+            if extent.xMinimum()!=0. and extent.xMaximum()!=0. and extent.yMinimum()!=0. and extent.yMaximum()!=0.:
+                f.write("enveloppe={"+str(extent.xMinimum())+";"+str(extent.xMaximum())+";"+str(extent.yMinimum())+";"+str(extent.yMaximum())+"}\n")
 
             # self.mExtentGroupBox.currentExtent()
             if not self.mQgsDoubleSpinBox_buffer.text().isspace():
@@ -164,15 +166,35 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
         f.close()
         return prop_file
 
+    def control_parameters(self)->Union[str,None]:
+        errors = ''
+        if (self.radioButton_rasterMNHC.isChecked()  and self.inputMNHClayerfile.currentText() =="") \
+            or (self.radioButton_dirMNHC.isChecked() and self.mQgsFileWidget_dirMNHC.filePath()==""):
+            errors = errors + 'No MNHC input<br/>'
+        dir = self.mQgsFileWidget_resultDir.filePath()
+        if dir is None or dir=='':
+            errors = errors + 'No output directory<br/>'
+        if errors!='':
+            return errors
+
+
     def run_grain(self)-> None:
         # init
         self.isInterrupted = False
         self.pushButton_interrupt.setEnabled(True)
+        self.textEdit_journal.clear()
+        self.tabWidget.setCurrentIndex(4)
 
-        # run
-        prop_file:str = self.create_properties_file()
-        command: str = get_console_command(prop_file)
-        run_command(command_line=command, feedback=self)
+        # control and run
+        errors = self.control_parameters()
+        if errors:
+            self.pushInfo("Input errors :")
+            self.pushInfo(errors)
+        else:
+            # run
+            prop_file:str = self.create_properties_file()
+            command: str = get_console_command(prop_file)
+            run_command(command_line=command, feedback=self)
 
         # end
         self.pushButton_interrupt.setEnabled(False)

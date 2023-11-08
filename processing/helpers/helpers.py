@@ -21,12 +21,13 @@ def add_simple_metrics(
 
     if len(no_zero_raster_values) < 1000:
         for simple_metric_name, simple_metric_list in TYPES_OF_METRICS_SIMPLE.items():
+            new_metric = [
+                metric + str(val)
+                for metric in simple_metric_list
+                for val in no_zero_raster_values
+            ]
             metrics[simple_metric_name].extend(
-                [
-                    metric + str(val)
-                    for metric in simple_metric_list
-                    for val in no_zero_raster_values
-                ]
+                item for item in new_metric if item not in metrics[simple_metric_name]
             )
 
     return metrics
@@ -43,14 +44,15 @@ def add_cross_metrics(
 
     if len(no_zero_raster_values) < 100:
         for cross_metric_name, cross_metrics_list in TYPES_OF_METRICS_CROSS.items():
+            new_metric = [
+                mc + str(val1) + "-" + str(val2)
+                for mc in cross_metrics_list
+                for val1 in no_zero_raster_values
+                for val2 in no_zero_raster_values
+                if val1 <= val2
+            ]
             metrics[cross_metric_name].extend(
-                [
-                    mc + str(val1) + "-" + str(val2)
-                    for mc in cross_metrics_list
-                    for val1 in no_zero_raster_values
-                    for val2 in no_zero_raster_values
-                    if val1 <= val2
-                ]
+                item for item in new_metric if item not in metrics[cross_metric_name]
             )
 
     return metrics
@@ -73,7 +75,9 @@ def get_metrics(
     raster_values: list[int], fast_mode: bool = False
 ) -> dict[str, list[str]]:
     """Get the metric dictionnary based on the raster values"""
-    metrics: dict[str, list[str]] = TYPES_OF_METRICS
+    # make a copy of the types_of_metrics
+
+    metrics: dict[str, list[str]] = TYPES_OF_METRICS.copy()
 
     metrics = add_simple_metrics(metrics, raster_values)
     metrics = add_cross_metrics(metrics, raster_values)

@@ -19,14 +19,9 @@ __copyright__ = "(C) 2017, Jean-Charles Naud"
 
 __revision__ = "$Format:%H$"
 
-import os
 from pathlib import Path
-from typing import Union
 import warnings
-from processing.gui.BatchPanel import BatchPanel
 from processing.gui.wrappers import (
-    DIALOG_MODELER,
-    DIALOG_BATCH,
     DIALOG_STANDARD,
 )
 from qgis.PyQt import uic
@@ -35,9 +30,10 @@ from qgis.core import QgsApplication, QgsMessageLog, Qgis
 
 from ..custom_dialogs.DialListCheckBox import DialListCheckBox
 from ....algorithms.helpers.constants import INPUT_RASTER
-from ....gui.chloe_algorithm_dialog import ChloeParametersPanel
 from .....helpers.helpers import extract_non_zero_non_nodata_values
-from ..helpers import extract_raster_layer_path, get_parameter_value_from_batch_panel
+from ..helpers import (
+    get_input_raster_param_path,
+)
 
 plugin_path = str(QgsApplication.pkgDataPath())
 with warnings.catch_warnings():
@@ -78,39 +74,13 @@ class ValuesSelectionPanel(BASE, WIDGET):
             self.display_value_selection_dialog
         )  # Bouton "..."
 
-    def get_input_raster_param_path(self) -> str:
-        """Get the input raster layer path"""
-
-        if self.dialog_type == DIALOG_MODELER:
-            return ""
-
-        widget: Union[BatchPanel, ChloeParametersPanel] = self.dialog.mainWidget()
-
-        if not widget:
-            return ""
-
-        input_raster_layer_param_value = self.get_input_raster_parameter_value(widget)
-
-        if input_raster_layer_param_value is None:
-            return ""
-
-        return extract_raster_layer_path(input_raster_layer_param_value)
-
-    def get_input_raster_parameter_value(
-        self, widget: Union[BatchPanel, ChloeParametersPanel]
-    ) -> Union[str, None]:
-        """Retrieve the input raster layer parameter"""
-
-        if self.dialog_type == DIALOG_BATCH:
-            return get_parameter_value_from_batch_panel(
-                widget=widget, parameter_name=self.raster_input_param_name
-            )
-        else:
-            return widget.wrappers[self.raster_input_param_name].value()
-
     def display_value_selection_dialog(self):
         """Display the value selection dialog"""
-        raster_file_path: str = self.get_input_raster_param_path()
+        raster_file_path: str = get_input_raster_param_path(
+            dialog_type=self.dialog_type,
+            input_raster_layer_param_name=self.raster_input_param_name,
+            algorithm_dialog=self.dialog,
+        )
 
         # don't show dialog if no raster is selected in input parameter
         if not raster_file_path:

@@ -3,6 +3,11 @@ from re import match
 from qgis.core import QgsRasterLayer, QgsProject
 from processing.gui.wrappers import WidgetWrapper
 from processing.gui.BatchPanel import BatchPanel
+from processing.gui.wrappers import (
+    DIALOG_MODELER,
+    DIALOG_BATCH,
+)
+from ..chloe_algorithm_dialog import ChloeParametersPanel
 
 
 def get_widget_wrapper_from_param_name(
@@ -72,3 +77,41 @@ def get_parameter_widget_from_batch_panel(
         ):
             return wrapper
     return None
+
+
+def get_input_raster_parameter_value(
+    dialog_type: str,
+    input_raster_layer_param_name: str,
+    widget: Union[BatchPanel, ChloeParametersPanel],
+) -> Union[str, None]:
+    """Retrieve the input raster layer parameter"""
+
+    if dialog_type == DIALOG_BATCH:
+        return get_parameter_value_from_batch_panel(
+            widget=widget, parameter_name=input_raster_layer_param_name
+        )
+    else:
+        return widget.wrappers[input_raster_layer_param_name].value()
+
+
+def get_input_raster_param_path(
+    dialog_type: str, input_raster_layer_param_name: str, algorithm_dialog
+) -> str:
+    """Get the input raster layer path"""
+
+    if dialog_type == DIALOG_MODELER:
+        return ""
+
+    widget: Union[BatchPanel, ChloeParametersPanel] = algorithm_dialog.mainWidget()
+
+    if not widget:
+        return ""
+
+    input_raster_layer_param_value = get_input_raster_parameter_value(
+        dialog_type, input_raster_layer_param_name, widget
+    )
+
+    if input_raster_layer_param_value is None:
+        return ""
+
+    return extract_raster_layer_path(input_raster_layer_param_value)

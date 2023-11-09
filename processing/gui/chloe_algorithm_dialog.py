@@ -9,6 +9,7 @@ from processing.gui.FileSelectionPanel import FileSelectionPanel
 from qgis.gui import (
     QgsProjectionSelectionWidget,
     QgsProcessingLayerOutputDestinationWidget,
+    QgsFileWidget,
 )
 from processing.tools.dataobjects import createContext
 
@@ -95,8 +96,11 @@ class ChloeParametersPanel(ParametersPanel):
                             )
                             # print(type(widget))
                             # add here widget signal connections
+
                             if isinstance(widget, FileSelectionPanel):
                                 widget.leText.textChanged.connect(m)
+                            elif isinstance(widget, QgsFileWidget):
+                                widget.fileChanged.connect(m)
                             elif isinstance(p, RasterWidgetWrapper):
                                 p.combo.valueChanged.connect(m)
                             elif isinstance(p, MultipleInputPanel):

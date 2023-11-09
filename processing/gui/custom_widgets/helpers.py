@@ -1,6 +1,11 @@
-from typing import Union
+from csv import reader
+from pathlib import Path
+from typing import Any, Union
 from re import match
 from qgis.core import QgsRasterLayer, QgsProject
+from qgis.gui import QgsAbstractProcessingParameterWidgetWrapper
+from qgis.PyQt.QtWidgets import QMessageBox
+from qgis.PyQt.QtCore import QAbstractItemModel, QVariant
 from processing.gui.wrappers import WidgetWrapper
 from processing.gui.BatchPanel import BatchPanel
 from processing.gui.wrappers import (
@@ -148,3 +153,164 @@ def get_input_raster_param_path(
         return ""
 
     return extract_raster_layer_path(input_raster_layer_param_value)
+
+
+def csv_file_has_min_column_count(
+    csv_file_path: Path, minimum_column_count: int
+) -> bool:
+    """Check if the csv file has at least the given minimum column count."""
+    try:
+        with open(str(csv_file_path), "r", encoding="utf-8") as csv_file:
+            csv_reader = reader(csv_file, delimiter=";")
+            header = next(csv_reader)
+            return len(header) >= minimum_column_count
+    except FileNotFoundError:
+        QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
+        return False
+    except PermissionError:
+        QMessageBox.critical(
+            None,
+            "Error",
+            f"{str(csv_file_path)} is not accessible. Please check the file permissions.",
+        )
+        return False
+    except UnicodeDecodeError:
+        QMessageBox.critical(
+            None,
+            "Error",
+            f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
+        )
+        return False
+
+
+def csv_file_column_is_type_integer(
+    csv_file_path: Path, column_idx_to_check: int = 0
+) -> bool:
+    """Check if the csv file column has integer values."""
+    try:
+        with open(str(csv_file_path), "r", encoding="utf-8") as csv_file:
+            csv_reader = reader(csv_file, delimiter=";")
+            next(csv_reader)
+            for row in csv_reader:
+                try:
+                    int(row[column_idx_to_check])
+                except ValueError:
+                    return False
+            return True
+    except FileNotFoundError:
+        QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
+        return False
+    except PermissionError:
+        QMessageBox.critical(
+            None,
+            "Error",
+            f"{str(csv_file_path)} is not accessible. Please check the file permissions.",
+        )
+        return False
+    except UnicodeDecodeError:
+        QMessageBox.critical(
+            None,
+            "Error",
+            f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
+        )
+        return False
+
+
+def csv_file_has_duplicates(csv_file_path: Path, column_idx_to_check: int = 0) -> bool:
+    """Check if the csv file has duplicates values"""
+    try:
+        with open(str(csv_file_path), "r", encoding="utf-8") as csv_file:
+            csv_reader = reader(csv_file, delimiter=";")
+            next(csv_reader)
+            values = []
+            duplicates: list[str] = []
+            for row in csv_reader:
+                value = row[column_idx_to_check]
+                if value in values:
+                    duplicates.append(value)
+                else:
+                    values.append(value)
+            if duplicates:
+                QMessageBox.critical(
+                    None,
+                    "Error",
+                    f"Duplicated values in column {column_idx_to_check} ({', '.join(duplicates)})",
+                )
+                return True
+            return False
+    except FileNotFoundError:
+        QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
+        return False
+    except PermissionError:
+        QMessageBox.critical(
+            None,
+            "Error",
+            f"{str(csv_file_path)} is not accessible. Please check the file permissions.",
+        )
+        return False
+    except UnicodeDecodeError:
+        QMessageBox.critical(
+            None,
+            "Error",
+            f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
+        )
+        return False
+
+
+def get_csv_file_headers_list(
+    csv_file_path: Path, skip_first_column: bool = True
+) -> list[str]:
+    """Get the csv file headers list."""
+    try:
+        with open(str(csv_file_path), "r", encoding="utf-8") as csv_file:
+            csv_reader = reader(csv_file, delimiter=";")
+            headers = next(csv_reader)
+            if skip_first_column:
+                return headers[1:]
+            else:
+                return headers
+    except FileNotFoundError:
+        QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
+        return []
+    except PermissionError:
+        QMessageBox.critical(
+            None,
+            "Error",
+            f"{str(csv_file_path)} is not accessible. Please check the file permissions.",
+        )
+        return []
+    except UnicodeDecodeError:
+        QMessageBox.critical(
+            None,
+            "Error",
+            f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
+        )
+        return []
+
+
+def value_exists_in_model_column(
+    model: QAbstractItemModel,
+    value: str,
+    column_index: int = 0,
+    skip_row_index: int = -1,
+) -> bool:
+    """ "
+    Checks if a value exists in a given column of a QAbstractItemModel model.
+
+    Args:
+        model (QAbstractItemModel): The model to check.
+        value (str): The value to check.
+        column_index (int, optional): The index of the column to check. Defaults to 0.
+        skip_row_index (int, optional): The index of the row to skip. Defaults to -1.
+
+    Returns:
+        bool: True if the value exists, False otherwise.
+    """
+    for row in range(model.rowCount()):
+        if row == skip_row_index:
+            continue
+        item = model.item(row, column_index)
+        if item is not None and item.text() != "":
+            if value == item.text():
+                return True
+    return False

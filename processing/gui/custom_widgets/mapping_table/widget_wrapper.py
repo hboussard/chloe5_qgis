@@ -1,15 +1,11 @@
-from pathlib import Path
 from processing.gui.wrappers import (
     WidgetWrapper,
     DIALOG_MODELER,
-    DIALOG_BATCH,
-    DIALOG_STANDARD,
 )
 from .input_mapping_table_panel import TableMappingPanel
 from qgis.PyQt.QtWidgets import (
     QLineEdit,
 )
-from ....algorithms.helpers.constants import MAP_CSV
 
 
 class ChloeMappingTableWidgetWrapper(WidgetWrapper):

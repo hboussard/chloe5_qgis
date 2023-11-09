@@ -6,6 +6,7 @@ from PyQt5.QtGui import QIcon
 from .algorithms.landscape_metrics.sliding_algorithm import SlidingAlgorithm
 from .algorithms.landscape_metrics.selected_algorithm import SelectedAlgorithm
 from .algorithms.tools.combine_algorithm import CombineAlgorithm
+from .algorithms.tools.search_and_replace_algorithm import SearchAndReplaceAlgorithm
 from .helpers.constants import CHLOE_PROVIDER_SUPPORTED_RASTER_EXTENSIONS
 
 
@@ -64,6 +65,7 @@ class ChloeAlgorithmProvider(QgsProcessingProvider):
             SlidingAlgorithm(),
             SelectedAlgorithm(),
             CombineAlgorithm(),
+            SearchAndReplaceAlgorithm(),
         ]
 
         [self.addAlgorithm(alg) for alg in self.algs]

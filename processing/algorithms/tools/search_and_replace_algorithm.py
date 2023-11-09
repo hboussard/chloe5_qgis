@@ -189,7 +189,7 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
         """get properties lines."""
         properties_lines: list[str] = []
 
-        properties_lines.append("treatment=search and replace")
+        properties_lines.append("treatment=search_and_replace")
         properties_lines.append(
             format_path_for_properties_file(
                 f"input_raster={self.input_raster_layer}", isWindows()

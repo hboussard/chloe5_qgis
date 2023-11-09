@@ -61,7 +61,12 @@ def get_parameter_value_from_batch_panel(
             wrapper is not None
             and wrapper.parameterDefinition().name() == parameter_name
         ):
-            return wrapper.value()
+            try:
+                value = wrapper.value()
+            except AttributeError:
+                # used if the widget is a QgsAbstractProcessingParameterWidgetWrapper
+                value = wrapper.widgetValue()
+            return value
     return None
 
 
@@ -79,19 +84,47 @@ def get_parameter_widget_from_batch_panel(
     return None
 
 
-def get_input_raster_parameter_value(
+def get_parameter_value_from_panel(
     dialog_type: str,
-    input_raster_layer_param_name: str,
+    param_name: str,
     widget: Union[BatchPanel, ChloeParametersPanel],
 ) -> Union[str, None]:
-    """Retrieve the input raster layer parameter"""
+    """Get the input raster layer parameter"""
 
     if dialog_type == DIALOG_BATCH:
-        return get_parameter_value_from_batch_panel(
-            widget=widget, parameter_name=input_raster_layer_param_name
+        value = get_parameter_value_from_batch_panel(
+            widget=widget, parameter_name=param_name
         )
     else:
-        return widget.wrappers[input_raster_layer_param_name].value()
+        widget = widget.wrappers[param_name]
+        value: Union[str, QVariant, None] = None
+        try:
+            value = widget.value()
+        except AttributeError:
+            # used if the widget is a QgsAbstractProcessingParameterWidgetWrapper
+            value = widget.widgetValue()
+
+        # empty param returns a NULL QVariant if empty
+
+    return None if (isinstance(value, QVariant) and value.isNull()) else value
+
+
+def get_parameter_value_from_algorithm_dialog(
+    dialog_type: str, param_name: str, algorithm_dialog
+) -> Union[Any, None]:
+    """Get the value of a given parameter name in the algorithm dialog"""
+    # TODO : implement for modeler dialog
+    if dialog_type == DIALOG_MODELER:
+        return ""
+
+    widget: Union[BatchPanel, ChloeParametersPanel] = algorithm_dialog.mainWidget()
+
+    if not widget:
+        return ""
+
+    return get_parameter_value_from_panel(
+        dialog_type=dialog_type, param_name=param_name, widget=widget
+    )
 
 
 def get_input_raster_param_path(
@@ -107,7 +140,7 @@ def get_input_raster_param_path(
     if not widget:
         return ""
 
-    input_raster_layer_param_value = get_input_raster_parameter_value(
+    input_raster_layer_param_value = get_parameter_value_from_panel(
         dialog_type, input_raster_layer_param_name, widget
     )
 

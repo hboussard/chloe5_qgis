@@ -33,6 +33,20 @@ def get_widget_wrapper_from_param_name(
     return None
 
 
+def get_parameter_widget_from_batch_panel(
+    widget: BatchPanel, parameter_name: str
+) -> Union[WidgetWrapper, None]:
+    """Get a widget wrapper of a parameter from the processign batch panel"""
+
+    for wrapper in widget.wrappers[0]:
+        if (
+            wrapper is not None
+            and wrapper.parameterDefinition().name() == parameter_name
+        ):
+            return wrapper
+    return None
+
+
 def extract_raster_layer_path(input_raster_layer_param_value: Union[str, None]) -> str:
     """
     Extracts the raster layer path based on the parameter value.
@@ -51,7 +65,11 @@ def extract_raster_layer_path(input_raster_layer_param_value: Union[str, None]) 
         selected_layer: QgsRasterLayer = QgsProject.instance().mapLayer(
             input_raster_layer_param_value
         )
-        return selected_layer.dataProvider().dataSourceUri()
+        return (
+            selected_layer.dataProvider().dataSourceUri()
+            if selected_layer is not None
+            else ""
+        )
     else:
         return input_raster_layer_param_value
 
@@ -72,20 +90,6 @@ def get_parameter_value_from_batch_panel(
                 # used if the widget is a QgsAbstractProcessingParameterWidgetWrapper
                 value = wrapper.widgetValue()
             return value
-    return None
-
-
-def get_parameter_widget_from_batch_panel(
-    widget: BatchPanel, parameter_name: str
-) -> Union[WidgetWrapper, None]:
-    """Get a widget wrapper of a parameter from the processign batch panel"""
-
-    for wrapper in widget.wrappers[0]:
-        if (
-            wrapper is not None
-            and wrapper.parameterDefinition().name() == parameter_name
-        ):
-            return wrapper
     return None
 
 

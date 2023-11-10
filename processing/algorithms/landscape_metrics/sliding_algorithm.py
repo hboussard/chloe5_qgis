@@ -518,7 +518,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
         if self.b_interpolate_values:
             properties_lines.append("interpolation=true")
-        else:
+        elif self.delta_displacement != 1:
             properties_lines.append("interpolation=false")
 
         if self.filter_analyze:

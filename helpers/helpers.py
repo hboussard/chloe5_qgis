@@ -225,15 +225,15 @@ def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_path: Path) -> No
         color_ramp_shader.setColorRampItemList(new_color_ramp_list)
 
 
-def extract_non_zero_non_nodata_values(raster_file_path: str) -> list[int]:
+def get_unique_raster_values_as_int(raster_file_path: str) -> list[int]:
     """
-    Extract values from a raster layer and return a list of values as integers, removing 0 and nodata values.
+    Extract values from a raster layer and return a list of values as integers.
 
     Args:
         raster_file_path (str): The file path of the raster layer.
 
     Returns:
-        list[int]: A list of non-zero and non-nodata values from the raster layer as integers.
+        list[int]: A list of values from the raster layer as integers.
     """
     dataset = gdal.Open(raster_file_path)  # DataSet
     if dataset is None:
@@ -242,13 +242,28 @@ def extract_non_zero_non_nodata_values(raster_file_path: str) -> list[int]:
     band = dataset.GetRasterBand(1)  # -> band
     array = np.array(band.ReadAsArray())  # -> matrice values
     values = np.unique(array)
+
+    return [int(floor(x)) for x in values]
+
+
+def get_raster_nodata_value(raster_file_path: str) -> Union[int, None]:
+    """
+    Extract the nodata value from a raster layer and return it as an integer.
+
+    Args:
+        raster_file_path (str): The file path of the raster layer.
+
+    Returns:
+        Union[int,None]: The nodata value as an integer or None if the raster layer has no nodata value.
+    """
+    dataset = gdal.Open(raster_file_path)  # DataSet
+    if dataset is None:
+        return None
+
+    band = dataset.GetRasterBand(1)  # -> band
     nodata = band.GetNoDataValue()
 
-    int_values_and_nodata: list[int] = [
-        int(floor(x)) for x in values[(values != 0) & (values != nodata)]
-    ]
-
-    return int_values_and_nodata
+    return int(floor(nodata)) if nodata is not None else None
 
 
 @dataclass

@@ -31,7 +31,9 @@ from qgis.PyQt import uic
 from processing.gui.wrappers import (
     DIALOG_STANDARD,
 )
-from .....helpers.helpers import extract_non_zero_non_nodata_values
+from .....helpers.helpers import (
+    get_unique_raster_values_as_int,
+)
 from ....helpers.helpers import get_metrics
 from ..helpers import (
     get_input_raster_param_path,
@@ -99,7 +101,6 @@ class DoubleCmbBoxSelectionPanel(BASE, WIDGET):
         """Populate the combobox_metric based on the selected value in the combobox_filter"""
         metric_group_filter: str = self.combobox_filter.currentText()
 
-        print("clear metric combobox")
         self.combobox_metric.clear()
 
         if self.metrics and metric_group_filter in self.metrics.keys():
@@ -111,7 +112,7 @@ class DoubleCmbBoxSelectionPanel(BASE, WIDGET):
         # reset metrics
         self.metrics = {}
         # get raster values
-        int_values_and_nodata: list[int] = extract_non_zero_non_nodata_values(
+        raster_int_values: list[int] = get_unique_raster_values_as_int(
             raster_file_path=get_input_raster_param_path(
                 dialog_type=self.dialog_type,
                 input_raster_layer_param_name=self.input_raster_layer_param_name,
@@ -120,7 +121,8 @@ class DoubleCmbBoxSelectionPanel(BASE, WIDGET):
         )
 
         self.metrics = get_metrics(
-            raster_values=int_values_and_nodata, fast_mode=self.fast_mode
+            raster_values=[value for value in raster_int_values if value != 0],
+            fast_mode=self.fast_mode,
         )
 
     def getValue(self):

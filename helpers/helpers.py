@@ -233,7 +233,7 @@ def get_unique_raster_values_as_int(raster_file_path: str) -> list[int]:
         raster_file_path (str): The file path of the raster layer.
 
     Returns:
-        list[int]: A list of values from the raster layer as integers.
+        list[int]: A list of values from the raster layer as integers expect nodata.
     """
     dataset = gdal.Open(raster_file_path)  # DataSet
     if dataset is None:
@@ -242,8 +242,8 @@ def get_unique_raster_values_as_int(raster_file_path: str) -> list[int]:
     band = dataset.GetRasterBand(1)  # -> band
     array = np.array(band.ReadAsArray())  # -> matrice values
     values = np.unique(array)
-
-    return [int(floor(x)) for x in values]
+    nodata_value = band.GetNoDataValue()
+    return [int(floor(value)) for value in values if value != nodata_value]
 
 
 def get_raster_nodata_value(raster_file_path: str) -> Union[int, None]:

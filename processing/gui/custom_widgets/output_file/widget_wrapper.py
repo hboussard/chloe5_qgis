@@ -6,7 +6,7 @@ from processing.gui.wrappers import (
 )
 from qgis.core import QgsSettings
 from qgis.PyQt.QtWidgets import QFileDialog,QCheckBox
-from qgis.PyQt.QtCore import QCoreApplication
+
 
 
 class ChloeOutputFileWidgetWrapper(MapLayerWidgetWrapper):

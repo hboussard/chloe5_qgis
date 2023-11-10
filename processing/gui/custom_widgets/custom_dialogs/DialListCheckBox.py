@@ -18,11 +18,11 @@ class DialListCheckBox(QDialog):
     example : 1,2,4,6,8
     """
 
-    def __init__(self, values: list[int], checked_values: list[int] = []):
+    def __init__(self, values: list[str], checked_values: list[str] = []):
         super().__init__(parent=None)
 
         self.list_view_model: QStandardItemModel = QStandardItemModel()
-        self.return_values: list[int] = []
+        self.return_values: list[str] = []
 
         self.init_gui()
 
@@ -58,7 +58,7 @@ class DialListCheckBox(QDialog):
         btn_submit.clicked.connect(self.submit)
 
     def populate_list_view_model(
-        self, values: list[int], checked_values: list[int]
+        self, values: list[str], checked_values: list[str]
     ) -> None:
         """
         Populates the list view model based on a values list.
@@ -101,7 +101,7 @@ class DialListCheckBox(QDialog):
             item = self.list_view_model.item(index)
             if item.isCheckable() and item.checkState() == Qt.Checked:  # Si Checked
                 try:
-                    self.return_values.append(int(item.text()))
+                    self.return_values.append(item.text())
                 except ValueError:
                     QgsMessageLog.logMessage(
                         self.tr(f"The value {item.text()} is not an integer"),

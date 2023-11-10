@@ -7,7 +7,10 @@ from qgis.PyQt.QtWidgets import QMessageBox, QHeaderView
 
 from processing.gui.wrappers import DIALOG_STANDARD
 from ....algorithms.helpers.constants import MAP_CSV
-from .....helpers.helpers import extract_non_zero_non_nodata_values
+from .....helpers.helpers import (
+    get_raster_nodata_value,
+    get_unique_raster_values_as_int,
+)
 from ..helpers import (
     csv_file_column_is_type_integer,
     csv_file_has_duplicates,
@@ -79,19 +82,29 @@ class TableMappingPanel(BASE, WIDGET):
 
         Extracts non-zero and non-nodata values from the input raster layer and sets them as data in the table model.
         """
+        raster_file_path: str = get_input_raster_param_path(
+            dialog_type=self.dialog_type,
+            input_raster_layer_param_name=self.input_raster_layer_param_name,
+            algorithm_dialog=self.dialog,
+        )
         # get raster values
-        raster_int_values_and_nodata: list[int] = extract_non_zero_non_nodata_values(
-            raster_file_path=get_input_raster_param_path(
-                dialog_type=self.dialog_type,
-                input_raster_layer_param_name=self.input_raster_layer_param_name,
-                algorithm_dialog=self.dialog,
-            )
+        raster_int_values: list[int] = get_unique_raster_values_as_int(
+            raster_file_path=raster_file_path
         )
 
+        nodata_value: Union[int, None] = get_raster_nodata_value(
+            raster_file_path=raster_file_path
+        )
+
+        raster_data_list: list[int] = []
+
+        if nodata_value is not None:
+            raster_data_list.append(nodata_value)
+
+        raster_data_list.extend(raster_int_values)
+
         self._table_model.set_data(
-            set(
-                (str(raster_value), "") for raster_value in raster_int_values_and_nodata
-            )
+            set((str(raster_value), "") for raster_value in raster_data_list)
         )
 
     def clear_mapping_table(self) -> None:

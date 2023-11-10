@@ -25,7 +25,6 @@ class OddEvenIntSpinbox(QSpinBox):
         self.dialog = parent
         # specifies wether spinbox value should be odd (True) or even (False)
         self.is_odd_mode: bool = odd_mode
-        self.valueChanged.connect(self.update_value)
         self.setSingleStep(2)
 
     def get_next_odd_or_even_value(self, value):
@@ -51,6 +50,10 @@ class OddEvenIntSpinbox(QSpinBox):
 
     def update_value(self):
         self.setValue(self.get_next_odd_or_even_value(self.value()))
+
+    def focusOutEvent(self, event):
+        self.update_value()
+        super().focusOutEvent(event)
 
     def getValue(self):
         return self.value()

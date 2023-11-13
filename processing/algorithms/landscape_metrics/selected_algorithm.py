@@ -3,7 +3,6 @@
 from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
-    QgsProcessingParameterRasterLayer,
     QgsProcessingParameterNumber,
     QgsProcessingParameterString,
     QgsProcessingParameterFile,
@@ -18,7 +17,9 @@ from ....helpers.helpers import convert_int_to_odd
 
 from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
 
-
+from ...gui.custom_parameters.chloe_raster_parameter_file_input import (
+    ChloeRasterParameterFileInput,
+)
 from ..chloe_algorithm import ChloeAlgorithm
 from ..helpers.constants import (
     ANALYZE_TYPE,
@@ -73,8 +74,8 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
     def init_input_params(self):
         """Init input parameters."""
-        input_raster_param = QgsProcessingParameterRasterLayer(
-            name=INPUT_RASTER, description=self.tr("Input layer asc"), optional=True
+        input_raster_param = ChloeRasterParameterFileInput(
+            name=INPUT_RASTER, description=self.tr("Input raster layer")
         )
 
         input_raster_param.setMetadata(
@@ -347,11 +348,11 @@ class SelectedAlgorithm(ChloeAlgorithm):
     def set_properties_values(self, parameters, context, feedback):
         """set properties values."""
 
-        self.set_properties_input_values(parameters, context)
+        self.set_properties_input_values(parameters, context, feedback)
 
-        self.set_properties_algorithm_values(parameters, context)
+        self.set_properties_algorithm_values(parameters, context, feedback)
 
-        self.set_properties_output_values(parameters, context)
+        self.set_properties_output_values(parameters, context, feedback)
 
     def get_properties_lines(self) -> list[str]:
         """get properties lines."""

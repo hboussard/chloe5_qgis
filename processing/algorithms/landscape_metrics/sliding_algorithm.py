@@ -19,7 +19,9 @@ from ....helpers.helpers import convert_int_to_odd
 from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
     ChloeRasterParameterFileDestination,
 )
-
+from ...gui.custom_parameters.chloe_raster_parameter_file_input import (
+    ChloeRasterParameterFileInput,
+)
 from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
 
 from ...helpers.helpers import (
@@ -82,8 +84,8 @@ class SlidingAlgorithm(ChloeAlgorithm):
     def init_input_params(self):
         """Init input parameters."""
         # INPUT ASC
-        input_asc_param = QgsProcessingParameterRasterLayer(
-            name=INPUT_RASTER, description=self.tr("Input raster layer"), optional=True
+        input_asc_param = ChloeRasterParameterFileInput(
+            name=INPUT_RASTER, description=self.tr("Input raster layer")
         )
 
         input_asc_param.setMetadata(

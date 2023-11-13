@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 
 from qgis.core import (
-    QgsProcessingParameterRasterLayer,
     QgsProcessingParameterNumber,
     QgsProcessingParameterString,
     QgsProcessingParameterFile,
@@ -14,6 +13,9 @@ from qgis.core import (
 from processing.tools.system import isWindows
 
 from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
+from ...gui.custom_parameters.chloe_raster_parameter_file_input import (
+    ChloeRasterParameterFileInput,
+)
 from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
     ChloeRasterParameterFileDestination,
 )
@@ -56,7 +58,7 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
         """Init input parameters."""
         # === INPUT PARAMETERS ===
 
-        input_raster_param = QgsProcessingParameterRasterLayer(
+        input_raster_param = ChloeRasterParameterFileInput(
             name=INPUT_RASTER, description=self.tr("Input raster layer")
         )
         input_raster_param.setMetadata(

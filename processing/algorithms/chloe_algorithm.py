@@ -206,6 +206,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         raster_layer_name: str = get_layer_name(
             layer=raster_layer, default_output=self.name()
         )
+
         set_raster_layer_symbology(
             layer=raster_layer, qml_file_path=STYLES_PATH / "continuous.qml"
         )

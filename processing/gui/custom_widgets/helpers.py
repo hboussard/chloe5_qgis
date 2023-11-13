@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any, Union
 from re import match
 from qgis.core import QgsRasterLayer, QgsProject
-from qgis.gui import QgsAbstractProcessingParameterWidgetWrapper
+
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.PyQt.QtCore import QAbstractItemModel, QVariant
 from processing.gui.wrappers import WidgetWrapper
@@ -13,6 +13,8 @@ from processing.gui.wrappers import (
     DIALOG_BATCH,
 )
 from ..chloe_algorithm_dialog import ChloeParametersPanel
+
+# TODO : Add translation to messages
 
 
 def get_widget_wrapper_from_param_name(
@@ -290,6 +292,25 @@ def get_csv_file_headers_list(
             f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
         )
         return []
+
+
+def csv_file_path_is_valid(csv_file: Path) -> bool:
+    """Check if the csv map file is valid"""
+    if csv_file is None or csv_file == Path():
+        QMessageBox.critical(
+            None,
+            "Csv file error",
+            "No csv file selected. Please select a csv file first.",
+        )
+        return False
+    if not csv_file.exists():
+        QMessageBox.critical(
+            None,
+            "Csv file error",
+            f"{csv_file} does not exist",
+        )
+        return False
+    return True
 
 
 def value_exists_in_model_column(

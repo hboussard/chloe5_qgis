@@ -100,6 +100,7 @@ class ChloeEnumUpdateStateWidgetWrapper(EnumWidgetWrapper):
         #         self.combobox.addItem(option, i)
 
     def set_fast_mode(self, fast_param_wrapper):
+        """Set the fast mode of the widget based on the value of the fast mode parameter"""
         is_fast_value: bool = fast_param_wrapper.parameterValue()
         if not self.fast_mode_options:
             return

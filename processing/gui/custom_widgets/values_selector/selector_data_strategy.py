@@ -1,10 +1,16 @@
-from typing import Protocol, Union
+from pathlib import Path
+from typing import Any, Protocol, Union
 from re import match
 from .....helpers.helpers import (
     get_raster_nodata_value,
     get_unique_raster_values_as_int,
 )
-from ...custom_widgets.helpers import get_input_raster_param_path
+from ...custom_widgets.helpers import (
+    csv_file_path_is_valid,
+    get_csv_file_headers_list,
+    get_input_raster_param_path,
+    get_parameter_value_from_algorithm_dialog,
+)
 
 
 class ValueSelectorStrategy(Protocol):
@@ -133,5 +139,88 @@ class RasterValueSelectorStrategy:
                 )
             else:
                 current_values.append(value)
+
+        return current_values
+
+
+class CSVHeaderValueSelectorStrategy:
+    """
+    A value selector strategy for getting the values of headers csv.
+
+    Attributes:
+        input_csv_name (str): The name of the input csv file.
+        dialog_type (str): The type of dialog.
+        algorithm_dialog: The algorithm dialog.
+    """
+
+    def __init__(self, input_csv_name: str, dialog_type: str, algorithm_dialog) -> None:
+        self.input_csv_name: str = input_csv_name
+        self.dialog_type: str = dialog_type
+        self.algorithm_dialog = algorithm_dialog
+
+    def get_csv_input_path(self) -> str:
+        """
+        Returns the path of the CSV file selected by the user in the algorithm dialog.
+
+        Returns:
+            str: The path of the selected CSV file, or an empty string if no file was selected.
+        """
+        csv_file: Union[Any, None] = get_parameter_value_from_algorithm_dialog(
+            dialog_type=self.dialog_type,
+            param_name=self.input_csv_name,
+            algorithm_dialog=self.algorithm_dialog,
+        )
+
+        if csv_file is None:
+            return ""
+
+        return csv_file
+
+    def get_data(self) -> list[str]:
+        """
+        Returns a list of headers from a CSV file, excluding the first two columns (should be X and Y).
+
+        Returns:
+            A list of strings representing the headers from the CSV file.
+        """
+        csv_file_path: Path = Path(self.get_csv_input_path())
+        if not csv_file_path_is_valid(csv_file=csv_file_path):
+            return []
+
+        # Get the headers from the csv file and skip the two first columns
+        csv_headers: list[str] = get_csv_file_headers_list(csv_file_path)[1:]
+
+        return csv_headers
+
+    def convert_selected_values_to_properties_file_element(
+        self, selected_values: list[str]
+    ) -> str:
+        """
+        Converts a list of selected values to a string that can be used as an element in a properties file.
+
+        Args:
+            selected_values: A list of selected values.
+
+        Returns:
+            A string that can be used as an element in a properties file.
+        """
+        return ";".join(selected_values)
+
+    def get_current_selected_values_from_line_edit(
+        self, line_edit_text: str
+    ) -> list[str]:
+        """
+        Get the current selected values from the value selector panel qline edit text
+
+        Returns:
+            list[str]: A list of the current selected values.
+        """
+        current_values: list[str] = []
+
+        if not line_edit_text:
+            return current_values
+
+        for value in line_edit_text.split(";"):
+            current_values.append(value)
 
         return current_values

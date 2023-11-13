@@ -1,8 +1,12 @@
 from processing.gui.wrappers import WidgetWrapper, DIALOG_MODELER
 from qgis.PyQt.QtWidgets import QLineEdit
-from ....algorithms.helpers.constants import INPUT_RASTER
+from ....algorithms.helpers.constants import INPUT_FILE_CSV, INPUT_RASTER
 from .values_selector_panel import ValuesSelectorPanel
-from .selector_data_strategy import ValueSelectorStrategy, RasterValueSelectorStrategy
+from .selector_data_strategy import (
+    ValueSelectorStrategy,
+    RasterValueSelectorStrategy,
+    CSVHeaderValueSelectorStrategy,
+)
 
 
 class ChloeValuesWidgetWrapper(WidgetWrapper):
@@ -41,4 +45,25 @@ class ChloeRasterValuesWidgetWrapper(ChloeValuesWidgetWrapper):
             )
             return ValuesSelectorPanel(
                 selector_strategy=selector_strategy, placeholder_text="1;2;3;4"
+            )
+
+
+class ChloeCSVHeaderValuesWidgetWrapper(ChloeValuesWidgetWrapper):
+    """
+    A widget wrapper for selecting CSV header values plugin.
+    """
+
+    def createWidget(self, input_csv=INPUT_FILE_CSV):
+        # STANDARD GUI
+        if self.dialogType == DIALOG_MODELER:
+            widget = QLineEdit()  # QgsPanelWidget()
+            return widget
+        else:
+            selector_strategy: ValueSelectorStrategy = CSVHeaderValueSelectorStrategy(
+                dialog_type=self.dialogType,
+                input_csv_name=input_csv,
+                algorithm_dialog=self.dialog,
+            )
+            return ValuesSelectorPanel(
+                selector_strategy=selector_strategy, placeholder_text="Field 1;Field 2"
             )

@@ -94,6 +94,8 @@ class MappingTableModel(QStandardItemModel):
         for value in data:
             value_item = QStandardItem(value[0])
             mapped_value_item = QStandardItem(value[1])
+            # set the data of the item to the value to be able to sort the model by integer value
+            value_item.setData(int(value[0]), Qt.DisplayRole)
             self.appendRow([value_item, mapped_value_item])
         self.sort(0)
 
@@ -117,6 +119,8 @@ class MappingTableModel(QStandardItemModel):
             )
             return
         value_item = QStandardItem(value)
+        # set the data of the item to the value to be able to sort the model by integer value
+        value_item.setData(int(value[0]), Qt.DisplayRole)
         mapped_value_item = QStandardItem(mapped_value)
         self.appendRow([value_item, mapped_value_item])
 

@@ -4,7 +4,6 @@ from enum import Enum
 from pathlib import Path
 from qgis.core import (
     QgsProcessingParameterDefinition,
-    QgsProcessingParameterRasterLayer,
     QgsProcessingParameterNumber,
     QgsProcessingParameterBoolean,
     QgsProcessingParameterString,
@@ -290,7 +289,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         filter_do_analyze_parameter.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.values_selection.widget_wrapper.ChloeValuesWidgetWrapper"
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.values_selector.widget_wrapper.ChloeRasterValuesWidgetWrapper"
                 }
             }
         )
@@ -310,7 +309,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         filter_no_analyze_parameter.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.values_selection.widget_wrapper.ChloeValuesWidgetWrapper"
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.values_selector.widget_wrapper.ChloeRasterValuesWidgetWrapper"
                 }
             }
         )

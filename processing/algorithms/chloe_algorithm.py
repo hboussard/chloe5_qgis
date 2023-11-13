@@ -218,10 +218,13 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         context.addLayerToLoadOnCompletion(raster_layer.id(), raster_layer_details)
         results[OUTPUT_RASTER] = raster_layer.id()
 
-    def helpUrl(self):
+    def helpUrl(self) -> str:
         localeName = QLocale.system().name()
         helpFilename = f"{self.name()}_{localeName}.html"
-        helpfile = f"{os.path.dirname(__file__)}{os.sep}.{os.sep}help_algorithm{os.sep}{helpFilename}"
+        documentation_folder: Path = (
+            CHLOE_PLUGIN_PATH / "processing" / "algorithms" / "documentation"
+        )
+        helpfile = f"{documentation_folder / helpFilename}"
         return helpfile
 
     def shortHelpString(self):

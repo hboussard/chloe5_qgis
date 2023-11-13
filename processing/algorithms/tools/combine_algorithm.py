@@ -15,7 +15,14 @@ from qgis.core import (
 from processing.tools.system import isWindows
 
 from ..chloe_algorithm import ChloeAlgorithm
-from ..helpers.constants import INPUTS_MATRIX, DOMAINS, OUTPUT_RASTER, SAVE_PROPERTIES
+from ..helpers.constants import (
+    INPUTS_MATRIX,
+    DOMAINS,
+    OUTPUT_RASTER,
+    SAVE_PROPERTIES,
+    UTILS_GROUP_ID,
+    UTILS_GROUP_NAME,
+)
 from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
     ChloeRasterParameterFileDestination,
 )
@@ -114,10 +121,10 @@ class CombineAlgorithm(ChloeAlgorithm):
         return self.tr("Combine")
 
     def group(self):
-        return self.tr("util")
+        return self.tr(UTILS_GROUP_NAME)
 
     def groupId(self):
-        return "util"
+        return UTILS_GROUP_ID
 
     def commandName(self):
         return "combine"

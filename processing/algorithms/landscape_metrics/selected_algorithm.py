@@ -26,6 +26,8 @@ from ..helpers.constants import (
     DISTANCE_FUNCTION,
     FRICTION_FILE,
     INPUT_RASTER,
+    LANDSCAPE_METRICS_GROUP_ID,
+    LANDSCAPE_METRICS_GROUP_NAME,
     METRICS,
     OUTPUT_CSV,
     OUTPUT_WINDOWS_PATH_DIR,
@@ -275,10 +277,10 @@ class SelectedAlgorithm(ChloeAlgorithm):
         return self.tr("selected")
 
     def group(self):
-        return self.tr("landscape metrics")
+        return self.tr(LANDSCAPE_METRICS_GROUP_NAME)
 
     def groupId(self):
-        return "landscapemetrics"
+        return LANDSCAPE_METRICS_GROUP_ID
 
     def commandName(self):
         return "selected"

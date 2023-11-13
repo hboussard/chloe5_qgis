@@ -41,6 +41,8 @@ from ..helpers.constants import (
     FRICTION_FILE,
     INPUT_RASTER,
     INTERPOLATE_VALUES_BOOL,
+    LANDSCAPE_METRICS_GROUP_ID,
+    LANDSCAPE_METRICS_GROUP_NAME,
     MAXIMUM_RATE_MISSING_VALUES,
     METRICS,
     OUTPUT_RASTER,
@@ -369,10 +371,10 @@ class SlidingAlgorithm(ChloeAlgorithm):
         return self.tr("sliding")
 
     def group(self):
-        return self.tr("landscape metrics")
+        return self.tr(LANDSCAPE_METRICS_GROUP_NAME)
 
     def groupId(self):
-        return "landscapemetrics"
+        return LANDSCAPE_METRICS_GROUP_ID
 
     def commandName(self):
         return "java"

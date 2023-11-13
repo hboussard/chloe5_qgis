@@ -27,6 +27,8 @@ from ..helpers.constants import (
     OUTPUT_RASTER,
     SAVE_PROPERTIES,
     NODATA_VALUE,
+    UTILS_GROUP_ID,
+    UTILS_GROUP_NAME,
     VALUES_MAPPING,
     MAP_CSV,
 )
@@ -145,10 +147,10 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
         return self.tr("search and replace")
 
     def group(self):
-        return self.tr("util")
+        return self.tr(UTILS_GROUP_NAME)
 
     def groupId(self):
-        return "util"
+        return UTILS_GROUP_ID
 
     def commandName(self):
         return "search and replace"

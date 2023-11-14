@@ -145,10 +145,12 @@ class FactorTablePanel(BASE, WIDGET):
             value_algorithm_child_id: str = value.outputChildId()
 
             # Check if the current layer is a modeler input
+            is_modeler_input: bool = False
             if isinstance(
                 self.parent_dialog.model.parameterDefinition(value.parameterName()),
                 QgsProcessingParameterDefinition,
             ):
+                is_modeler_input = True
                 # If it is, set layer_id to the name of the input parameter
                 layer_id = self.parent_dialog.model.parameterDefinition(
                     value.parameterName()
@@ -164,7 +166,9 @@ class FactorTablePanel(BASE, WIDGET):
                 layer_id = f'{alg.algorithm().displayName().replace(" ", "_")}_{value.outputName()}'
             list_layers.append(
                 LayerInfo(
-                    layer_path=extract_raster_layer_path(layer_path),
+                    layer_path=layer_path
+                    if is_modeler_input
+                    else extract_raster_layer_path(layer_path),
                     modeler_input_id=layer_id,
                 )
             )

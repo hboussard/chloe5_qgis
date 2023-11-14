@@ -16,7 +16,7 @@ class ChloeAscRasterWidgetWrapper(RasterWidgetWrapper):
             widget.setLayer(dummy_layer)
         return widget
 
-    def postInitialize(self, widgetWrapperList):
+    def postInitialize(self, wrappers):
         # no initial selection
         if self.dialogType == DIALOG_STANDARD:
             self.combo.setLayer(None)

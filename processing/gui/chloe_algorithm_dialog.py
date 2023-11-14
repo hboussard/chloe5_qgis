@@ -94,7 +94,6 @@ class ChloeParametersPanel(ParametersPanel):
                                 if issubclass(p.__class__, WidgetWrapper)
                                 else p.wrappedWidget()
                             )
-                            # print(type(widget))
                             # add here widget signal connections
 
                             if isinstance(widget, FileSelectionPanel):

@@ -50,7 +50,7 @@ from ..helpers.enums import AnalyzeType, AnalyzeTypeFastMode, WindowShapeType
 
 
 class SelectedAlgorithm(ChloeAlgorithm):
-    """Algorithm selection."""
+    """Algorithm selected."""
 
     def __init__(self):
         super().__init__()

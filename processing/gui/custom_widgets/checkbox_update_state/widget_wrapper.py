@@ -8,8 +8,6 @@ from processing.gui.wrappers import (
 
 from processing.gui.wrappers import (
     WidgetWrapper,
-    DIALOG_MODELER,
-    DIALOG_BATCH,
     DIALOG_STANDARD,
 )
 

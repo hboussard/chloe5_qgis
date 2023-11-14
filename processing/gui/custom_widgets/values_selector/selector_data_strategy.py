@@ -190,7 +190,9 @@ class CSVHeaderValueSelectorStrategy:
             return []
 
         # Get the headers from the csv file and skip the two first columns
-        csv_headers: list[str] = get_csv_file_headers_list(csv_file_path)[1:]
+        csv_headers: list[str] = get_csv_file_headers_list(
+            csv_file_path, skip_columns_indexes=[0, 1]
+        )
 
         return csv_headers
 

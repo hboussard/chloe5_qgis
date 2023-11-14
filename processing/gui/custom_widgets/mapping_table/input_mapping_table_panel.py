@@ -162,7 +162,7 @@ class TableMappingPanel(BASE, WIDGET):
             return
 
         csv_headers_list: list[str] = get_csv_file_headers_list(
-            csv_file_path=csv_file_path
+            csv_file_path=csv_file_path, skip_columns_indexes=[0]
         )
         self.combobox_csv_headers_selector.addItems(csv_headers_list)
 

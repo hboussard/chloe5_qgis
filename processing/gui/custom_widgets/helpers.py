@@ -313,17 +313,19 @@ def csv_file_has_duplicates(csv_file_path: Path, column_idx_to_check: int = 0) -
 
 
 def get_csv_file_headers_list(
-    csv_file_path: Path, skip_first_column: bool = True
+    csv_file_path: Path, skip_columns_indexes: list[int]
 ) -> list[str]:
     """Get the csv file headers list."""
     try:
         with open(str(csv_file_path), "r", encoding="utf-8") as csv_file:
             csv_reader = reader(csv_file, delimiter=";")
             headers = next(csv_reader)
-            if skip_first_column:
-                return headers[1:]
-            else:
-                return headers
+            headers_list: list[str] = []
+            # skip columns if their index are in the skip_columns_indexes list
+            for idx, header in enumerate(headers):
+                if idx not in skip_columns_indexes:
+                    headers_list.append(header)
+            return headers_list
     except FileNotFoundError:
         QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
         return []

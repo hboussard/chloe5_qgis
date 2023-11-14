@@ -2,10 +2,11 @@ from csv import reader
 from pathlib import Path
 from typing import Any, Union
 from re import match
-from qgis.core import QgsRasterLayer, QgsProject
-
+from qgis.core import QgsRasterLayer, QgsProject, QgsMessageLog, Qgis
+from qgis.gui import QgsAbstractProcessingParameterWidgetWrapper
 from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.PyQt.QtCore import QAbstractItemModel, QVariant
+
 from processing.gui.wrappers import WidgetWrapper
 from processing.gui.BatchPanel import BatchPanel
 from processing.gui.wrappers import (
@@ -17,7 +18,9 @@ from ..chloe_algorithm_dialog import ChloeParametersPanel
 # TODO : Add translation to messages
 
 
-def get_param_wrappers_from_algorithm_dialog(algorithm_dialog, dialog_type: str):
+def get_param_wrappers_from_algorithm_dialog(
+    algorithm_dialog, dialog_type: str
+) -> dict[str, QgsAbstractProcessingParameterWidgetWrapper]:
     """Get the parameter wrappers from the algorithm dialog"""
     if dialog_type == DIALOG_BATCH:
         return algorithm_dialog.mainWidget().wrappers[0]
@@ -28,7 +31,7 @@ def get_param_wrappers_from_algorithm_dialog(algorithm_dialog, dialog_type: str)
 
 
 def get_widget_wrapper_from_param_name(
-    wrappers, param_name: str
+    wrappers: list[QgsAbstractProcessingParameterWidgetWrapper], param_name: str
 ) -> Union[WidgetWrapper, None]:
     """Returns the WidgetWrapper object from a list of wrappers that matches the given parameter name.
 
@@ -39,6 +42,7 @@ def get_widget_wrapper_from_param_name(
     Returns:
         WidgetWrapper: The WidgetWrapper object that matches the given parameter name.
     """
+
     for wrapper in wrappers:
         if wrapper.parameterDefinition().name() == param_name:
             return wrapper
@@ -123,6 +127,38 @@ def get_parameter_value_from_batch_standard_algorithm_dialog(
         param_name=param_name,
         parameters_panel=parameters_panel,
     )
+
+
+def replace_param_widget_value(
+    algorithm_dialog, dialog_type: str, param_name: str, value: Any
+):
+    """Replaces the value of a parameter widget with the given value.
+
+    Args:
+        param_name (str): The name of the parameter to replace the value of.
+        value (Any): The new value to set for the parameter widget.
+
+    Returns:
+        None
+    """
+    wrappers = get_param_wrappers_from_algorithm_dialog(
+        algorithm_dialog=algorithm_dialog, dialog_type=dialog_type
+    )
+
+    param_widget = wrappers[param_name]
+    if param_widget is None:
+        QgsMessageLog.logMessage(
+            f"Could not find widget for parameter {param_name}", level=Qgis.Critical
+        )
+    else:
+        try:
+            param_widget.setParameterValue(value, algorithm_dialog.processingContext())
+        except AttributeError:
+            # log
+            QgsMessageLog.logMessage(
+                f"Could not set parameter value for parameter {param_name}",
+                level=Qgis.Critical,
+            )
 
 
 def extract_raster_layer_path(input_raster_layer_param_value: Union[str, None]) -> str:

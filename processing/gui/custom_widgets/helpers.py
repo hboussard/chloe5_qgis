@@ -17,6 +17,16 @@ from ..chloe_algorithm_dialog import ChloeParametersPanel
 # TODO : Add translation to messages
 
 
+def get_param_wrappers_from_algorithm_dialog(algorithm_dialog, dialog_type: str):
+    """Get the parameter wrappers from the algorithm dialog"""
+    if dialog_type == DIALOG_BATCH:
+        return algorithm_dialog.mainWidget().wrappers[0]
+    elif dialog_type == DIALOG_MODELER:
+        return algorithm_dialog.widget.widget.wrappers
+    else:
+        return algorithm_dialog.mainWidget().wrappers
+
+
 def get_widget_wrapper_from_param_name(
     wrappers, param_name: str
 ) -> Union[WidgetWrapper, None]:

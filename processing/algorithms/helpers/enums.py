@@ -4,6 +4,13 @@ from enum import Enum
 # parameters options enums
 
 
+class MimeType(Enum):
+    """Mime type enum"""
+
+    GEOTIFF = "GEOTIFF"
+    ASCII_GRID = "ASCII GRID"
+
+
 class AnalyzeType(Enum):
     """Analyze type enum"""
 

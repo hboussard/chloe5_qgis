@@ -17,7 +17,7 @@ from ..helpers import (
     csv_file_has_min_column_count,
     get_csv_file_headers_list,
     get_input_raster_param_path,
-    get_parameter_value_from_algorithm_dialog,
+    get_parameter_value_from_batch_standard_algorithm_dialog,
 )
 
 from .models import IntValueDelegate, MappingTableModel
@@ -122,7 +122,9 @@ class TableMappingPanel(BASE, WIDGET):
             str: The path to the CSV file, or an empty string if no file was selected.
         """
 
-        csv_file: Union[Any, None] = get_parameter_value_from_algorithm_dialog(
+        csv_file: Union[
+            Any, None
+        ] = get_parameter_value_from_batch_standard_algorithm_dialog(
             dialog_type=self.dialog_type,
             param_name=MAP_CSV,
             algorithm_dialog=self.dialog,

@@ -9,7 +9,7 @@ from ...custom_widgets.helpers import (
     csv_file_path_is_valid,
     get_csv_file_headers_list,
     get_input_raster_param_path,
-    get_parameter_value_from_algorithm_dialog,
+    get_parameter_value_from_batch_standard_algorithm_dialog,
 )
 
 
@@ -165,7 +165,9 @@ class CSVHeaderValueSelectorStrategy:
         Returns:
             str: The path of the selected CSV file, or an empty string if no file was selected.
         """
-        csv_file: Union[Any, None] = get_parameter_value_from_algorithm_dialog(
+        csv_file: Union[
+            Any, None
+        ] = get_parameter_value_from_batch_standard_algorithm_dialog(
             dialog_type=self.dialog_type,
             param_name=self.input_csv_name,
             algorithm_dialog=self.algorithm_dialog,

@@ -31,8 +31,9 @@ from ....algorithms.helpers.constants import INPUTS_MATRIX
 from ....gui.chloe_algorithm_dialog import ChloeParametersPanel
 from ..helpers import (
     extract_raster_layer_path,
-    get_parameter_value_from_algorithm_dialog,
-    get_parameter_widget_from_batch_panel,
+    get_param_wrappers_from_algorithm_dialog,
+    get_parameter_value_from_batch_standard_algorithm_dialog,
+    get_parameter_widget_wrapper_from_batch_panel,
 )
 from .dataclasses import CombineFactorElement, LayerInfo
 from .models import FactorTableModel
@@ -127,9 +128,9 @@ class FactorTablePanel(BASE, WIDGET):
         list_layers: list[LayerInfo] = []
 
         # TODO : Accessing the modeler widget that way is a bit hacky, find a better way to do this
-        modeler_widget = self.parent_dialog.widget.widget.wrappers[
-            self.input_matrix_parameter_name
-        ]
+        modeler_widget = get_param_wrappers_from_algorithm_dialog(
+            algorithm_dialog=self.parent_dialog, dialog_type=DIALOG_MODELER
+        )[self.input_matrix_parameter_name]
         if modeler_widget is None or not isinstance(modeler_widget.value(), list):
             error_message: str = self.tr("Error: no modeler wrapper found")
             QgsMessageLog.logMessage(error_message, level=Qgis.Critical)
@@ -185,7 +186,7 @@ class FactorTablePanel(BASE, WIDGET):
         """
         list_layers: list[LayerInfo] = []
 
-        widget_values = get_parameter_value_from_algorithm_dialog(
+        widget_values = get_parameter_value_from_batch_standard_algorithm_dialog(
             dialog_type=self.dialog_type,
             param_name=self.input_matrix_parameter_name,
             algorithm_dialog=self.parent_dialog,

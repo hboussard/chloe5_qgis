@@ -45,12 +45,12 @@ def get_widget_wrapper_from_param_name(
     return None
 
 
-def get_parameter_widget_from_batch_panel(
-    widget: BatchPanel, parameter_name: str
+def get_parameter_widget_wrapper_from_batch_panel(
+    batch_panel: BatchPanel, parameter_name: str
 ) -> Union[WidgetWrapper, None]:
     """Get a widget wrapper of a parameter from the processign batch panel"""
 
-    for wrapper in widget.wrappers[0]:
+    for wrapper in batch_panel.wrappers[0]:
         if (
             wrapper is not None
             and wrapper.parameterDefinition().name() == parameter_name
@@ -59,39 +59,12 @@ def get_parameter_widget_from_batch_panel(
     return None
 
 
-def extract_raster_layer_path(input_raster_layer_param_value: Union[str, None]) -> str:
-    """
-    Extracts the raster layer path based on the parameter value.
-
-    Args:
-        input_raster_layer_param_value (Union[str, None]): The input raster layer parameter value.
-
-    Returns:
-        str: The raster layer path.
-    """
-    if input_raster_layer_param_value is None:
-        return ""
-
-    # if the given input_raster_layer is a qgs map layer id
-    if match(r"^[a-zA-Z0-9_]+$", input_raster_layer_param_value):
-        selected_layer: QgsRasterLayer = QgsProject.instance().mapLayer(
-            input_raster_layer_param_value
-        )
-        return (
-            selected_layer.dataProvider().dataSourceUri()
-            if selected_layer is not None
-            else ""
-        )
-    else:
-        return input_raster_layer_param_value
-
-
 def get_parameter_value_from_batch_panel(
-    widget: BatchPanel, parameter_name: str
+    batch_panel: BatchPanel, parameter_name: str
 ) -> Union[str, None]:
     """Get the input raster layer parameter from the processign batch panel"""
 
-    for wrapper in widget.wrappers[0]:
+    for wrapper in batch_panel.wrappers[0]:
         if (
             wrapper is not None
             and wrapper.parameterDefinition().name() == parameter_name
@@ -108,16 +81,16 @@ def get_parameter_value_from_batch_panel(
 def get_parameter_value_from_panel(
     dialog_type: str,
     param_name: str,
-    widget: Union[BatchPanel, ChloeParametersPanel],
+    parameters_panel: Union[BatchPanel, ChloeParametersPanel],
 ) -> Union[str, None]:
     """Get the input raster layer parameter"""
 
     if dialog_type == DIALOG_BATCH:
         value = get_parameter_value_from_batch_panel(
-            widget=widget, parameter_name=param_name
+            batch_panel=parameters_panel, parameter_name=param_name
         )
     else:
-        widget = widget.wrappers[param_name]
+        widget = parameters_panel.wrappers[param_name]
         value: Union[str, QVariant, None] = None
         try:
             value = widget.value()
@@ -130,7 +103,7 @@ def get_parameter_value_from_panel(
     return None if (isinstance(value, QVariant) and value.isNull()) else value
 
 
-def get_parameter_value_from_algorithm_dialog(
+def get_parameter_value_from_batch_standard_algorithm_dialog(
     dialog_type: str, param_name: str, algorithm_dialog
 ) -> Union[Any, None]:
     """Get the value of a given parameter name in the algorithm dialog"""
@@ -138,14 +111,44 @@ def get_parameter_value_from_algorithm_dialog(
     if dialog_type == DIALOG_MODELER:
         return ""
 
-    widget: Union[BatchPanel, ChloeParametersPanel] = algorithm_dialog.mainWidget()
+    parameters_panel: Union[
+        BatchPanel, ChloeParametersPanel
+    ] = algorithm_dialog.mainWidget()
 
-    if not widget:
+    if not parameters_panel:
         return ""
 
     return get_parameter_value_from_panel(
-        dialog_type=dialog_type, param_name=param_name, widget=widget
+        dialog_type=dialog_type,
+        param_name=param_name,
+        parameters_panel=parameters_panel,
     )
+
+
+def extract_raster_layer_path(input_raster_layer_param_value: Union[str, None]) -> str:
+    """
+    Extracts the raster layer path based on the parameter value.
+
+    Args:
+        input_raster_layer_param_value (Union[str, None]): The input raster layer parameter value.
+
+    Returns:
+        str: The raster layer path.
+    """
+    if input_raster_layer_param_value is None:
+        return ""
+    # if the given input_raster_layer is a qgs map layer id
+    if match(r"^[a-zA-Z0-9_]+$", input_raster_layer_param_value):
+        selected_layer: QgsRasterLayer = QgsProject.instance().mapLayer(
+            input_raster_layer_param_value
+        )
+        return (
+            selected_layer.dataProvider().dataSourceUri()
+            if selected_layer is not None
+            else ""
+        )
+    else:
+        return input_raster_layer_param_value
 
 
 def get_input_raster_param_path(

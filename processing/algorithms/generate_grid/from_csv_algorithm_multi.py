@@ -86,7 +86,9 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
         csv_fields_param.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.values_selector.widget_wrapper.ChloeCSVHeaderValuesWidgetWrapper"
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.values_selector.widget_wrapper.ChloeCSVHeaderValuesWidgetWrapper",
+                    "input_csv_param_name": INPUT_FILE_CSV,
+                    "skip_header_names_pattern": "^(x|y|id)$",
                 }
             }
         )
@@ -115,7 +117,7 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 name=WIDTH,
-                description=self.tr("Columns count"),
+                description=self.tr("Width"),
                 minValue=0,
                 defaultValue=100,
             )
@@ -124,7 +126,7 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 name=HEIGHT,
-                description=self.tr("Rows count"),
+                description=self.tr("Height"),
                 minValue=0,
                 defaultValue=100,
             )
@@ -133,7 +135,7 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 name=XMIN,
-                description=self.tr("X bottom left corner coordinate"),
+                description=self.tr("X Min"),
                 type=QgsProcessingParameterNumber.Double,
                 defaultValue=0.0,
             )
@@ -142,7 +144,7 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
             QgsProcessingParameterNumber(
                 name=YMIN,
                 type=QgsProcessingParameterNumber.Double,
-                description=self.tr("Y bottom left corner coordinate"),
+                description=self.tr("Y min"),
                 defaultValue=0.0,
             )
         )
@@ -168,6 +170,7 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
             name=MIME_TYPE,
             description=self.tr("Mime type"),
             options=enum_to_list(MimeType),
+            defaultValue=MimeType.GEOTIFF.value,
         )
 
         self.addParameter(mime_type_param)
@@ -272,7 +275,7 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
                 f"output_folder={self.output_dir}", isWindows()
             )
         )
-        properties_lines.append(f"output_file_prefix={self.output_file_prefix}")
+        properties_lines.append(f"output_prefix={self.output_file_prefix}")
         properties_lines.append(f"mime_type={self.mime_type}")
         properties_lines.append(f"variables={{{self.variables}}}")
         properties_lines.append(f"width={str(self.width)}")

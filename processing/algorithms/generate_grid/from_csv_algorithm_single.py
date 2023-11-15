@@ -81,7 +81,8 @@ class FromCSVSingleAlgorithm(ChloeAlgorithm):
             {
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.combobox.widget_wrapper.ChloeCsvHeadersComboboxWidgetWrapper",
-                    "input_csv": INPUT_FILE_CSV,
+                    "input_csv_param_name": INPUT_FILE_CSV,
+                    "skip_header_names_pattern": "^(x|y|id)$",
                     "parent_widget_config": {
                         "linked_parameters": [
                             {
@@ -119,7 +120,7 @@ class FromCSVSingleAlgorithm(ChloeAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 name=WIDTH,
-                description=self.tr("Columns count"),
+                description=self.tr("Width"),
                 minValue=0,
                 defaultValue=100,
             )
@@ -128,7 +129,7 @@ class FromCSVSingleAlgorithm(ChloeAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 name=HEIGHT,
-                description=self.tr("Rows count"),
+                description=self.tr("Height"),
                 minValue=0,
                 defaultValue=100,
             )
@@ -137,7 +138,7 @@ class FromCSVSingleAlgorithm(ChloeAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 name=XMIN,
-                description=self.tr("X bottom left corner coordinate"),
+                description=self.tr("X Min"),
                 type=QgsProcessingParameterNumber.Double,
                 defaultValue=0.0,
             )
@@ -146,7 +147,7 @@ class FromCSVSingleAlgorithm(ChloeAlgorithm):
             QgsProcessingParameterNumber(
                 name=YMIN,
                 type=QgsProcessingParameterNumber.Double,
-                description=self.tr("Y bottom left corner coordinate"),
+                description=self.tr("Y Min"),
                 defaultValue=0.0,
             )
         )
@@ -244,7 +245,7 @@ class FromCSVSingleAlgorithm(ChloeAlgorithm):
 
         properties_lines: list[str] = []
 
-        properties_lines.append("treatment=raster_from_csvs")
+        properties_lines.append("treatment=raster_from_csv")
         properties_lines.append(
             format_path_for_properties_file(f"input_csv={self.input_csv}", isWindows())
         )

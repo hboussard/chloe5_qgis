@@ -50,11 +50,4 @@ class ChloeCheckboxUpdateStateWidgetWrapper(BooleanWidgetWrapper):
             else:
                 widget = wrapper.wrappedWidget()
 
-            enable_widget: bool = (
-                self.value() == enabled_widget_config["enabled_by_value"]
-            )
-            # empty param value if widget is disabled
-            if not enable_widget:
-                wrapper.setParameterValue(None, self.dialog.processingContext())
-
-            widget.setEnabled(enable_widget)
+            widget.setEnabled(self.value() == enabled_widget_config["enabled_by_value"])

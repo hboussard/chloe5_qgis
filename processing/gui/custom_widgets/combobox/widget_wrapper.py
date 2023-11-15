@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Union
-
+from re import compile, IGNORECASE
 from processing.gui.wrappers import WidgetWrapper, DIALOG_MODELER
 from qgis.PyQt.QtWidgets import QLineEdit, QComboBox
 from ....algorithms.helpers.constants import INPUT_FILE_CSV
@@ -8,6 +8,7 @@ from ....algorithms.helpers.constants import INPUT_FILE_CSV
 from ..helpers import (
     csv_file_path_is_valid,
     get_csv_file_headers_list,
+    get_filtered_csv_headers_list,
     get_parameter_value_from_batch_standard_algorithm_dialog,
 )
 
@@ -20,9 +21,15 @@ class ChloeCsvHeadersComboboxWidgetWrapper(WidgetWrapper):
     CSV file selected in the input parameter, and get the selected header value.
     """
 
-    def createWidget(self, input_csv=INPUT_FILE_CSV, parent_widget_config=None):
-        self.input_csv = input_csv
+    def createWidget(
+        self,
+        input_csv_param_name=INPUT_FILE_CSV,
+        parent_widget_config=None,
+        skip_header_names_pattern: str = "",
+    ):
+        self.input_csv_param_name: str = input_csv_param_name
         self.parent_widget_config = parent_widget_config
+        self.skip_header_names_pattern: str = skip_header_names_pattern
         # STANDARD GUI
         if self.dialogType == DIALOG_MODELER:
             widget = QLineEdit()
@@ -59,7 +66,7 @@ class ChloeCsvHeadersComboboxWidgetWrapper(WidgetWrapper):
             str, None
         ] = get_parameter_value_from_batch_standard_algorithm_dialog(
             dialog_type=self.dialogType,
-            param_name=self.input_csv,
+            param_name=self.input_csv_param_name,
             algorithm_dialog=self.dialog,
         )
 
@@ -71,9 +78,17 @@ class ChloeCsvHeadersComboboxWidgetWrapper(WidgetWrapper):
         if not csv_file_path_is_valid(input_csv_file_path):
             return []
 
-        return get_csv_file_headers_list(
-            input_csv_file_path, skip_columns_indexes=[0, 1]
-        )
+        if self.skip_header_names_pattern:
+            return get_filtered_csv_headers_list(
+                csv_file_path=input_csv_file_path,
+                skip_header_names_pattern=compile(
+                    rf"{self.skip_header_names_pattern}", flags=IGNORECASE
+                ),
+            )
+        else:
+            return get_csv_file_headers_list(
+                csv_file_path=input_csv_file_path, skip_columns_indexes=[]
+            )
 
     def setValue(self, value):
         """Set value on the widget/component."""

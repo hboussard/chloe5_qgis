@@ -519,7 +519,11 @@ class SlidingAlgorithm(ChloeAlgorithm):
         if not self.is_fast_mode:
             properties_lines.append(f"shape={str(self.window_shape)}")
 
-        if self.window_shape == WindowShapeType.FUNCTIONAL.value and self.friction_file:
+        if (
+            self.window_shape == WindowShapeType.FUNCTIONAL.value
+            and self.friction_file
+            and not self.is_fast_mode
+        ):
             properties_lines.append(f"friction={self.friction_file}")
 
         if self.b_interpolate_values:

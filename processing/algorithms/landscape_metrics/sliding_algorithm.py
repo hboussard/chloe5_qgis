@@ -111,6 +111,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
                     "enabled_widgets_configs": [
                         {"param_name": WINDOW_SHAPE, "enabled_by_value": False},
                         {"param_name": DISTANCE_FUNCTION, "enabled_by_value": False},
+                        {"param_name": FRICTION_FILE, "enabled_by_value": False},
                     ],
                 }
             }
@@ -514,9 +515,11 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
         properties_lines.append(f"metrics={{{self.metrics}}}")
         properties_lines.append(f"delta_displacement={str(self.delta_displacement)}")
-        properties_lines.append(f"shape={str(self.window_shape)}")
 
-        if self.window_shape == WindowShapeType.FUNCTIONAL.value:
+        if not self.is_fast_mode:
+            properties_lines.append(f"shape={str(self.window_shape)}")
+
+        if self.window_shape == WindowShapeType.FUNCTIONAL.value and self.friction_file:
             properties_lines.append(f"friction={self.friction_file}")
 
         if self.b_interpolate_values:

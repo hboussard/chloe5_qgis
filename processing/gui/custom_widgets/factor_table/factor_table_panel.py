@@ -99,7 +99,7 @@ class FactorTablePanel(BASE, WIDGET):
         self.tableView.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
 
         # Set the placeholder text for the combination formula text box.
-        self.LineEdit_formula.setPlaceholderText(self.tr("Combination Formula"))
+        self.plainTextEdit_formula.setPlaceholderText(self.tr("Combination Formula"))
 
         # Connect the populate button to the populateTableModel method.
         self.button_load_layers.clicked.connect(self.populate_table_model)
@@ -269,7 +269,7 @@ class FactorTablePanel(BASE, WIDGET):
             return
 
         # Check for a valid formula
-        formula = self.LineEdit_formula.text()
+        formula = self.plainTextEdit_formula.toPlainText()
         if not formula or not self.formula_is_valid(formula):
             return
 
@@ -297,5 +297,5 @@ class FactorTablePanel(BASE, WIDGET):
             This order is constraint by the way the value is stored in the model xml file
         """
         if value and len(value) > 1:
-            self.LineEdit_formula.setText(str(value[1]))
+            self.plainTextEdit_formula.setPlainText(str(value[1]))
             self._table_model.set_data(value[0])

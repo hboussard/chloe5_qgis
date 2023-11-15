@@ -1,7 +1,7 @@
 from csv import reader
 from pathlib import Path
 from typing import Any, Union
-from re import match
+from re import Pattern, match
 from qgis.core import QgsRasterLayer, QgsProject, QgsMessageLog, Qgis
 from qgis.gui import QgsAbstractProcessingParameterWidgetWrapper
 from qgis.PyQt.QtWidgets import QMessageBox
@@ -325,6 +325,54 @@ def get_csv_file_headers_list(
             for idx, header in enumerate(headers):
                 if idx not in skip_columns_indexes:
                     headers_list.append(header)
+            return headers_list
+    except FileNotFoundError:
+        QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
+        return []
+    except PermissionError:
+        QMessageBox.critical(
+            None,
+            "Error",
+            f"{str(csv_file_path)} is not accessible. Please check the file permissions.",
+        )
+        return []
+    except UnicodeDecodeError:
+        QMessageBox.critical(
+            None,
+            "Error",
+            f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
+        )
+        return []
+
+
+def get_filtered_csv_headers_list(
+    csv_file_path: Path, skip_header_names_pattern: Pattern
+) -> list[str]:
+    """
+    Get the csv file headers list, skipping headers whose names match the given pattern.
+
+    Args:
+        csv_file_path (Path): The path to the csv file.
+        skip_header_names_pattern (Pattern): The pattern to match against header names.
+
+    Returns:
+        list[str]: The list of csv file headers, with skipped headers removed.
+
+    Raises:
+        FileNotFoundError: If the csv file does not exist.
+        PermissionError: If the csv file is not accessible due to file permissions.
+        UnicodeDecodeError: If the csv file is not a valid csv file due to encoding issues.
+    """
+    try:
+        with open(str(csv_file_path), "r", encoding="utf-8") as csv_file:
+            csv_reader = reader(csv_file, delimiter=";")
+            headers = next(csv_reader)
+            headers_list: list[str] = []
+            # skip columns if their names matches the skip_columns_names_pattern
+            for header in headers:
+                if skip_header_names_pattern.match(header):
+                    continue
+                headers_list.append(header)
             return headers_list
     except FileNotFoundError:
         QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")

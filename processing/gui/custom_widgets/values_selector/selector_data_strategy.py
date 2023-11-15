@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Any, Protocol, Union
-from re import match
+from re import Pattern, match
 from .....helpers.helpers import (
     get_raster_nodata_value,
     get_unique_raster_values_as_int,
@@ -8,6 +8,7 @@ from .....helpers.helpers import (
 from ...custom_widgets.helpers import (
     csv_file_path_is_valid,
     get_csv_file_headers_list,
+    get_filtered_csv_headers_list,
     get_input_raster_param_path,
     get_parameter_value_from_batch_standard_algorithm_dialog,
 )
@@ -157,6 +158,16 @@ class CSVHeaderValueSelectorStrategy:
         self.input_csv_name: str = input_csv_name
         self.dialog_type: str = dialog_type
         self.algorithm_dialog = algorithm_dialog
+        self.skip_header_names_pattern: Union[Pattern, None] = None
+
+    def set_skip_header_names_pattern(self, pattern: Pattern) -> None:
+        """
+        Set the pattern for skipping header names.
+
+        Args:
+            pattern: The pattern for skipping header names.
+        """
+        self.skip_header_names_pattern = pattern
 
     def get_csv_input_path(self) -> str:
         """
@@ -190,9 +201,15 @@ class CSVHeaderValueSelectorStrategy:
             return []
 
         # Get the headers from the csv file and skip the two first columns
-        csv_headers: list[str] = get_csv_file_headers_list(
-            csv_file_path, skip_columns_indexes=[0, 1]
-        )
+        if self.skip_header_names_pattern is not None:
+            csv_headers: list[str] = get_filtered_csv_headers_list(
+                csv_file_path=csv_file_path,
+                skip_header_names_pattern=self.skip_header_names_pattern,
+            )
+        else:
+            csv_headers = get_csv_file_headers_list(
+                csv_file_path, skip_columns_indexes=[]
+            )
 
         return csv_headers
 

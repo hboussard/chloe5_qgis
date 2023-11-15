@@ -275,7 +275,10 @@ class CombineAlgorithm(ChloeAlgorithm):
         properties_lines: list[str] = []
 
         properties_lines.append("treatment=combine")
-        properties_lines.append(f"combination={self.combination_formula}")
+
+        # convert multi ligne formula to a single line
+        combination_formula: str = self.combination_formula.replace("\n", " ")
+        properties_lines.append(f"combination={combination_formula}")
 
         factors: str = ";".join(
             [

@@ -103,11 +103,11 @@ class SelectedAlgorithm(ChloeAlgorithm):
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.double_combobox.widget_wrapper.ChloeDoubleComboboxWidgetWrapper",
                     "default_selected_metric": "diversity metrics",
                     "input_raster_layer_param_name": INPUT_RASTER,
-                    "parentWidgetConfig": {
-                        "linkedParams": [
+                    "parent_widget_config": {
+                        "linked_parameters": [
                             {
-                                "paramName": INPUT_RASTER,
-                                "refreshMethod": "refresh_metrics_combobox",
+                                "parameter_name": INPUT_RASTER,
+                                "action": "refresh_metrics_combobox",
                             },
                         ]
                     },

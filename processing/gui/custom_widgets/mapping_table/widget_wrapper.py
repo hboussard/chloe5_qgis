@@ -9,9 +9,11 @@ from qgis.PyQt.QtWidgets import (
 
 
 class ChloeMappingTableWidgetWrapper(WidgetWrapper):
-    def createWidget(self, input_raster_layer_param_name: str, parentWidgetConfig=None):
+    def createWidget(
+        self, input_raster_layer_param_name: str, parent_widget_config=None
+    ):
         """Widget creation to put like panel in dialog"""
-        self.parentWidgetConfig = parentWidgetConfig
+        self.parent_widget_config = parent_widget_config
 
         if self.dialogType == DIALOG_MODELER:
             widget = QLineEdit()
@@ -42,8 +44,8 @@ class ChloeMappingTableWidgetWrapper(WidgetWrapper):
         else:
             return self.widget.getValue()
 
-    def getParentWidgetConfig(self):
-        return self.parentWidgetConfig
+    def get_parent_widget_config(self):
+        return self.parent_widget_config
 
     def populate_csv_mapping_combobox(self):
         """Populate the widget csv mapping combobox using the csv file selected in param."""

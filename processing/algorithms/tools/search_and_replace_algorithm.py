@@ -95,15 +95,15 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.mapping_table.widget_wrapper.ChloeMappingTableWidgetWrapper",
                     "input_raster_layer_param_name": INPUT_RASTER,
-                    "parentWidgetConfig": {
-                        "linkedParams": [
+                    "parent_widget_config": {
+                        "linked_parameters": [
                             {
-                                "paramName": MAP_CSV,
-                                "refreshMethod": "populate_csv_mapping_combobox",
+                                "parameter_name": MAP_CSV,
+                                "action": "populate_csv_mapping_combobox",
                             },
                             {
-                                "paramName": INPUT_RASTER,
-                                "refreshMethod": "clear_mapping_table",
+                                "parameter_name": INPUT_RASTER,
+                                "action": "clear_mapping_table",
                             },
                         ]
                     },

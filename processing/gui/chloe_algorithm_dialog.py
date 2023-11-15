@@ -80,14 +80,14 @@ class ChloeParametersPanel(ParametersPanel):
 
         for k in self.wrappers:
             w = self.wrappers[k]
-            if hasattr(w, "getParentWidgetConfig"):
-                config = w.getParentWidgetConfig()
+            if hasattr(w, "get_parent_widget_config"):
+                config = w.get_parent_widget_config()
                 # print(config)
                 if config is not None:
-                    linked_params = config.get("linkedParams", [])
+                    linked_params = config.get("linked_parameters", [])
                     for linked_param in linked_params:
-                        p = self.wrappers[linked_param["paramName"]]
-                        m = getattr(w, linked_param["refreshMethod"])
+                        p = self.wrappers[linked_param["parameter_name"]]
+                        m = getattr(w, linked_param["action"])
                         if m is not None:
                             widget = (
                                 p.widget

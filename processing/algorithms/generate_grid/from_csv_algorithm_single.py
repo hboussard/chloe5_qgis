@@ -82,11 +82,11 @@ class FromCSVSingleAlgorithm(ChloeAlgorithm):
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.combobox.widget_wrapper.ChloeCsvHeadersComboboxWidgetWrapper",
                     "input_csv": INPUT_FILE_CSV,
-                    "parentWidgetConfig": {
-                        "linkedParams": [
+                    "parent_widget_config": {
+                        "linked_parameters": [
                             {
-                                "paramName": INPUT_FILE_CSV,
-                                "refreshMethod": "populate_csv_header_combobox",
+                                "parameter_name": INPUT_FILE_CSV,
+                                "action": "populate_csv_header_combobox",
                             },
                         ]
                     },

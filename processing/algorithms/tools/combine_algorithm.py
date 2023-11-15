@@ -80,11 +80,11 @@ class CombineAlgorithm(ChloeAlgorithm):
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.factor_table.widget_wrapper.ChloeFactorTableWidgetWrapper",
                     "input_matrix_param_name": INPUTS_MATRIX,
-                    "parentWidgetConfig": {
-                        "linkedParams": [
+                    "parent_widget_config": {
+                        "linked_parameters": [
                             {
-                                "paramName": INPUTS_MATRIX,
-                                "refreshMethod": "refresh_factor_table",
+                                "parameter_name": INPUTS_MATRIX,
+                                "action": "refresh_factor_table",
                             },
                         ]
                     },

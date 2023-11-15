@@ -20,9 +20,9 @@ class ChloeCsvHeadersComboboxWidgetWrapper(WidgetWrapper):
     CSV file selected in the input parameter, and get the selected header value.
     """
 
-    def createWidget(self, input_csv=INPUT_FILE_CSV, parentWidgetConfig=None):
+    def createWidget(self, input_csv=INPUT_FILE_CSV, parent_widget_config=None):
         self.input_csv = input_csv
-        self.parentWidgetConfig = parentWidgetConfig
+        self.parent_widget_config = parent_widget_config
         # STANDARD GUI
         if self.dialogType == DIALOG_MODELER:
             widget = QLineEdit()
@@ -30,8 +30,8 @@ class ChloeCsvHeadersComboboxWidgetWrapper(WidgetWrapper):
 
         return QComboBox()
 
-    def getParentWidgetConfig(self):
-        return self.parentWidgetConfig
+    def get_parent_widget_config(self):
+        return self.parent_widget_config
 
     def populate_csv_header_combobox(self):
         """Populate the widget csv mapping combobox using the csv file selected in param.

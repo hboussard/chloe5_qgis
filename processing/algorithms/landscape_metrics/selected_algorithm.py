@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterNumber,
@@ -20,6 +18,11 @@ from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
 from ...gui.custom_parameters.chloe_raster_parameter_file_input import (
     ChloeRasterParameterFileInput,
 )
+from ...helpers.helpers import (
+    enum_to_list,
+    format_path_for_properties_file,
+    get_enum_element_index,
+)
 from ..chloe_algorithm import ChloeAlgorithm
 from ..helpers.constants import (
     ANALYZE_TYPE,
@@ -31,19 +34,13 @@ from ..helpers.constants import (
     METRICS,
     OUTPUT_CSV,
     OUTPUT_WINDOWS_PATH_DIR,
-    PIXEL_POINT_SELECTOR_OPTIONS,
-    PIXELS_POINTS_FILE,
-    PIXELS_POINTS_SELECT,
+    POINTS_FILE,
     SAVE_PROPERTIES,
     WINDOW_SHAPE,
     WINDOW_SIZES,
 )
 
-from ...helpers.helpers import (
-    enum_to_list,
-    format_path_for_properties_file,
-    get_enum_element_index,
-)
+
 from ..helpers.enums import AnalyzeType, AnalyzeTypeFastMode, WindowShapeType
 
 # Main dialog
@@ -63,8 +60,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
         self.friction_file: str = ""
         self.analyze_type: str = ""
         self.distance_formula: str = ""
-        self.pixels_point_selection: Union[int, None] = None
-        self.pixels_points_file: str = ""
+        self.points_file: str = ""
         self.output_csv: str = ""
         self.output_windows_path_dir: str = ""
 
@@ -139,21 +135,11 @@ class SelectedAlgorithm(ChloeAlgorithm):
         )
         self.addParameter(window_size_param)
 
-        # PIXELS POINTS SELECT
-
-        point_pixel_selector_param = QgsProcessingParameterEnum(
-            name=PIXELS_POINTS_SELECT,
-            description=self.tr("Pixels/points selection"),
-            options=PIXEL_POINT_SELECTOR_OPTIONS,
-        )
-
-        self.addParameter(point_pixel_selector_param)
-
         # PIXELS_POINTS FILE
         self.addParameter(
             QgsProcessingParameterFile(
-                name=PIXELS_POINTS_FILE,
-                description=self.tr("Pixels/points file"),
+                name=POINTS_FILE,
+                description=self.tr("Point file"),
                 optional=False,
             )
         )
@@ -321,13 +307,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
             parameters, DISTANCE_FUNCTION, context
         )
 
-        self.pixels_point_selection = self.parameterAsInt(
-            parameters, PIXELS_POINTS_SELECT, context
-        )
-
-        self.pixels_points_file = self.parameterAsString(
-            parameters, PIXELS_POINTS_FILE, context
-        )
+        self.points_file = self.parameterAsString(parameters, POINTS_FILE, context)
 
         self.metrics = self.parameterAsString(parameters, METRICS, context)
 
@@ -381,14 +361,9 @@ class SelectedAlgorithm(ChloeAlgorithm):
         if self.window_shape == WindowShapeType.FUNCTIONAL.value:
             properties_lines.append(f"friction={self.friction_file}")
 
-        pixels_points_files = format_path_for_properties_file(
-            self.pixels_points_file, isWindows()
-        )
+        points_files = format_path_for_properties_file(self.points_file, isWindows())
 
-        if self.pixels_point_selection == 0:  # pixel(s) file
-            properties_lines.append(f"pixels={pixels_points_files}")
-        elif self.pixels_point_selection == 1:  # point(s) file
-            properties_lines.append(f"points={pixels_points_files}")
+        properties_lines.append(f"points={points_files}")
 
         properties_lines.append(
             format_path_for_properties_file(

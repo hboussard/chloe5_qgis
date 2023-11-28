@@ -7,6 +7,7 @@ from .algorithms.landscape_metrics.sliding_algorithm import SlidingAlgorithm
 from .algorithms.landscape_metrics.selected_algorithm import SelectedAlgorithm
 from .algorithms.tools.combine_algorithm import CombineAlgorithm
 from .algorithms.tools.search_and_replace_algorithm import SearchAndReplaceAlgorithm
+from .algorithms.tools.classification_algorithm import ClassificationAlgorithm
 from .algorithms.generate_grid.from_csv_algorithm_multi import FromCSVMultiAlgorithm
 from .algorithms.generate_grid.from_csv_algorithm_single import FromCSVSingleAlgorithm
 from .helpers.constants import CHLOE_PROVIDER_SUPPORTED_RASTER_EXTENSIONS
@@ -70,6 +71,7 @@ class ChloeAlgorithmProvider(QgsProcessingProvider):
             SearchAndReplaceAlgorithm(),
             FromCSVMultiAlgorithm(),
             FromCSVSingleAlgorithm(),
+            ClassificationAlgorithm(),
         ]
 
         [self.addAlgorithm(alg) for alg in self.algs]

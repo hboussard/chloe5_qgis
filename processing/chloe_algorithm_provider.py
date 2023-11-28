@@ -5,6 +5,7 @@ from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QIcon
 from .algorithms.landscape_metrics.sliding_algorithm import SlidingAlgorithm
 from .algorithms.landscape_metrics.selected_algorithm import SelectedAlgorithm
+from .algorithms.landscape_metrics.grid_algorithm import GridAlgorithm
 from .algorithms.tools.combine_algorithm import CombineAlgorithm
 from .algorithms.tools.search_and_replace_algorithm import SearchAndReplaceAlgorithm
 from .algorithms.tools.classification_algorithm import ClassificationAlgorithm
@@ -72,6 +73,7 @@ class ChloeAlgorithmProvider(QgsProcessingProvider):
             FromCSVMultiAlgorithm(),
             FromCSVSingleAlgorithm(),
             ClassificationAlgorithm(),
+            GridAlgorithm(),
         ]
 
         [self.addAlgorithm(alg) for alg in self.algs]

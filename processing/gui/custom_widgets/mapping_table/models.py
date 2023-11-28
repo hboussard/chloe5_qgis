@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
 from ..helpers import value_exists_in_model_column
 
 
-class IntValueDelegate(QItemDelegate):
+class MappingModelIntValueDelegate(QItemDelegate):
     """
     A delegate for handling integer values in a QTableView.
 
@@ -111,7 +111,7 @@ class MappingTableModel(QStandardItemModel):
 
     def append_row(self, value: str, mapped_value: str) -> None:
         """append a row to the model"""
-        if self.value_exists_in_column(value=value, column_index=0):
+        if value_exists_in_model_column(model=self, value=value, column_index=0):
             QMessageBox.critical(
                 None,
                 self.tr("Duplicated value"),
@@ -146,23 +146,6 @@ class MappingTableModel(QStandardItemModel):
             if item is not None and item.text():
                 if first_column_value == item.text():
                     self.item(row, update_column_index).setText(new_cell_value)
-
-    def value_exists_in_column(self, value: str, column_index: int = 0) -> bool:
-        """ "
-        Checks if a value exists in a given column of the model.
-
-        Args:
-            column_index (int, optional): The index of the column to check. Defaults to 0.
-
-        Returns:
-            bool: True if the value exists, False otherwise.
-        """
-        for row in range(self.rowCount()):
-            item = self.item(row, column_index)
-            if item is not None and item.text():
-                if value == item.text():
-                    return True
-        return False
 
     def get_data_as_propertie_list(self) -> str:
         """

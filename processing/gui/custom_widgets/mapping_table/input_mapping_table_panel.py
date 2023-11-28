@@ -20,7 +20,7 @@ from ..helpers import (
     get_parameter_value_from_batch_standard_algorithm_dialog,
 )
 
-from .models import IntValueDelegate, MappingTableModel
+from .models import MappingModelIntValueDelegate, MappingTableModel
 
 WIDGET, BASE = uic.loadUiType(
     Path(__file__).resolve().parent / "DlgMappingTableInput.ui"
@@ -60,13 +60,12 @@ class TableMappingPanel(BASE, WIDGET):
     def init_gui(self) -> None:
         self.tableView_mapping.setModel(self._table_model)
         self.tableView_mapping.setItemDelegateForColumn(
-            0, IntValueDelegate(self.tableView_mapping)
+            0, MappingModelIntValueDelegate(self.tableView_mapping)
         )
         #  Set columns to stretch to the remaining space
         self.tableView_mapping.horizontalHeader().setSectionResizeMode(
             QHeaderView.Stretch
         )
-        # TODO : keep a row number limit to the model ?
 
     def add_table_row(self) -> None:
         """Add a row to the mapping table"""

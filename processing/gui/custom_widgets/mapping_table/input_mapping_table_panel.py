@@ -9,7 +9,7 @@ from processing.gui.wrappers import DIALOG_STANDARD
 from ....algorithms.helpers.constants import MAP_CSV
 from .....helpers.helpers import (
     get_raster_nodata_value,
-    get_unique_raster_values_as_int,
+    get_unique_raster_values,
 )
 from ..helpers import (
     csv_file_column_is_type_integer,
@@ -88,20 +88,20 @@ class TableMappingPanel(BASE, WIDGET):
             algorithm_dialog=self.dialog,
         )
         # get raster values
-        raster_int_values: list[int] = get_unique_raster_values_as_int(
-            raster_file_path=raster_file_path
+        raster_int_values: list[float] = get_unique_raster_values(
+            raster_file_path=raster_file_path, as_int=True
         )
 
-        nodata_value: Union[int, None] = get_raster_nodata_value(
+        nodata_value: Union[float, None] = get_raster_nodata_value(
             raster_file_path=raster_file_path
         )
 
         raster_data_list: list[int] = []
 
         if nodata_value is not None:
-            raster_data_list.append(nodata_value)
+            raster_data_list.append(int(nodata_value))
 
-        raster_data_list.extend(raster_int_values)
+        raster_data_list.extend([int(raster) for raster in raster_int_values])
 
         self._table_model.set_data(
             set((str(raster_value), "") for raster_value in raster_data_list)

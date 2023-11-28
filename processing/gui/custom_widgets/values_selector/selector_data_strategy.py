@@ -3,7 +3,7 @@ from typing import Any, Protocol, Union
 from re import Pattern, match
 from .....helpers.helpers import (
     get_raster_nodata_value,
-    get_unique_raster_values_as_int,
+    get_unique_raster_values,
 )
 from ...custom_widgets.helpers import (
     csv_file_path_is_valid,
@@ -77,19 +77,19 @@ class RasterValueSelectorStrategy:
         if not raster_file_path:
             return raster_data_list
 
-        raster_values: list[int] = get_unique_raster_values_as_int(
-            raster_file_path=raster_file_path
+        raster_values: list[float] = get_unique_raster_values(
+            raster_file_path=raster_file_path, as_int=True
         )
-        nodata_value: Union[int, None] = get_raster_nodata_value(
+        nodata_value: Union[float, None] = get_raster_nodata_value(
             raster_file_path=raster_file_path
         )
 
         if nodata_value is not None:
             raster_data_list.append(
-                f"{str(nodata_value)} {RASTER_NO_DATA_VALUE_INDICATOR}"
+                f"{str(int(nodata_value))} {RASTER_NO_DATA_VALUE_INDICATOR}"
             )
 
-        raster_data_list.extend([str(value) for value in raster_values])
+        raster_data_list.extend([str(int(value)) for value in raster_values])
         return raster_data_list
 
     def convert_selected_values_to_properties_file_element(
@@ -129,12 +129,12 @@ class RasterValueSelectorStrategy:
 
         raster_file_path: str = self.get_raster_input_path()
 
-        nodata_value: Union[int, None] = get_raster_nodata_value(
+        nodata_value: Union[float, None] = get_raster_nodata_value(
             raster_file_path=raster_file_path
         )
 
         for value in line_edit_text.split(";"):
-            if nodata_value is not None and value == str(nodata_value):
+            if nodata_value is not None and value == str(int(nodata_value)):
                 current_values.append(
                     f"{str(nodata_value)} {RASTER_NO_DATA_VALUE_INDICATOR}"
                 )

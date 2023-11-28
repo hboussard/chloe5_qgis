@@ -32,7 +32,7 @@ from processing.gui.wrappers import (
     DIALOG_STANDARD,
 )
 from .....helpers.helpers import (
-    get_unique_raster_values_as_int,
+    get_unique_raster_values,
 )
 from ....helpers.helpers import get_metrics
 from ..helpers import (
@@ -112,12 +112,13 @@ class DoubleCmbBoxSelectionPanel(BASE, WIDGET):
         # reset metrics
         self.metrics = {}
         # get raster values
-        raster_int_values: list[int] = get_unique_raster_values_as_int(
+        raster_int_values: list[int] = get_unique_raster_values(
             raster_file_path=get_input_raster_param_path(
                 dialog_type=self.dialog_type,
                 input_raster_layer_param_name=self.input_raster_layer_param_name,
                 algorithm_dialog=self.dialog,
-            )
+            ),
+            as_int=True,
         )
 
         self.metrics = get_metrics(

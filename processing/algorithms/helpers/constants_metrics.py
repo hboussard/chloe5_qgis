@@ -1,4 +1,4 @@
-FAST_MODE_EXCLUSION_METRICS: list[str] = ["patch metrics", "quantitative metrics"]
+FAST_MODE_EXCLUSION_METRICS: list[str] = ["patch metrics"]
 
 TYPES_OF_METRICS: dict[str, list[str]] = {
     "basic metrics": [

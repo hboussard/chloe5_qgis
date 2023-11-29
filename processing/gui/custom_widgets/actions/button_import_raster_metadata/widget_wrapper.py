@@ -8,6 +8,7 @@ from .....algorithms.helpers.constants import (
     YMIN,
     CELL_SIZE,
     NODATA_VALUE,
+    OUTPUT_CRS,
 )
 from ...helpers import (
     replace_param_widget_value,
@@ -131,6 +132,7 @@ class ChloeImportRasterMetadataButtonWidgetWrapper(ChloeActionWidgetWrapper):
             YMIN: raster_metadata.ymin,
             CELL_SIZE: raster_metadata.cell_size,
             NODATA_VALUE: raster_metadata.nodata_value,
+            OUTPUT_CRS: raster_metadata.crs,
         }
 
         for param_name, value in param_mapping.items():

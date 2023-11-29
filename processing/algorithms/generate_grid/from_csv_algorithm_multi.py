@@ -9,6 +9,8 @@ from qgis.core import (
     QgsProcessingParameterEnum,
     QgsProcessingParameterFileDestination,
     QgsProcessingParameterFolderDestination,
+    QgsProcessingParameterCrs,
+    QgsCoordinateReferenceSystem,
 )
 from processing.tools.system import isWindows
 
@@ -20,6 +22,7 @@ from ...helpers.helpers import enum_to_list, format_path_for_properties_file
 from ..chloe_algorithm import ChloeAlgorithm
 from ..helpers.constants import (
     CELL_SIZE,
+    OUTPUT_CRS,
     FIELDS,
     GENERATE_GRID_GROUP_ID,
     GENERATE_GRID_GROUP_NAME,
@@ -54,6 +57,7 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
         self.ymin: Union[float, None] = None
         self.cellsize: Union[int, None] = None
         self.nodata_value: Union[int, None] = None
+        self.output_crs: str = ""
         self.mime_type: str = ""
         self.output_file_prefix: str = ""
         self.output_dir: str = ""
@@ -164,7 +168,13 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
                 defaultValue=-1,
             )
         )
-
+        self.addParameter(
+            QgsProcessingParameterCrs(
+                OUTPUT_CRS,
+                self.tr("Output CRS"),
+                defaultValue="EPSG:2154",
+            )
+        )
         # MIME TYPE
         mime_type_param = QgsProcessingParameterEnum(
             name=MIME_TYPE,
@@ -222,6 +232,19 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
     def commandName(self):
         return "from csv"
 
+    def checkParameterValues(self, parameters, context):
+        """Override checkParameterValues base class method. check additional parameters."""
+
+        output_crs = self.parameterAsCrs(parameters, OUTPUT_CRS, context)
+
+        if output_crs.isGeographic():
+            return False, self.tr(
+                "The selected crs is geographic, please select a projected crs."
+            )
+
+        # If these parameters are valid, call the parent class's checkParameterValues method for the rest
+        return super().checkParameterValues(parameters, context)
+
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
 
@@ -237,6 +260,12 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
         self.ymin = self.parameterAsDouble(parameters, YMIN, context)
         self.cellsize = self.parameterAsInt(parameters, CELL_SIZE, context)
         self.nodata_value = self.parameterAsInt(parameters, NODATA_VALUE, context)
+
+        output_crs: QgsCoordinateReferenceSystem = self.parameterAsCrs(
+            parameters, OUTPUT_CRS, context
+        )
+
+        self.output_crs = output_crs.authid()
         self.mime_type = enum_to_list(enum_class=MimeType, return_enum_names=True)[
             self.parameterAsEnum(parameters, MIME_TYPE, context)
         ]
@@ -284,5 +313,6 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
         properties_lines.append(f"ymin={str(self.ymin)}")
         properties_lines.append(f"cellsize={str(self.cellsize)}")
         properties_lines.append(f"nodata_value={str(self.nodata_value)}")
+        properties_lines.append(f"crs={self.output_crs}")
 
         return properties_lines

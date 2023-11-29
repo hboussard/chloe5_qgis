@@ -171,7 +171,7 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
         self.output_raster_layer = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
-        self.create_projection_file(output_path_raster=Path(self.output_raster_layer))
+
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster_layer)
 
         # === SAVE_PROPERTIES

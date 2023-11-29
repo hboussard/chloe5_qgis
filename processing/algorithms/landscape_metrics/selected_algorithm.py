@@ -271,17 +271,6 @@ class SelectedAlgorithm(ChloeAlgorithm):
     def commandName(self):
         return "selected"
 
-    def checkParameterValues(self, parameters, context):
-        """Override checkParameterValues base class method. check additional parameters."""
-
-        input_raster = self.parameterAsString(parameters, INPUT_RASTER, context)
-
-        if not input_raster:
-            return False, self.tr("You must select an input raster file")
-
-        # If these parameters are valid, call the parent class's checkParameterValues method for the rest
-        return super().checkParameterValues(parameters, context)
-
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
 

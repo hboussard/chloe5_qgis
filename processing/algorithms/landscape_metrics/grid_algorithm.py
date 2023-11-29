@@ -193,7 +193,7 @@ class GridAlgorithm(ChloeAlgorithm):
         self.output_raster = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
-        self.create_projection_file(output_path_raster=Path(self.output_raster))
+
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
 
         # === SAVE_PROPERTIES

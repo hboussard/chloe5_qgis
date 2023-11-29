@@ -199,9 +199,9 @@ class CombineAlgorithm(ChloeAlgorithm):
         return scope_layer_list
 
     def set_properties_algorithm_values(self, parameters, context, feedback) -> None:
-        """Set algorithm parameters."""
+        """Set algorithm parameters.
 
-        """input_factors as returned by parameterAsMatrix is a list of two elements (only lists are supported in the modeler model3 file) :
+        input_factors as returned by parameterAsMatrix is a list of two elements (only lists are supported in the modeler model3 file) :
         - the first element is a list of CombineFactorElement objects or lists of strings wich are representing a CombineFactorElement as list (strings are used in the modeler context because of the model3 file)
         - the second element is a string representing the combination formula
         """
@@ -255,7 +255,7 @@ class CombineAlgorithm(ChloeAlgorithm):
         self.output_raster = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
-        self.create_projection_file(output_path_raster=Path(self.output_raster))
+
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
 
         # === SAVE_PROPERTIES

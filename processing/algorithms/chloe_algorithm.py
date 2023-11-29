@@ -262,16 +262,6 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             context = self.__class__.__name__
         return QCoreApplication.translate(context, string)
 
-    def create_projection_file(self, output_path_raster: Path):
-        """Create Projection File"""
-        if not search(r"asc", output_path_raster.suffix, IGNORECASE):
-            return
-        f_prj = str(output_path_raster.parent / f"{output_path_raster.stem}.prj")
-        crs_output = iface.mapCanvas().mapSettings().destinationCrs()
-        with open(f_prj, "w", encoding="utf-8") as file:
-            # b_string = str.encode(crs_output.toWkt())
-            file.write(crs_output.toWkt())
-
     def parameterRasterAsFilePath(self, parameters, paramName, context) -> str:
         res = self.parameterAsString(parameters, paramName, context)
 

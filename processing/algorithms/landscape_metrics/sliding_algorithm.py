@@ -376,15 +376,10 @@ class SlidingAlgorithm(ChloeAlgorithm):
         return LANDSCAPE_METRICS_GROUP_ID
 
     def commandName(self):
-        return "java"
+        return "sliding"
 
     def checkParameterValues(self, parameters, context):
         """Override checkParameterValues base class method. check additional parameters."""
-
-        input_raster = self.parameterAsString(parameters, INPUT_RASTER, context)
-
-        if not input_raster:
-            return False, self.tr("You must select an input raster file")
 
         output_csv = self.parameterAsOutputLayer(parameters, OUTPUT_CSV, context)
         output_raster = self.parameterAsOutputLayer(parameters, OUTPUT_RASTER, context)
@@ -454,7 +449,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         self.output_raster = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
-        self.create_projection_file(output_path_raster=Path(self.output_raster))
+
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
 
         # === SAVE_PROPERTIES

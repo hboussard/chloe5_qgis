@@ -254,7 +254,7 @@ class FromCSVSingleAlgorithm(ChloeAlgorithm):
         self.output_raster = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
-        self.create_projection_file(output_path_raster=Path(self.output_raster))
+
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
 
         f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)

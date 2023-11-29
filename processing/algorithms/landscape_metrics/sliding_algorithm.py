@@ -84,7 +84,6 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
     def init_input_params(self):
         """Init input parameters."""
-        # INPUT ASC
         input_asc_param = ChloeRasterParameterFileInput(
             name=INPUT_RASTER, description=self.tr("Input raster layer")
         )
@@ -514,7 +513,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
             properties_lines.append(f"distance_function={str(self.distance_formula)}")
 
         properties_lines.append(f"metrics={{{self.metrics}}}")
-        properties_lines.append(f"delta_displacement={str(self.delta_displacement)}")
+        properties_lines.append(f"displacement={str(self.delta_displacement)}")
 
         if not self.is_fast_mode:
             properties_lines.append(f"shape={str(self.window_shape)}")

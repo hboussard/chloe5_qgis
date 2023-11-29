@@ -72,7 +72,7 @@ class ClassificationTablePanel(BASE, WIDGET):
         Returns:
             None
         """
-        # TODO : raster_values should include nodata value ?
+
         raster_values: list[float] = get_unique_raster_values(
             raster_file_path=get_input_raster_param_path(
                 dialog_type=self.dialog_type,
@@ -99,8 +99,29 @@ class ClassificationTablePanel(BASE, WIDGET):
         else:
             self.label_domain_warning.setVisible(False)
 
-    def getValue(self):
-        return self.lineEdit_domains.text()
+    def value(self) -> "list[list[list[str]] | str]":
+        """
+        Get the value of the classification table panel.
+        The returned value is a list of list of list of strings (the domains with the mapped class value) or a string (the propertie string).
+        This type of value is used so that the widget can also be used in the modeler mode.
+        Returns:
+            list[list[list[str]] | str]: The value of the classification table panel.
+        """
+        return [
+            self.lineEdit_domains.text(),
+            self._table_model.get_data(),
+        ]
 
-    def setValue(self, value):
-        self.lineEdit_domains.setText(value)
+    def setValue(self, value: "list[list[list[str]] | str]"):
+        """
+        Sets the value of the classification table panel.
+
+        Args:
+            value (list[list[list[str]] | str]): The value to be set. It should be a nested list of strings (domains/class) and a single string in second position (propertie string ).
+            This type of value is used so that the widget can also be used in the modeler mode.
+        Returns:
+            None
+        """
+        if value and len(value) > 1:
+            self._table_model.set_data(value[1])
+            self.lineEdit_domains.setText(str(value[0]))

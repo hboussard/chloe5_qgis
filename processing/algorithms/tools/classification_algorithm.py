@@ -131,8 +131,16 @@ class ClassificationAlgorithm(ChloeAlgorithm):
         )
 
     def set_properties_algorithm_values(self, parameters, context, feedback):
-        """Set algorithm parameters."""
-        self.domains = self.parameterAsString(parameters, DOMAINS, context)
+        """Set algorithm parameters.
+        domains widget returns a list containing a list of domains and a string containing the domains to be used in the properties file.
+        first value of this list is the propertie string and the second is the list of domains  .
+        This allows the use of the custom classification domain in modeler mode to be saved in the model xml file.
+        """
+
+        domains_param_value: "list[list[str] | str]" = self.parameterAsMatrix(
+            parameters, DOMAINS, context
+        )
+        self.domains = domains_param_value[0]
 
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""

@@ -22,18 +22,19 @@ class ClassificationTableModel(QStandardItemModel):
         self.setHorizontalHeaderLabels([self.tr("domain"), self.tr("class")])
 
         self.rowsInserted.connect(self.model_updated)
-        self.rowsInserted.connect(self.on_row_inserted)
         self.dataChanged.connect(self.model_updated)
-        self.dataChanged.connect(self.on_data_changed)
         self.rowsRemoved.connect(self.model_updated)
 
     def model_updated(self) -> None:
         """Emit signal when model is updated"""
         self.signal_model_updated.emit()
 
-    def set_data(self, data: set[tuple[str, str]]) -> None:
+    def set_data(self, data: list[list[str]]) -> None:
         """
-        Sets the data in the model with a list of Tuple containing the value and the mapped value.
+        Set the data for the classification table.
+
+        Parameters:
+            data (list[list[str]]): The data to be set in the table. Each inner list contains two strings representing the domain and class values.
 
         Returns:
             None
@@ -43,7 +44,25 @@ class ClassificationTableModel(QStandardItemModel):
             domain_item = QStandardItem(value[0])
             class_item = QStandardItem(value[1])
             self.appendRow([domain_item, class_item])
-        self.sort(0)
+
+    def get_data(self) -> list[list[str]]:
+        """
+        Retrieve the data from the classification table.
+
+        Returns:
+            A list of lists containing the domain and mapped class for each row in the table.
+            This return type is set so that the data can be used in the modeler (which only uses lists in the model xml file)
+        """
+        data: list[list[str]] = []
+        for row in range(self.rowCount()):
+            domain_item = self.item(row, 0)
+            class_item = self.item(row, 1)
+            if domain_item is not None and class_item is not None:
+                domain: str = domain_item.text()
+                mapped_class: str = class_item.text()
+                if domain and mapped_class:
+                    data.append([domain, mapped_class])
+        return data
 
     def clear_data(self):
         """clear the model data"""
@@ -138,18 +157,3 @@ class ClassificationTableModel(QStandardItemModel):
                 if domain and mapped_class:
                     data.append(f"({domain}-{mapped_class})")
         return ";".join(data)
-
-    def on_row_inserted(self) -> None:
-        """
-        Called when a row is inserted in the model.
-        """
-        # self.sort(0)
-        pass
-
-    def on_data_changed(self) -> None:
-        """
-        Called when a cell is edited in the model.
-        """
-
-        # self.sort(0)
-        pass

@@ -22,8 +22,8 @@ class ChloeClassificationTableWidgetWrapper(WidgetWrapper):
         """Set value on the widget/component."""
         if value is None:
             return
-        self.widget.setValue(str(value))
+        self.widget.setValue(value)
 
     def value(self):
         """Get value on the widget/component."""
-        return self.widget.getValue()
+        return self.widget.value()

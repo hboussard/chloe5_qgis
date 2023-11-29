@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 import os
 from pathlib import Path
-from re import search, IGNORECASE, match
+from re import match
 from time import gmtime, strftime
 from typing import Any
 from qgis.PyQt.QtCore import QCoreApplication, QLocale
@@ -13,9 +12,6 @@ from qgis.core import (
     QgsProcessingAlgorithm,
     QgsProcessingException,
 )
-
-from qgis.utils import iface
-
 from processing.tools.system import getTempFilename
 
 from ...helpers.helpers import (

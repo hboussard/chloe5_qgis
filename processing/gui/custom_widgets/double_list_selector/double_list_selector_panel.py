@@ -1,12 +1,7 @@
-# -*- coding: utf-8 -*-
-
 from pathlib import Path
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QAbstractItemView, QListWidgetItem
-from processing.gui.wrappers import (
-    DIALOG_STANDARD,
-)
 from .....helpers.helpers import (
     get_unique_raster_values,
 )

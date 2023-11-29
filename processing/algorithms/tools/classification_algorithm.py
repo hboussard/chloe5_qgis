@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-
-from pathlib import Path
-
 from qgis.core import (
-    QgsProcessingParameterRasterLayer,
     QgsProcessingParameterString,
     QgsProcessingParameterFileDestination,
 )

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 # Constants for the custom widgets
 
 # The directory where the custom widgets are stored

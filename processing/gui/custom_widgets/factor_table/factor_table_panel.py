@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 *********************************************************************************************
     factor_table_panel.py
@@ -16,24 +14,19 @@
 # This will get replaced with a git SHA1 when you do a git archive
 
 from pathlib import Path
-from typing import Union
-
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QMessageBox, QHeaderView
 
 
 from qgis.core import QgsProcessingParameterDefinition, QgsMessageLog, Qgis
-from processing.gui.BatchPanel import BatchPanel
-from processing.gui.wrappers import DIALOG_MODELER, DIALOG_STANDARD, DIALOG_BATCH
+from processing.gui.wrappers import DIALOG_MODELER, DIALOG_STANDARD
 from .....helpers.helpers import get_layer_name
 from ....algorithms.helpers.constants import INPUTS_MATRIX
-from ....gui.chloe_algorithm_dialog import ChloeParametersPanel
 from ..helpers import (
     extract_raster_layer_path,
     get_param_wrappers_from_algorithm_dialog,
     get_parameter_value_from_batch_standard_algorithm_dialog,
-    get_parameter_widget_wrapper_from_batch_panel,
 )
 from .dataclasses import CombineFactorElement, LayerInfo
 from .models import FactorTableModel

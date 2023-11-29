@@ -130,7 +130,7 @@ class GridAlgorithm(ChloeAlgorithm):
         raster_output_parameter = ChloeRasterParameterFileDestination(
             name=OUTPUT_RASTER,
             description=self.tr("Output Raster"),
-            optional=False,
+            optional=True,
             createByDefault=False,
         )
 
@@ -158,6 +158,18 @@ class GridAlgorithm(ChloeAlgorithm):
 
     def commandName(self):
         return "grid"
+
+    def checkParameterValues(self, parameters, context):
+        """Override checkParameterValues base class method. check additional parameters."""
+
+        output_csv = self.parameterAsOutputLayer(parameters, OUTPUT_CSV, context)
+        output_raster = self.parameterAsOutputLayer(parameters, OUTPUT_RASTER, context)
+
+        if not output_csv and not output_raster:
+            return False, self.tr("You must select at least one output file")
+
+        # If these parameters are valid, call the parent class's checkParameterValues method for the rest
+        return super().checkParameterValues(parameters, context)
 
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
@@ -209,9 +221,9 @@ class GridAlgorithm(ChloeAlgorithm):
                 is_windows_system=isWindows(),
             )
         )
-        properties_lines.append(f"grid_sizes={str(self.grid_sizes)}")
+        properties_lines.append(f"sizes={str(self.grid_sizes)}")
         properties_lines.append(
-            f"maximum_nodata_value_rate={str(self.maximum_rate_missing_values)}"
+            f"maximum_rate_nodata_value={str(self.maximum_rate_missing_values)}"
         )
         properties_lines.append(f"metrics={{{self.metrics}}}")
         if self.output_csv:

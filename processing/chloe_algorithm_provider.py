@@ -7,6 +7,7 @@ from .algorithms.landscape_metrics.sliding_algorithm import SlidingAlgorithm
 from .algorithms.landscape_metrics.sliding_multi_algorithm import SlidingMultiAlgorithm
 from .algorithms.landscape_metrics.selected_algorithm import SelectedAlgorithm
 from .algorithms.landscape_metrics.grid_algorithm import GridAlgorithm
+from .algorithms.landscape_metrics.grid_multi_algorithm import GridMultiAlgorithm
 from .algorithms.landscape_metrics.map_algorithm import MapAlgorithm
 from .algorithms.tools.combine_algorithm import CombineAlgorithm
 from .algorithms.tools.search_and_replace_algorithm import SearchAndReplaceAlgorithm
@@ -77,6 +78,8 @@ class ChloeAlgorithmProvider(QgsProcessingProvider):
             FromCSVSingleAlgorithm(),
             ClassificationAlgorithm(),
             GridAlgorithm(),
+            GridMultiAlgorithm(),
+            MapAlgorithm(),
         ]
 
         [self.addAlgorithm(alg) for alg in self.algs]

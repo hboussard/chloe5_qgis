@@ -4,8 +4,10 @@ from qgis.core import QgsProcessingProvider, QgsRuntimeProfiler
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QIcon
 from .algorithms.landscape_metrics.sliding_algorithm import SlidingAlgorithm
+from .algorithms.landscape_metrics.sliding_multi_algorithm import SlidingMultiAlgorithm
 from .algorithms.landscape_metrics.selected_algorithm import SelectedAlgorithm
 from .algorithms.landscape_metrics.grid_algorithm import GridAlgorithm
+from .algorithms.landscape_metrics.map_algorithm import MapAlgorithm
 from .algorithms.tools.combine_algorithm import CombineAlgorithm
 from .algorithms.tools.search_and_replace_algorithm import SearchAndReplaceAlgorithm
 from .algorithms.tools.classification_algorithm import ClassificationAlgorithm
@@ -67,6 +69,7 @@ class ChloeAlgorithmProvider(QgsProcessingProvider):
         """Load the algorithms that belong to this provider."""
         self.algs = [
             SlidingAlgorithm(),
+            SlidingMultiAlgorithm(),
             SelectedAlgorithm(),
             CombineAlgorithm(),
             SearchAndReplaceAlgorithm(),

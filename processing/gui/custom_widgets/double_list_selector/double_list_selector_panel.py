@@ -32,7 +32,7 @@ class DoubleListSelectionPanel(BASE, WIDGET):
         self.input_raster_layer_param_name: str = input_raster_layer_param_name
         self.default_selected_metric: str = default_selected_metric
         self.metrics: dict[str, list[str]] = {}
-
+        self.fast_mode: bool = False
         self.init_gui()
 
     def init_gui(self) -> None:
@@ -56,6 +56,12 @@ class DoubleListSelectionPanel(BASE, WIDGET):
             self.remove_item_from_destination_list
         )
 
+        self.set_metrics()
+        self.populate_filter_combobox()
+
+    def set_fast_mode(self, fast_mode: bool):
+        """Set the fast mode"""
+        self.fast_mode = fast_mode
         self.set_metrics()
         self.populate_filter_combobox()
 
@@ -96,7 +102,8 @@ class DoubleListSelectionPanel(BASE, WIDGET):
         )
 
         self.metrics = get_metrics(
-            raster_values=[int(value) for value in raster_int_values if value != 0]
+            raster_values=[int(value) for value in raster_int_values if value != 0],
+            fast_mode=self.fast_mode,
         )
 
     def populate_source_list(self) -> None:

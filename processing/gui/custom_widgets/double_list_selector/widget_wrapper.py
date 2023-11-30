@@ -1,11 +1,27 @@
-from processing.gui.wrappers import (
-    WidgetWrapper,
-)
+from functools import partial
+from processing.gui.wrappers import WidgetWrapper, DIALOG_STANDARD
 
 from .double_list_selector_panel import DoubleListSelectionPanel
+from ....algorithms.helpers.constants import FAST
 
 
 class ChloeDoubleListSelectorWidgetWrapper(WidgetWrapper):
+    def postInitialize(self, wrappers):
+        """Post initialization of the widget/component."""
+        # Find the wrapper for the 'FAST' parameter
+        for wrapper in wrappers:
+            if wrapper.parameterDefinition().name() == FAST:
+                # Connect to the `widgetValueHasChanged` signal of the 'FAST' wrapper
+                if self.dialogType == DIALOG_STANDARD:
+                    wrapper.widget.stateChanged.connect(
+                        partial(self.set_fast_mode, wrapper)
+                    )
+                else:
+                    wrapper.widget.currentIndexChanged.connect(
+                        partial(self.set_fast_mode, wrapper)
+                    )
+                break
+
     def createWidget(
         self,
         default_selected_metric: str,
@@ -40,3 +56,7 @@ class ChloeDoubleListSelectorWidgetWrapper(WidgetWrapper):
     def refresh_metrics_combobox(self):
         self.widget.set_metrics()
         self.widget.populate_filter_combobox()
+
+    def set_fast_mode(self, fast_param_wrapper):
+        is_fast_value: bool = fast_param_wrapper.parameterValue()
+        self.widget.set_fast_mode(is_fast_value)

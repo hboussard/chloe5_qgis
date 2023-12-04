@@ -30,8 +30,11 @@ from ..helpers.constants import (
     INPUT_RASTER,
     LANDSCAPE_METRICS_GROUP_ID,
     LANDSCAPE_METRICS_GROUP_NAME,
+    LANDSCAPE_METRICS_MULTI_GROUP_ID,
+    LANDSCAPE_METRICS_MULTI_GROUP_NAME,
     METRICS,
     OUTPUT_CSV,
+    OUTPUT_DIR,
     OUTPUT_WINDOWS_PATH_DIR,
     POINTS_FILE,
     SAVE_PROPERTIES,
@@ -45,22 +48,22 @@ from ..helpers.enums import AnalyzeType, AnalyzeTypeFastMode, WindowShapeType
 # Main dialog
 
 
-class SelectedAlgorithm(ChloeAlgorithm):
-    """Algorithm selected."""
+class SelectedMultiAlgorithm(ChloeAlgorithm):
+    """Algorithm selected multi."""
 
     def __init__(self):
         super().__init__()
 
         # properties values
         self.input_raster_layer: str = ""
-        self.window_sizes: int = 0
+        self.window_sizes: str = ""
         self.metrics: str = ""
         self.window_shape: str = ""
         self.friction_file: str = ""
         self.analyze_type: str = ""
         self.distance_formula: str = ""
         self.points_file: str = ""
-        self.output_csv: str = ""
+        self.output_folder: str = ""
         self.output_windows_path_dir: str = ""
 
     def initAlgorithm(self, config=None):
@@ -95,7 +98,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
         metrics_param.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.double_combobox.widget_wrapper.ChloeDoubleComboboxWidgetWrapper",
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.double_list_selector.widget_wrapper.ChloeDoubleListSelectorWidgetWrapper",
                     "default_selected_metric": "diversity metrics",
                     "input_raster_layer_param_name": INPUT_RASTER,
                     "parent_widget_config": {
@@ -114,21 +117,18 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
         # WINDOWS SIZE
 
-        window_size_param = QgsProcessingParameterNumber(
-            name=WINDOW_SIZES,
-            description=self.tr("Windows sizes (pixels)"),
-            defaultValue=3,
-            minValue=3,
+        window_size_param = QgsProcessingParameterString(
+            name=WINDOW_SIZES, description=self.tr("Windows sizes (pixels)")
         )
 
         window_size_param.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.int_spin_box.widget_wrapper.ChloeOddEvenIntSpinboxWrapper",
-                    "initial_value": 3,
-                    "min_value": 3,
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.number_list_selector.widget_wrapper.ChloeIntListSelectorWidgetWrapper",
+                    "default_value": 3,
                     "max_value": 100001,
-                    "odd_mode": True,
+                    "min_value": 3,
+                    "single_step_value": 2,
                 }
             }
         )
@@ -229,14 +229,11 @@ class SelectedAlgorithm(ChloeAlgorithm):
         """Init output parameters."""
         # === OUTPUT PARAMETERS ===
 
-        csv_output_parameter = QgsProcessingParameterFileDestination(
-            name=OUTPUT_CSV,
-            description=self.tr("Output csv"),
-            fileFilter="CSV (*.csv *.CSV)",
-            createByDefault=False,
+        output_folder_parameter = QgsProcessingParameterFolderDestination(
+            name=OUTPUT_DIR,
+            description=self.tr("Output folder"),
         )
-
-        self.addParameter(csv_output_parameter)
+        self.addParameter(output_folder_parameter)
 
         windows_raster_folder_param = QgsProcessingParameterFolderDestination(
             name=OUTPUT_WINDOWS_PATH_DIR,
@@ -256,19 +253,19 @@ class SelectedAlgorithm(ChloeAlgorithm):
         )
 
     def name(self):
-        return "selected"
+        return "selected multi"
 
     def displayName(self):
-        return self.tr("selected")
+        return self.tr("selected multi")
 
     def group(self):
-        return self.tr(LANDSCAPE_METRICS_GROUP_NAME)
+        return self.tr(LANDSCAPE_METRICS_MULTI_GROUP_NAME)
 
     def groupId(self):
-        return LANDSCAPE_METRICS_GROUP_ID
+        return LANDSCAPE_METRICS_MULTI_GROUP_ID
 
     def commandName(self):
-        return "selected"
+        return "selected multi"
 
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
@@ -285,7 +282,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
         self.friction_file = self.parameterAsString(parameters, FRICTION_FILE, context)
 
-        self.window_sizes = self.parameterAsInt(parameters, WINDOW_SIZES, context)
+        self.window_sizes = self.parameterAsString(parameters, WINDOW_SIZES, context)
 
         self.analyze_type = enum_to_list(AnalyzeType)[
             self.parameterAsEnum(parameters, ANALYZE_TYPE, context)
@@ -301,12 +298,13 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
-        self.output_csv = self.parameterAsString(parameters, OUTPUT_CSV, context)
+        self.output_folder = self.parameterAsString(parameters, OUTPUT_DIR, context)
+        self.set_output_parameter_value(OUTPUT_DIR, self.output_folder)
 
         self.output_windows_path_dir = self.parameterAsString(
             parameters, OUTPUT_WINDOWS_PATH_DIR, context
         )
-        self.set_output_parameter_value(OUTPUT_CSV, self.output_csv)
+
         if self.output_windows_path_dir:
             self.set_output_parameter_value(
                 OUTPUT_WINDOWS_PATH_DIR, self.output_windows_path_dir
@@ -329,16 +327,14 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
         properties_lines: list[str] = []
 
-        properties_lines.append(f"treatment={self.name()}")
+        properties_lines.append("treatment=selected")
         properties_lines.append(
             format_path_for_properties_file(
                 f"input_raster={self.input_raster_layer}", isWindows()
             )
         )
 
-        properties_lines.append(
-            f"sizes={{{str(convert_int_to_odd(input_integer=self.window_sizes))}}}"
-        )
+        properties_lines.append(f"sizes={{{self.window_sizes}}}")
 
         properties_lines.append(f"metrics={{{self.metrics}}}")
 
@@ -355,7 +351,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
         properties_lines.append(
             format_path_for_properties_file(
-                f"output_csv={self.output_csv}", isWindows()
+                f"output_folder={self.output_folder}", isWindows()
             )
         )
 

@@ -28,21 +28,19 @@ from ..helpers.constants import (
     SAVE_PROPERTIES,
 )
 
+# Main dialog
 
-class GridAlgorithm(ChloeAlgorithm):
-    """Grid algorithm"""
+
+class MapAlgorithm(ChloeAlgorithm):
+    """Algorithm generate ascii grid from csv"""
 
     def __init__(self):
         super().__init__()
 
         # properties values
-
         self.input_raster: str = ""
-        self.grid_sizes: int = 2
-        self.maximum_rate_missing_values: int = 100
         self.metrics: str = ""
         self.output_csv: str = ""
-        self.output_raster: str = ""
 
     def initAlgorithm(self, config=None):
         self.init_input_params()
@@ -68,14 +66,14 @@ class GridAlgorithm(ChloeAlgorithm):
         """Init algorithm parameters."""
         # METRICS
 
-        metrics_param = QgsProcessingParameterString(
+        metrics_param: QgsProcessingParameterString = QgsProcessingParameterString(
             name=METRICS, description=self.tr("Select metrics")
         )
 
         metrics_param.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.double_combobox.widget_wrapper.ChloeDoubleComboboxWidgetWrapper",
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.double_list_selector.widget_wrapper.ChloeDoubleListSelectorWidgetWrapper",
                     "default_selected_metric": "diversity metrics",
                     "input_raster_layer_param_name": INPUT_RASTER,
                     "parent_widget_config": {
@@ -92,46 +90,14 @@ class GridAlgorithm(ChloeAlgorithm):
 
         self.addParameter(metrics_param)
 
-        # GRID SIZE
-        self.addParameter(
-            QgsProcessingParameterNumber(
-                name=GRID_SIZES,
-                description=self.tr("Grid size (pixels)"),
-                defaultValue=2,
-                minValue=2,
-            )
-        )
-
-        # MAXIMUM RATE MISSING VALUES
-        self.addParameter(
-            QgsProcessingParameterNumber(
-                name=MAXIMUM_RATE_MISSING_VALUES,
-                description=self.tr("Maximum rate of mising values"),
-                minValue=0,
-                maxValue=100,
-                defaultValue=100,
-            )
-        )
-
     def init_output_params(self):
         """Init output parameters."""
         csv_output_parameter = QgsProcessingParameterFileDestination(
             name=OUTPUT_CSV,
             description=self.tr("Output csv"),
             fileFilter="CSV (*.csv *.CSV)",
-            optional=True,
-            createByDefault=False,
         )
         self.addParameter(csv_output_parameter)
-
-        raster_output_parameter = ChloeRasterParameterFileDestination(
-            name=OUTPUT_RASTER,
-            description=self.tr("Output Raster"),
-            optional=True,
-            createByDefault=False,
-        )
-
-        self.addParameter(raster_output_parameter)
 
         self.addParameter(
             QgsProcessingParameterFileDestination(
@@ -142,10 +108,10 @@ class GridAlgorithm(ChloeAlgorithm):
         )
 
     def name(self):
-        return "grid"
+        return "map"
 
     def displayName(self):
-        return self.tr("grid")
+        return self.tr("map")
 
     def group(self):
         return self.tr(LANDSCAPE_METRICS_GROUP_NAME)
@@ -154,19 +120,7 @@ class GridAlgorithm(ChloeAlgorithm):
         return LANDSCAPE_METRICS_GROUP_ID
 
     def commandName(self):
-        return "grid"
-
-    def checkParameterValues(self, parameters, context):
-        """Override checkParameterValues base class method. check additional parameters."""
-
-        output_csv = self.parameterAsOutputLayer(parameters, OUTPUT_CSV, context)
-        output_raster = self.parameterAsOutputLayer(parameters, OUTPUT_RASTER, context)
-
-        if not output_csv and not output_raster:
-            return False, self.tr("You must select at least one output file")
-
-        # If these parameters are valid, call the parent class's checkParameterValues method for the rest
-        return super().checkParameterValues(parameters, context)
+        return "map"
 
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
@@ -176,22 +130,13 @@ class GridAlgorithm(ChloeAlgorithm):
 
     def set_properties_algorithm_values(self, parameters, context, feedback):
         """Set algorithm parameters."""
-        self.grid_sizes = self.parameterAsInt(parameters, GRID_SIZES, context)
-        self.maximum_rate_missing_values = self.parameterAsInt(
-            parameters, MAXIMUM_RATE_MISSING_VALUES, context
-        )
+
         self.metrics = self.parameterAsString(parameters, METRICS, context)
 
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
         self.output_csv = self.parameterAsString(parameters, OUTPUT_CSV, context)
         self.set_output_parameter_value(OUTPUT_CSV, self.output_csv)
-
-        self.output_raster = self.parameterAsOutputLayer(
-            parameters, OUTPUT_RASTER, context
-        )
-
-        self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
 
         # === SAVE_PROPERTIES
 
@@ -211,30 +156,22 @@ class GridAlgorithm(ChloeAlgorithm):
     def get_properties_lines(self) -> list[str]:
         """get properties lines."""
         properties_lines: list[str] = []
-        properties_lines.append("treatment=grid")
+
+        properties_lines.append("treatment=map")
         properties_lines.append(
             format_path_for_properties_file(
                 input_string=f"input_raster={self.input_raster}",
                 is_windows_system=isWindows(),
             )
         )
-        properties_lines.append(f"sizes={str(self.grid_sizes)}")
-        properties_lines.append(
-            f"maximum_rate_nodata_value={str(self.maximum_rate_missing_values)}"
-        )
-        properties_lines.append(f"metrics={{{self.metrics}}}")
-        if self.output_csv:
-            properties_lines.append(
-                format_path_for_properties_file(
-                    input_string=f"output_csv={self.output_csv}",
-                    is_windows_system=isWindows(),
-                )
-            )
 
         properties_lines.append(
             format_path_for_properties_file(
-                input_string=f"output_raster={self.output_raster}",
+                input_string=f"output_csv={self.output_csv}",
                 is_windows_system=isWindows(),
             )
         )
+
+        properties_lines.append(f"metrics={{{self.metrics}}}")
+
         return properties_lines

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from typing import Any, Union
 from pathlib import Path
 from csv import reader

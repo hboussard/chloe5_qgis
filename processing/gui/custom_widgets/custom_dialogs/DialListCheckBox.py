@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from qgis.PyQt.QtCore import Qt, QCoreApplication
 from qgis.PyQt.QtWidgets import (
     QDialog,

@@ -7,6 +7,7 @@ from qgis.core import (
     QgsProcessingParameterFile,
     QgsProcessingParameterEnum,
     QgsProcessingParameterFileDestination,
+    QgsProcessingParameterFolderDestination,
 )
 
 from processing.tools.system import isWindows
@@ -39,8 +40,11 @@ from ..helpers.constants import (
     INTERPOLATE_VALUES_BOOL,
     LANDSCAPE_METRICS_GROUP_ID,
     LANDSCAPE_METRICS_GROUP_NAME,
+    LANDSCAPE_METRICS_MULTI_GROUP_ID,
+    LANDSCAPE_METRICS_MULTI_GROUP_NAME,
     MAXIMUM_RATE_MISSING_VALUES,
     METRICS,
+    OUTPUT_DIR,
     OUTPUT_RASTER,
     OUTPUT_CSV,
     SAVE_PROPERTIES,
@@ -50,8 +54,8 @@ from ..helpers.constants import (
 from ..helpers.enums import AnalyzeType, AnalyzeTypeFastMode, WindowShapeType
 
 
-class SlidingAlgorithm(ChloeAlgorithm):
-    """Algorithm sliding."""
+class SlidingMultiAlgorithm(ChloeAlgorithm):
+    """Algorithm sliding multi."""
 
     def __init__(self):
         super().__init__()
@@ -70,8 +74,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         self.filter_no_analyze: str = ""
         self.maximum_rate_missing_values: int = 0
         self.metrics: str = ""
-        self.output_csv: str = ""
-        self.output_raster: str = ""
+        self.output_folder: str = ""
 
     def initAlgorithm(self, config=None):
         self.init_input_params()
@@ -123,7 +126,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         metrics_param.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.double_combobox.widget_wrapper.ChloeDoubleComboboxWidgetWrapper",
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.double_list_selector.widget_wrapper.ChloeDoubleListSelectorWidgetWrapper",
                     "default_selected_metric": "diversity metrics",
                     "input_raster_layer_param_name": INPUT_RASTER,
                     "parent_widget_config": {
@@ -334,23 +337,11 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
     def init_output_params(self):
         """Init output parameters."""
-        csv_output_parameter = QgsProcessingParameterFileDestination(
-            name=OUTPUT_CSV,
-            description=self.tr("Output csv"),
-            fileFilter="CSV (*.csv *.CSV)",
-            optional=True,
-            createByDefault=False,
+        output_folder_parameter = QgsProcessingParameterFolderDestination(
+            name=OUTPUT_DIR,
+            description=self.tr("Output windows folder"),
         )
-        self.addParameter(csv_output_parameter)
-
-        raster_output_parameter = ChloeRasterParameterFileDestination(
-            name=OUTPUT_RASTER,
-            description=self.tr("Output Raster"),
-            optional=True,
-            createByDefault=False,
-        )
-
-        self.addParameter(raster_output_parameter)
+        self.addParameter(output_folder_parameter)
 
         self.addParameter(
             QgsProcessingParameterFileDestination(
@@ -361,31 +352,19 @@ class SlidingAlgorithm(ChloeAlgorithm):
         )
 
     def name(self):
-        return "sliding"
+        return "sliding multi"
 
     def displayName(self):
-        return self.tr("sliding")
+        return self.tr("sliding multi")
 
     def group(self):
-        return self.tr(LANDSCAPE_METRICS_GROUP_NAME)
+        return self.tr(LANDSCAPE_METRICS_MULTI_GROUP_NAME)
 
     def groupId(self):
-        return LANDSCAPE_METRICS_GROUP_ID
+        return LANDSCAPE_METRICS_MULTI_GROUP_ID
 
     def commandName(self):
-        return "sliding"
-
-    def checkParameterValues(self, parameters, context):
-        """Override checkParameterValues base class method. check additional parameters."""
-
-        output_csv = self.parameterAsOutputLayer(parameters, OUTPUT_CSV, context)
-        output_raster = self.parameterAsOutputLayer(parameters, OUTPUT_RASTER, context)
-
-        if not output_csv and not output_raster:
-            return False, self.tr("You must select at least one output file")
-
-        # If these parameters are valid, call the parent class's checkParameterValues method for the rest
-        return super().checkParameterValues(parameters, context)
+        return "sliding multi"
 
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
@@ -440,14 +419,8 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
-        self.output_csv = self.parameterAsString(parameters, OUTPUT_CSV, context)
-        self.set_output_parameter_value(OUTPUT_CSV, self.output_csv)
-
-        self.output_raster = self.parameterAsOutputLayer(
-            parameters, OUTPUT_RASTER, context
-        )
-
-        self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
+        self.output_folder = self.parameterAsString(parameters, OUTPUT_DIR, context)
+        self.set_output_parameter_value(OUTPUT_DIR, self.output_folder)
 
         # === SAVE_PROPERTIES
 
@@ -476,21 +449,12 @@ class SlidingAlgorithm(ChloeAlgorithm):
             )
         )
 
-        if self.output_csv:
-            properties_lines.append(
-                format_path_for_properties_file(
-                    input_string=f"output_csv={self.output_csv}",
-                    is_windows_system=isWindows(),
-                )
+        properties_lines.append(
+            format_path_for_properties_file(
+                input_string=f"output_folder={self.output_folder}",
+                is_windows_system=isWindows(),
             )
-
-        if self.output_raster:
-            properties_lines.append(
-                format_path_for_properties_file(
-                    input_string=f"output_raster={self.output_raster}",
-                    is_windows_system=isWindows(),
-                )
-            )
+        )
 
         properties_lines.append(
             f"sizes={{{str(convert_int_to_odd(input_integer=self.window_sizes))}}}"

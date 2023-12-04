@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-
 from pathlib import Path
-from typing import Set
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QHeaderView
 from .....helpers.helpers import get_unique_raster_values

@@ -78,7 +78,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
         input_raster_param.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.raster_input.widget_wrapper.ChloeAscRasterWidgetWrapper"
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.layer_input.widget_wrapper.ChloeRasterInputWidgetWrapper"
                 }
             }
         )
@@ -329,7 +329,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
         properties_lines: list[str] = []
 
-        properties_lines.append(f"treatment={self.name()}")
+        properties_lines.append("treatment=selected")
         properties_lines.append(
             format_path_for_properties_file(
                 f"input_raster={self.input_raster_layer}", isWindows()

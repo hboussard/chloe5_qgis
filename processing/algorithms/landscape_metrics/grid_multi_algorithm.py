@@ -192,7 +192,7 @@ class GridMultiAlgorithm(ChloeAlgorithm):
                 is_windows_system=isWindows(),
             )
         )
-        properties_lines.append(f"sizes={str(self.grid_sizes)}")
+        properties_lines.append(f"sizes={{{str(self.grid_sizes)}}}")
         properties_lines.append(
             f"maximum_rate_nodata_value={str(self.maximum_rate_missing_values)}"
         )

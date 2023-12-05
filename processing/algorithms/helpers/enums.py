@@ -28,8 +28,8 @@ class AnalyzeTypeFastMode(Enum):
 class DistanceType(Enum):
     """Distance type enum"""
 
-    EUCLIDIAN_DISTANCE = "euclidian distance"
-    FUNCTIONAL_DISTANCE = "functional distance"
+    EUCLIDIAN = "Euclidian"
+    FUNCTIONAL = "Functional"
 
 
 class WindowShapeType(Enum):

@@ -20,12 +20,9 @@ TYPES_OF_METRICS: dict[str, list[str]] = {
     ],
     "diversity metrics": [
         "HET",
-        "HET-agg",
         "HET-frag",
         "SHDI",
         "SHEI",
-        "SIDI",
-        "SIEI",
     ],
     "patch metrics": [
         "LPI",

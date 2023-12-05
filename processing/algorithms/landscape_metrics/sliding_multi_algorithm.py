@@ -1,10 +1,11 @@
 from enum import Enum
+from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterNumber,
     QgsProcessingParameterBoolean,
     QgsProcessingParameterString,
-    QgsProcessingParameterFile,
+    QgsMapLayer,
     QgsProcessingParameterEnum,
     QgsProcessingParameterFileDestination,
     QgsProcessingParameterFolderDestination,
@@ -13,9 +14,7 @@ from qgis.core import (
 from processing.tools.system import isWindows
 
 from ....helpers.helpers import convert_int_to_odd
-from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
-    ChloeRasterParameterFileDestination,
-)
+
 from ...gui.custom_parameters.chloe_raster_parameter_file_input import (
     ChloeRasterParameterFileInput,
 )
@@ -38,15 +37,11 @@ from ..helpers.constants import (
     FRICTION_FILE,
     INPUT_RASTER,
     INTERPOLATE_VALUES_BOOL,
-    LANDSCAPE_METRICS_GROUP_ID,
-    LANDSCAPE_METRICS_GROUP_NAME,
     LANDSCAPE_METRICS_MULTI_GROUP_ID,
     LANDSCAPE_METRICS_MULTI_GROUP_NAME,
     MAXIMUM_RATE_MISSING_VALUES,
     METRICS,
     OUTPUT_DIR,
-    OUTPUT_RASTER,
-    OUTPUT_CSV,
     SAVE_PROPERTIES,
     WINDOW_SHAPE,
     WINDOW_SIZES,
@@ -198,14 +193,22 @@ class SlidingMultiAlgorithm(ChloeAlgorithm):
 
         # FRICTION FILE (OPTIONAL)
 
-        friction_file_param = QgsProcessingParameterFile(
-            name=FRICTION_FILE, description=self.tr("Friction file"), optional=True
+        friction_file_param = ChloeRasterParameterFileInput(
+            name=FRICTION_FILE,
+            description=self.tr("Friction file"),
+            optional=True,
         )
-        friction_file_param.setFileFilter("GeoTIFF (*.tif *.TIF);; ASCII (*.asc *.ASC)")
+        friction_file_param.setMetadata(
+            {
+                "widget_wrapper": {
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.layer_input.widget_wrapper.ChloeRasterInputWidgetWrapper"
+                }
+            }
+        )
+
         friction_file_param.setFlags(
             friction_file_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
         )
-
         self.addParameter(friction_file_param)
 
         # ANALYZE TYPE
@@ -381,7 +384,15 @@ class SlidingMultiAlgorithm(ChloeAlgorithm):
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        self.friction_file = self.parameterAsString(parameters, FRICTION_FILE, context)
+        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+            parameters, FRICTION_FILE, context
+        )
+        self.friction_file = (
+            friction_layer.source()
+            if friction_layer is not None
+            and self.window_shape == WindowShapeType.FUNCTIONAL.value
+            else ""
+        )
 
         self.window_sizes = self.parameterAsInt(parameters, WINDOW_SIZES, context)
 
@@ -474,11 +485,7 @@ class SlidingMultiAlgorithm(ChloeAlgorithm):
         if not self.is_fast_mode:
             properties_lines.append(f"shape={str(self.window_shape)}")
 
-        if (
-            self.window_shape == WindowShapeType.FUNCTIONAL.value
-            and self.friction_file
-            and not self.is_fast_mode
-        ):
+        if self.friction_file and not self.is_fast_mode:
             properties_lines.append(f"friction={self.friction_file}")
 
         if self.b_interpolate_values:

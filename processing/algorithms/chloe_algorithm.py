@@ -38,10 +38,8 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         self.output_values: dict[str, Any] = {}
 
     def icon(self):
-        iconPath = os.path.normpath(
-            os.path.join(os.path.dirname(__file__), "images", "chloe_icon.png")
-        )
-        return QIcon(iconPath)
+        icon_path: Path = CHLOE_PLUGIN_PATH / "images" / "chloe.png"
+        return QIcon(str(icon_path))
 
     def tags(self):
         return ["chloe", self.commandName()]

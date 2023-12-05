@@ -4,6 +4,7 @@ from processing.gui.wrappers import (
     FileWidgetWrapper,
     BooleanWidgetWrapper,
     EnumWidgetWrapper,
+    RasterWidgetWrapper,
 )
 
 from processing.gui.wrappers import (
@@ -45,7 +46,9 @@ class ChloeCheckboxUpdateStateWidgetWrapper(BooleanWidgetWrapper):
             )
             if not wrapper:
                 continue
-            if isinstance(wrapper, (FileWidgetWrapper, EnumWidgetWrapper)):
+            if isinstance(
+                wrapper, (FileWidgetWrapper, EnumWidgetWrapper, RasterWidgetWrapper)
+            ):
                 widget = wrapper.widget
             else:
                 widget = wrapper.wrappedWidget()

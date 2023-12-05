@@ -3,6 +3,7 @@ from typing import Any, Union
 from processing.gui.wrappers import (
     FileWidgetWrapper,
     EnumWidgetWrapper,
+    RasterWidgetWrapper,
 )
 from processing.gui.wrappers import (
     WidgetWrapper,
@@ -72,7 +73,10 @@ class ChloeEnumUpdateStateWidgetWrapper(EnumWidgetWrapper):
                 ):
                     wrapper.wrappedWidget().setEnabled(False)
                     continue
-            if isinstance(wrapper, (FileWidgetWrapper, EnumWidgetWrapper)):
+
+            if isinstance(
+                wrapper, (FileWidgetWrapper, EnumWidgetWrapper, RasterWidgetWrapper)
+            ):
                 widget = wrapper.widget
             else:
                 widget = wrapper.wrappedWidget()

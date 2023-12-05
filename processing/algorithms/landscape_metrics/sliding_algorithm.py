@@ -1,10 +1,11 @@
 from enum import Enum
+from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterNumber,
     QgsProcessingParameterBoolean,
     QgsProcessingParameterString,
-    QgsProcessingParameterFile,
+    QgsMapLayer,
     QgsProcessingParameterEnum,
     QgsProcessingParameterFileDestination,
 )
@@ -195,14 +196,22 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
         # FRICTION FILE (OPTIONAL)
 
-        friction_file_param = QgsProcessingParameterFile(
-            name=FRICTION_FILE, description=self.tr("Friction file"), optional=True
+        friction_file_param = ChloeRasterParameterFileInput(
+            name=FRICTION_FILE,
+            description=self.tr("Friction file"),
+            optional=True,
         )
-        friction_file_param.setFileFilter("GeoTIFF (*.tif *.TIF);; ASCII (*.asc *.ASC)")
+        friction_file_param.setMetadata(
+            {
+                "widget_wrapper": {
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.layer_input.widget_wrapper.ChloeRasterInputWidgetWrapper"
+                }
+            }
+        )
+
         friction_file_param.setFlags(
             friction_file_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
         )
-
         self.addParameter(friction_file_param)
 
         # ANALYZE TYPE
@@ -402,8 +411,15 @@ class SlidingAlgorithm(ChloeAlgorithm):
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        self.friction_file = self.parameterAsString(parameters, FRICTION_FILE, context)
-
+        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+            parameters, FRICTION_FILE, context
+        )
+        self.friction_file = (
+            friction_layer.source()
+            if friction_layer is not None
+            and self.window_shape == WindowShapeType.FUNCTIONAL.value
+            else ""
+        )
         self.window_sizes = self.parameterAsInt(parameters, WINDOW_SIZES, context)
 
         analyze_enum_class: Enum = AnalyzeType

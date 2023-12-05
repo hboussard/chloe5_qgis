@@ -26,6 +26,9 @@ class NumberListSelectionPanel(BASE, WIDGET):
         self.pushButton_add.clicked.connect(self.add_item_to_destination_list)
         self.pushButton_remove.clicked.connect(self.remove_item_from_destination_list)
         self.pushButton_clear.clicked.connect(self.clear_destination_list)
+        self.listWidget_destination.doubleClicked.connect(
+            self.remove_item_from_destination_list
+        )
 
     def init_gui(self):
         """Init the gui"""
@@ -58,13 +61,13 @@ class NumberListSelectionPanel(BASE, WIDGET):
 
     def remove_item_from_destination_list(self) -> None:
         """Remove selected items from destination list"""
-        for item in self.selectedItems():
-            self.takeItem(self.row(item))
+        for item in self.listWidget_destination.selectedItems():
+            self.listWidget_destination.takeItem(self.listWidget_destination.row(item))
         self.set_properties_value()
 
     def clear_destination_list(self) -> None:
         """Clear destination list"""
-        self.clear()
+        self.listWidget_destination.clear()
         self.set_properties_value()
 
     def set_properties_value(self) -> None:

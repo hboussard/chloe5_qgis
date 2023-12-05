@@ -1,3 +1,4 @@
+from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterNumber,
@@ -6,6 +7,7 @@ from qgis.core import (
     QgsProcessingParameterEnum,
     QgsProcessingParameterFileDestination,
     QgsProcessingParameterFolderDestination,
+    QgsMapLayer,
 )
 
 from processing.tools.system import isWindows
@@ -140,6 +142,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
                 name=POINTS_FILE,
                 description=self.tr("Point file"),
                 optional=False,
+                fileFilter="CSV (*.csv *.CSV);;TXT (*.txt *.TXT);; DBF (*.dbf *.DBF)",
             )
         )
 
@@ -174,13 +177,23 @@ class SelectedAlgorithm(ChloeAlgorithm):
         self.addParameter(window_shape_param)
 
         # FRICTION FILE
-        friction_file_param = QgsProcessingParameterFile(
-            name=FRICTION_FILE, description=self.tr("Friction file"), optional=True
+        friction_file_param = ChloeRasterParameterFileInput(
+            name=FRICTION_FILE,
+            description=self.tr("Friction file"),
+            optional=True,
         )
-        friction_file_param.setFileFilter("GeoTIFF (*.tif *.TIF);; ASCII (*.asc *.ASC)")
+        friction_file_param.setMetadata(
+            {
+                "widget_wrapper": {
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.layer_input.widget_wrapper.ChloeRasterInputWidgetWrapper"
+                }
+            }
+        )
+
         friction_file_param.setFlags(
             friction_file_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
         )
+        self.addParameter(friction_file_param)
         # ANALYZE TYPE
 
         analyze_type_param = QgsProcessingParameterEnum(
@@ -283,8 +296,15 @@ class SelectedAlgorithm(ChloeAlgorithm):
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        self.friction_file = self.parameterAsString(parameters, FRICTION_FILE, context)
-
+        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+            parameters, FRICTION_FILE, context
+        )
+        self.friction_file = (
+            friction_layer.source()
+            if friction_layer is not None
+            and self.window_shape == WindowShapeType.FUNCTIONAL.value
+            else ""
+        )
         self.window_sizes = self.parameterAsInt(parameters, WINDOW_SIZES, context)
 
         self.analyze_type = enum_to_list(AnalyzeType)[
@@ -346,7 +366,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
         if self.analyze_type == AnalyzeType.WEIGHTED.value:
             properties_lines.append(f"distance_function={str(self.distance_formula)}")
         properties_lines.append(f"shape={str(self.window_shape)}")
-        if self.window_shape == WindowShapeType.FUNCTIONAL.value:
+        if self.friction_file:
             properties_lines.append(f"friction={self.friction_file}")
 
         points_files = format_path_for_properties_file(self.points_file, isWindows())

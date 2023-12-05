@@ -255,12 +255,3 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         if context == "":
             context = self.__class__.__name__
         return QCoreApplication.translate(context, string)
-
-    def parameterRasterAsFilePath(self, parameters, paramName, context) -> str:
-        res = self.parameterAsString(parameters, paramName, context)
-
-        if res is None or not res or match(r"^[a-zA-Z0-9_]+$", res):
-            layer = self.parameterAsRasterLayer(parameters, paramName, context)
-            res = layer.dataProvider().dataSourceUri().split("|")[0]
-
-        return res

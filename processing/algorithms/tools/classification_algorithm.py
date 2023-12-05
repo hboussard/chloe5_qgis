@@ -121,9 +121,9 @@ class ClassificationAlgorithm(ChloeAlgorithm):
 
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
-        self.input_raster_layer = self.parameterRasterAsFilePath(
+        self.input_raster_layer = self.parameterAsLayer(
             parameters, INPUT_RASTER, context
-        )
+        ).source()
 
     def set_properties_algorithm_values(self, parameters, context, feedback):
         """Set algorithm parameters.

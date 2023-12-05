@@ -25,7 +25,7 @@ class DoubleCmbBoxSelectionPanel(BASE, WIDGET):
         default_selected_metric: str = "",
         input_raster_layer_param_name: str = "",
     ):
-        super().__init__(None)
+        super().__init__()
         self.setupUi(self)
         self.dialog = parent
         self.dialog_type: str = dialog_type

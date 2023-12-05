@@ -35,7 +35,7 @@ class TableMappingPanel(BASE, WIDGET):
         input_raster_layer_param_name: str = "",
         dialog_type: str = DIALOG_STANDARD,
     ):
-        super().__init__(None)
+        super().__init__()
         self.setupUi(self)
         self.dialog = parent
         self.dialog_type: str = dialog_type

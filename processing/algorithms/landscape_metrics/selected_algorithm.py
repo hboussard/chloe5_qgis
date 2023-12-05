@@ -182,6 +182,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
             description=self.tr("Friction file"),
             optional=True,
         )
+
         friction_file_param.setMetadata(
             {
                 "widget_wrapper": {

@@ -32,7 +32,7 @@ class ValuesSelectorPanel(BASE, WIDGET):
         selector_strategy: ValueSelectorStrategy,
         placeholder_text: str = "",
     ):
-        super().__init__(None)
+        super().__init__()
         self.setupUi(self)
         self.selector_strategy: ValueSelectorStrategy = selector_strategy
 

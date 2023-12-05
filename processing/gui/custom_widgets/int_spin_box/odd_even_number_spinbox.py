@@ -19,7 +19,7 @@ class OddEvenIntSpinbox(QSpinBox):
     """Integer Spinbox with odd or even numbers"""
 
     def __init__(self, parent, odd_mode: bool = False):
-        super().__init__(parent)
+        super().__init__()
         self.dialog = parent
         # specifies wether spinbox value should be odd (True) or even (False)
         self.is_odd_mode: bool = odd_mode

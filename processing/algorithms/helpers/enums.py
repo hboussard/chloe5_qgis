@@ -51,6 +51,6 @@ class ShortWindowShapeType(Enum):
 class ClusterType(Enum):
     """Cluster type enum"""
 
-    ROOK_NEIGHBORHOOD = "rook neighborhood"
-    QUEEN_NEIGHBORHOOD = "queen neighborhood"
+    ROOK = "rook neighborhood"
+    QUEEN = "queen neighborhood"
     DISTANCE = "distance"

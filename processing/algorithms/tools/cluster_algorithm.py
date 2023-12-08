@@ -137,7 +137,7 @@ class ClusterAlgorithm(ChloeAlgorithm):
 
         distance_file_param = ChloeRasterParameterFileInput(
             name=CLUSTER_DISTANCE_FILE,
-            description=self.tr("Friction file"),
+            description=self.tr("Distance file"),
             optional=True,
         )
 
@@ -229,7 +229,7 @@ class ClusterAlgorithm(ChloeAlgorithm):
         self.cluster_values = self.parameterAsString(parameters, CLUSTER, context)
 
         self.cluster_type = str(
-            enum_to_list(ClusterType)[
+            enum_to_list(enum_class=ClusterType, return_enum_names=True)[
                 self.parameterAsEnum(parameters, CLUSTER_TYPE, context)
             ]
         )
@@ -304,12 +304,12 @@ class ClusterAlgorithm(ChloeAlgorithm):
                 )
             )
 
-        properties_lines.append(f"cluster={{{self.cluster_values}}}")
-
+        properties_lines.append(f"cluster_sources={{{self.cluster_values}}}")
+        properties_lines.append(f"cluster_type={self.cluster_type}")
         if self.distance_file:
             properties_lines.append(
                 format_path_for_properties_file(
-                    input_string=f"distance_file={self.distance_file}",
+                    input_string=f"distance_raster={self.distance_file}",
                     is_windows_system=isWindows(),
                 )
             )

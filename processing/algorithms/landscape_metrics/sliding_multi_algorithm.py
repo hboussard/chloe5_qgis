@@ -60,7 +60,7 @@ class SlidingMultiAlgorithm(ChloeAlgorithm):
         self.is_fast_mode: bool = False
         self.window_shape: str = ""
         self.friction_file: str = ""
-        self.window_sizes: int = 0
+        self.window_sizes: str = ""
         self.analyze_type: str = ""
         self.distance_formula: str = ""
         self.delta_displacement: int = 0
@@ -139,21 +139,18 @@ class SlidingMultiAlgorithm(ChloeAlgorithm):
         self.addParameter(metrics_param)
 
         # WINDOW SIZE
-        window_size_parameter = QgsProcessingParameterNumber(
-            name=WINDOW_SIZES,
-            description=self.tr("Windows sizes (pixels)"),
-            defaultValue=3,
-            minValue=3,
+        window_size_parameter = QgsProcessingParameterString(
+            name=WINDOW_SIZES, description=self.tr("Windows sizes (pixels)")
         )
 
         window_size_parameter.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.int_spin_box.widget_wrapper.ChloeOddEvenIntSpinboxWrapper",
-                    "initial_value": 3,
-                    "min_value": 3,
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.number_list_selector.widget_wrapper.ChloeIntListSelectorWidgetWrapper",
+                    "default_value": 3,
                     "max_value": 100001,
-                    "odd_mode": True,
+                    "min_value": 3,
+                    "single_step_value": 2,
                 }
             }
         )
@@ -394,7 +391,7 @@ class SlidingMultiAlgorithm(ChloeAlgorithm):
             else ""
         )
 
-        self.window_sizes = self.parameterAsInt(parameters, WINDOW_SIZES, context)
+        self.window_sizes = self.parameterAsString(parameters, WINDOW_SIZES, context)
 
         analyze_enum_class: Enum = AnalyzeType
         if self.is_fast_mode:
@@ -467,9 +464,7 @@ class SlidingMultiAlgorithm(ChloeAlgorithm):
             )
         )
 
-        properties_lines.append(
-            f"sizes={{{str(convert_int_to_odd(input_integer=self.window_sizes))}}}"
-        )
+        properties_lines.append(f"sizes={{{self.window_sizes}}}")
         properties_lines.append(
             f"maximum_nodata_value_rate={str(self.maximum_rate_missing_values)}"
         )

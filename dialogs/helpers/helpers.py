@@ -51,6 +51,13 @@ class InputLayerFileWidget(QWidget):
                 return layer
         return None
     
+    def currentFilePath(self):
+        layer = self.currentLayer()
+        if layer is not None:
+            return layer.source()
+        else:
+            return self.currentText()
+    
     def connectLayerChangedSlot(self,setLayerSlot):
         self.mlcb.layerChanged.connect(setLayerSlot)
 

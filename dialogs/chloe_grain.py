@@ -96,8 +96,8 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
             dirPath = self.mQgsFileWidget_resultDir.filePath()
             prefix = self.lineEdit_resultPrefix.text()
             filepath = dirPath+'/'+prefix+'_'
-            f.write('output_path="'+dirPath+'"'+'\n')
-            f.write('name="'+prefix+'"'+'\n')
+            f.write('output_path='+dirPath+'\n')
+            f.write('name='+prefix+'\n')
 
             extent = self.mExtentGroupBox.currentExtent()
             if extent.xMinimum()!=0. and extent.xMaximum()!=0. and extent.yMinimum()!=0. and extent.yMaximum()!=0.:
@@ -108,16 +108,16 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
                 f.write( 'buffer_area='+str(self.mQgsDoubleSpinBox_buffer.value())+'\n')
 
             if self.radioButton_rasterMNHC.isChecked():
-                f.write( 'bocage="'+self.inputMNHClayerfile.currentLayer().source()+'"' +'\n')
+                f.write( 'bocage='+self.inputMNHClayerfile.currentFilePath() +'\n')
             else:
-                f.write( 'bocage="'+self.mQgsFileWidget_dirMNHC.filePath()+'"' +'\n')
+                f.write( 'bocage='+self.mQgsFileWidget_dirMNHC.filePath() +'\n')
 
             # scénario (onglet 3)
             if self.groupBox_arasements.isChecked():
-                f.write( 'suppression="'+self.inputarasementslayerfile.currentLayer().source()+'"' +'\n')
+                f.write( 'suppression='+self.inputarasementslayerfile.currentFilePath()+'\n')
                         
             if self.groupBox_plantations.isChecked() :
-                f.write( 'plantations="'+self.inputplantationslayerfile.currentLayer().source()+'"'+'\n')
+                f.write( 'plantations='+self.inputplantationslayerfile.currentFilePath()+'\n')
                 if self.radioButton_valeurHauteurVegetation.isChecked():
                     f.write( 'hauteur_plantations='+self.lineEdit_hauteurVegetation.text() +'\n')
                 elif self.radioButton_champHauteurVegetation.isChecked():
@@ -129,35 +129,35 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
             
             if self.checkBox_hauteurBoisements.isChecked(): # recuperation_hauteur_boisement
                 treatment = 'recuperation_hauteur_boisement'
-                f.write( 'hauteur_boisement="' + filepath + 'hauteur_boisement.tif"'+'\n' )
+                f.write( 'hauteur_boisement=' + filepath + 'hauteur_boisement.tif'+'\n' )
 
             if self.checkBox_typesBoisements.isChecked(): # detection_type_boisement
                 treatment = 'detection_type_boisement'
-                f.write( 'type_boisement="' + filepath + 'type_boisement.tif"'+'\n' )
+                f.write( 'type_boisement=' + filepath + 'type_boisement.tif'+'\n' )
 
             if self.checkBox_distanceInfluence.isChecked(): # calcul_distance_influence_boisement
                 treatment = 'calcul_distance_influence_boisement'
-                f.write( 'distance_influence="' + filepath + 'distance_influence.tif"' +'\n')
+                f.write( 'distance_influence=' + filepath + 'distance_influence.tif"' +'\n')
 
             if self.checkBox_grain.isChecked(): # calcul_grain_bocager
                 treatment = 'calcul_grain_bocager'
-                f.write( 'grain_bocager="' + filepath + 'grain_bocager.tif"' +'\n')
+                f.write( 'grain_bocager=' + filepath + 'grain_bocager.tif"' +'\n')
             if self.checkBox_grain4classes.isChecked(): # calcul_grain_bocager
                 treatment = 'calcul_grain_bocager'
-                f.write( 'grain_bocager_4classes="' + filepath + 'grain_bocager_4classes.tif"'+'\n' )
+                f.write( 'grain_bocager_4classes=' + filepath + 'grain_bocager_4classes.tif'+'\n' )
 
             if self.checkBox_grainMask.isChecked(): # clusterisation_fonctionnalite
                 treatment = 'clusterisation_fonctionnalite'
-                f.write( 'grain_bocager_fonctionnel="' + filepath + 'grain_bocager_fonctionnel.tif"' +'\n')
+                f.write( 'grain_bocager_fonctionnel=' + filepath + 'grain_bocager_fonctionnel.tif"' +'\n')
             if self.checkBox_clusters.isChecked(): # clusterisation_fonctionnalite
                 treatment = 'clusterisation_fonctionnalite'
-                f.write( 'clusterisation_grain_bocager_fonctionnel="' + filepath + 'clusters.tif"'+'\n' ) 
+                f.write( 'clusterisation_grain_bocager_fonctionnel=' + filepath + 'clusters.tif'+'\n' ) 
 
             if self.checkBox_enjeux.isChecked(): # calcul_enjeux_globaux
                 treatment = 'calcul_enjeux_globaux'
-                f.write( 'enjeux_window_radius="'+self.lineEdit_radiusEnjeux.text()+'"\n' )
-                f.write( 'proportion_grain_bocager_fonctionnel="' + filepath + 'proportion_grain_fonctionnel.tif'+'"\n' )
-                f.write( 'fragmentation_grain_bocager_fonctionnel="' + filepath + 'fragmentation_grain_fonctionnel.tif'+'"\n' )
+                f.write( 'enjeux_window_radius='+self.lineEdit_radiusEnjeux.text()+'"\n' )
+                f.write( 'proportion_grain_bocager_fonctionnel=' + filepath + 'proportion_grain_fonctionnel.tif'+'"\n' )
+                f.write( 'fragmentation_grain_bocager_fonctionnel=' + filepath + 'fragmentation_grain_fonctionnel.tif'+'"\n' )
 
             # self.checkBox_scenarioDiffs.isChecked()
 
@@ -209,7 +209,7 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
         self.cursor.insertHtml( message + "<br/>\n")
 
     def pushCommandInfo(self, message: str) -> None:
-        self.pushInfo('<span style="color:blue">**' + message + '**</span>\n')
+        self.pushInfo('<span style="color:blue">' + message + '</span>\n')
 
     def pushConsoleInfo(self, message: str) -> None:
         self.pushInfo('<span style="color:grey">' + message + '</span>\n')

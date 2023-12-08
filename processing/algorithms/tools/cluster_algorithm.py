@@ -236,7 +236,7 @@ class ClusterAlgorithm(ChloeAlgorithm):
 
         self.cluster_distance = (
             self.parameterAsString(parameters, CLUSTER_DISTANCE, context)
-            if self.cluster_type == ClusterType.DISTANCE.value
+            if self.cluster_type == ClusterType.DISTANCE.name
             else ""
         )
 
@@ -246,7 +246,7 @@ class ClusterAlgorithm(ChloeAlgorithm):
         self.distance_file = (
             distance_layer.source()
             if distance_layer is not None
-            and self.cluster_type == ClusterType.DISTANCE.value
+            and self.cluster_type == ClusterType.DISTANCE.name
             else ""
         )
 

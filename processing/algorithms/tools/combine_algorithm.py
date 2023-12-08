@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from pathlib import Path
 from dataclasses import dataclass
 from qgis.core import (
@@ -15,7 +13,14 @@ from qgis.core import (
 from processing.tools.system import isWindows
 
 from ..chloe_algorithm import ChloeAlgorithm
-from ..helpers.constants import INPUTS_MATRIX, DOMAINS, OUTPUT_RASTER, SAVE_PROPERTIES
+from ..helpers.constants import (
+    INPUTS_MATRIX,
+    DOMAINS,
+    OUTPUT_RASTER,
+    SAVE_PROPERTIES,
+    UTILS_GROUP_ID,
+    UTILS_GROUP_NAME,
+)
 from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
     ChloeRasterParameterFileDestination,
 )
@@ -73,11 +78,11 @@ class CombineAlgorithm(ChloeAlgorithm):
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.factor_table.widget_wrapper.ChloeFactorTableWidgetWrapper",
                     "input_matrix_param_name": INPUTS_MATRIX,
-                    "parentWidgetConfig": {
-                        "linkedParams": [
+                    "parent_widget_config": {
+                        "linked_parameters": [
                             {
-                                "paramName": INPUTS_MATRIX,
-                                "refreshMethod": "refresh_factor_table",
+                                "parameter_name": INPUTS_MATRIX,
+                                "action": "refresh_factor_table",
                             },
                         ]
                     },
@@ -114,10 +119,10 @@ class CombineAlgorithm(ChloeAlgorithm):
         return self.tr("Combine")
 
     def group(self):
-        return self.tr("util")
+        return self.tr(UTILS_GROUP_NAME)
 
     def groupId(self):
-        return "util"
+        return UTILS_GROUP_ID
 
     def commandName(self):
         return "combine"
@@ -192,9 +197,9 @@ class CombineAlgorithm(ChloeAlgorithm):
         return scope_layer_list
 
     def set_properties_algorithm_values(self, parameters, context, feedback) -> None:
-        """Set algorithm parameters."""
+        """Set algorithm parameters.
 
-        """input_factors as returned by parameterAsMatrix is a list of two elements (only lists are supported in the modeler model3 file) :
+        input_factors as returned by parameterAsMatrix is a list of two elements (only lists are supported in the modeler model3 file) :
         - the first element is a list of CombineFactorElement objects or lists of strings wich are representing a CombineFactorElement as list (strings are used in the modeler context because of the model3 file)
         - the second element is a string representing the combination formula
         """
@@ -248,7 +253,7 @@ class CombineAlgorithm(ChloeAlgorithm):
         self.output_raster = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
-        self.create_projection_file(output_path_raster=Path(self.output_raster))
+
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
 
         # === SAVE_PROPERTIES
@@ -268,7 +273,10 @@ class CombineAlgorithm(ChloeAlgorithm):
         properties_lines: list[str] = []
 
         properties_lines.append("treatment=combine")
-        properties_lines.append(f"combination={self.combination_formula}")
+
+        # convert multi ligne formula to a single line
+        combination_formula: str = self.combination_formula.replace("\n", " ")
+        properties_lines.append(f"combination={combination_formula}")
 
         factors: str = ";".join(
             [

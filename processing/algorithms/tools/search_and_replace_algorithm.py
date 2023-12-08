@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
-
-import os
-from pathlib import Path
-
 from qgis.core import (
-    QgsProcessingParameterRasterLayer,
     QgsProcessingParameterNumber,
     QgsProcessingParameterString,
     QgsProcessingParameterFile,
@@ -14,6 +8,9 @@ from qgis.core import (
 from processing.tools.system import isWindows
 
 from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
+from ...gui.custom_parameters.chloe_raster_parameter_file_input import (
+    ChloeRasterParameterFileInput,
+)
 from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
     ChloeRasterParameterFileDestination,
 )
@@ -25,6 +22,8 @@ from ..helpers.constants import (
     OUTPUT_RASTER,
     SAVE_PROPERTIES,
     NODATA_VALUE,
+    UTILS_GROUP_ID,
+    UTILS_GROUP_NAME,
     VALUES_MAPPING,
     MAP_CSV,
 )
@@ -56,13 +55,13 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
         """Init input parameters."""
         # === INPUT PARAMETERS ===
 
-        input_raster_param = QgsProcessingParameterRasterLayer(
+        input_raster_param = ChloeRasterParameterFileInput(
             name=INPUT_RASTER, description=self.tr("Input raster layer")
         )
         input_raster_param.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.raster_input.widget_wrapper.ChloeAscRasterWidgetWrapper"
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.layer_input.widget_wrapper.ChloeRasterInputWidgetWrapper"
                 }
             }
         )
@@ -91,15 +90,15 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
                 "widget_wrapper": {
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.mapping_table.widget_wrapper.ChloeMappingTableWidgetWrapper",
                     "input_raster_layer_param_name": INPUT_RASTER,
-                    "parentWidgetConfig": {
-                        "linkedParams": [
+                    "parent_widget_config": {
+                        "linked_parameters": [
                             {
-                                "paramName": MAP_CSV,
-                                "refreshMethod": "populate_csv_mapping_combobox",
+                                "parameter_name": MAP_CSV,
+                                "action": "populate_csv_mapping_combobox",
                             },
                             {
-                                "paramName": INPUT_RASTER,
-                                "refreshMethod": "clear_mapping_table",
+                                "parameter_name": INPUT_RASTER,
+                                "action": "clear_mapping_table",
                             },
                         ]
                     },
@@ -143,19 +142,19 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
         return self.tr("search and replace")
 
     def group(self):
-        return self.tr("util")
+        return self.tr(UTILS_GROUP_NAME)
 
     def groupId(self):
-        return "util"
+        return UTILS_GROUP_ID
 
     def commandName(self):
         return "search and replace"
 
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
-        self.input_raster_layer = self.parameterRasterAsFilePath(
+        self.input_raster_layer = self.parameterAsLayer(
             parameters, INPUT_RASTER, context
-        )
+        ).source()
 
     def set_properties_algorithm_values(self, parameters, context, feedback):
         """Set algorithm parameters."""
@@ -167,7 +166,7 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
         self.output_raster_layer = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
-        self.create_projection_file(output_path_raster=Path(self.output_raster_layer))
+
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster_layer)
 
         # === SAVE_PROPERTIES

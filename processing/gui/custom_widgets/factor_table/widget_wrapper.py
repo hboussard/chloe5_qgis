@@ -4,9 +4,9 @@ from .dataclasses import CombineFactorElement
 
 
 class ChloeFactorTableWidgetWrapper(WidgetWrapper):
-    def createWidget(self, input_matrix_param_name: str, parentWidgetConfig=None):
+    def createWidget(self, input_matrix_param_name: str, parent_widget_config=None):
         """Widget creation to put like panel in dialog"""
-        self.parentWidgetConfig = parentWidgetConfig
+        self.parent_widget_config = parent_widget_config
         return FactorTablePanel(
             parent=self.dialog,
             input_matrix_parameter_name=input_matrix_param_name,
@@ -27,8 +27,8 @@ class ChloeFactorTableWidgetWrapper(WidgetWrapper):
         """Get value on the widget/component."""
         return self.widget.value()
 
-    def getParentWidgetConfig(self):
-        return self.parentWidgetConfig
+    def get_parent_widget_config(self):
+        return self.parent_widget_config
 
     def refresh_factor_table(self):
         self.widget.populate_table_model()

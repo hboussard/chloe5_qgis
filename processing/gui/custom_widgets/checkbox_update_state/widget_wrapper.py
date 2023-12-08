@@ -4,12 +4,11 @@ from processing.gui.wrappers import (
     FileWidgetWrapper,
     BooleanWidgetWrapper,
     EnumWidgetWrapper,
+    RasterWidgetWrapper,
 )
 
 from processing.gui.wrappers import (
     WidgetWrapper,
-    DIALOG_MODELER,
-    DIALOG_BATCH,
     DIALOG_STANDARD,
 )
 
@@ -36,6 +35,10 @@ class ChloeCheckboxUpdateStateWidgetWrapper(BooleanWidgetWrapper):
             )
 
     def update_enabled_widgets(self, wrappers):
+        """
+        Updates the enabled state of the enabled_widgets_configs widgets based on the current value of the checkbox.
+
+        """
         for enabled_widget_config in self.enabled_widgets_configs:
             # Find the wrapper for the parameter that will be impacted
             wrapper: Union[WidgetWrapper, None] = get_widget_wrapper_from_param_name(
@@ -43,8 +46,11 @@ class ChloeCheckboxUpdateStateWidgetWrapper(BooleanWidgetWrapper):
             )
             if not wrapper:
                 continue
-            if isinstance(wrapper, (FileWidgetWrapper, EnumWidgetWrapper)):
+            if isinstance(
+                wrapper, (FileWidgetWrapper, EnumWidgetWrapper, RasterWidgetWrapper)
+            ):
                 widget = wrapper.widget
             else:
                 widget = wrapper.wrappedWidget()
+
             widget.setEnabled(self.value() == enabled_widget_config["enabled_by_value"])

@@ -46,4 +46,5 @@ Class-Path: ../bin/apiland-1.0.jar
  ../lib/jaxb-core-2.2.11.jar 
  ../lib/jaxb-impl-2.2.11.jar 
  ../lib/activation-1.1.1.jar 
+ ../lib/jackson-core-2.9.9.jar 
 

@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import signal
 import platform
-from typing import Protocol, Union
+from typing import Protocol, Tuple, Union
 from re import search
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
 import numpy as np
@@ -225,7 +225,9 @@ def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_path: Path) -> No
         color_ramp_shader.setColorRampItemList(new_color_ramp_list)
 
 
-def get_unique_raster_values_as_int(raster_file_path: str) -> list[int]:
+def get_unique_raster_values(
+    raster_file_path: str, as_int: bool = False
+) -> list[float]:
     """
     Extract values from a raster layer and return a list of values as integers.
 
@@ -243,10 +245,12 @@ def get_unique_raster_values_as_int(raster_file_path: str) -> list[int]:
     array = np.array(band.ReadAsArray())  # -> matrice values
     values = np.unique(array)
     nodata_value = band.GetNoDataValue()
-    return [int(floor(value)) for value in values if value != nodata_value]
+    if as_int:
+        return [floor(value) for value in values if value != nodata_value]
+    return [value for value in values if value != nodata_value]
 
 
-def get_raster_nodata_value(raster_file_path: str) -> Union[int, None]:
+def get_raster_nodata_value(raster_file_path: str) -> Union[float, None]:
     """
     Extract the nodata value from a raster layer and return it as an integer.
 
@@ -263,7 +267,7 @@ def get_raster_nodata_value(raster_file_path: str) -> Union[int, None]:
     band = dataset.GetRasterBand(1)  # -> band
     nodata = band.GetNoDataValue()
 
-    return int(floor(nodata)) if nodata is not None else None
+    return floor(nodata) if nodata is not None else None
 
 
 @dataclass

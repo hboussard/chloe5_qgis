@@ -4,6 +4,13 @@ from enum import Enum
 # parameters options enums
 
 
+class MimeType(Enum):
+    """Mime type enum"""
+
+    GEOTIFF = "GEOTIFF"
+    ASCII_GRID = "ASCII GRID"
+
+
 class AnalyzeType(Enum):
     """Analyze type enum"""
 
@@ -21,8 +28,8 @@ class AnalyzeTypeFastMode(Enum):
 class DistanceType(Enum):
     """Distance type enum"""
 
-    EUCLIDIAN_DISTANCE = "euclidian distance"
-    FUNCTIONAL_DISTANCE = "functional distance"
+    EUCLIDIAN = "Euclidian"
+    FUNCTIONAL = "Functional"
 
 
 class WindowShapeType(Enum):
@@ -39,3 +46,11 @@ class ShortWindowShapeType(Enum):
     CIRCLE = "cr"
     SQUARE = "sq"
     FUNCTIONAL = "fn"
+
+
+class ClusterType(Enum):
+    """Cluster type enum"""
+
+    ROOK_NEIGHBORHOOD = "rook neighborhood"
+    QUEEN_NEIGHBORHOOD = "queen neighborhood"
+    DISTANCE = "distance"

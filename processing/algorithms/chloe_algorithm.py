@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 import os
 from pathlib import Path
-from re import search, IGNORECASE, match
+from re import match
 from time import gmtime, strftime
 from typing import Any
 from qgis.PyQt.QtCore import QCoreApplication, QLocale
@@ -13,9 +12,6 @@ from qgis.core import (
     QgsProcessingAlgorithm,
     QgsProcessingException,
 )
-
-from qgis.utils import iface
-
 from processing.tools.system import getTempFilename
 
 from ...helpers.helpers import (
@@ -42,10 +38,8 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         self.output_values: dict[str, Any] = {}
 
     def icon(self):
-        iconPath = os.path.normpath(
-            os.path.join(os.path.dirname(__file__), "images", "chloe_icon.png")
-        )
-        return QIcon(iconPath)
+        icon_path: Path = CHLOE_PLUGIN_PATH / "images" / "chloe.png"
+        return QIcon(str(icon_path))
 
     def tags(self):
         return ["chloe", self.commandName()]
@@ -206,6 +200,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         raster_layer_name: str = get_layer_name(
             layer=raster_layer, default_output=self.name()
         )
+
         set_raster_layer_symbology(
             layer=raster_layer, qml_file_path=STYLES_PATH / "continuous.qml"
         )
@@ -217,10 +212,13 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         context.addLayerToLoadOnCompletion(raster_layer.id(), raster_layer_details)
         results[OUTPUT_RASTER] = raster_layer.id()
 
-    def helpUrl(self):
+    def helpUrl(self) -> str:
         localeName = QLocale.system().name()
         helpFilename = f"{self.name()}_{localeName}.html"
-        helpfile = f"{os.path.dirname(__file__)}{os.sep}.{os.sep}help_algorithm{os.sep}{helpFilename}"
+        documentation_folder: Path = (
+            CHLOE_PLUGIN_PATH / "processing" / "algorithms" / "documentation"
+        )
+        helpfile = f"{documentation_folder / helpFilename}"
         return helpfile
 
     def shortHelpString(self):
@@ -257,22 +255,3 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         if context == "":
             context = self.__class__.__name__
         return QCoreApplication.translate(context, string)
-
-    def create_projection_file(self, output_path_raster: Path):
-        """Create Projection File"""
-        if not search(r"asc", output_path_raster.suffix, IGNORECASE):
-            return
-        f_prj = str(output_path_raster.parent / f"{output_path_raster.stem}.prj")
-        crs_output = iface.mapCanvas().mapSettings().destinationCrs()
-        with open(f_prj, "w", encoding="utf-8") as file:
-            # b_string = str.encode(crs_output.toWkt())
-            file.write(crs_output.toWkt())
-
-    def parameterRasterAsFilePath(self, parameters, paramName, context) -> str:
-        res = self.parameterAsString(parameters, paramName, context)
-
-        if res is None or not res or match(r"^[a-zA-Z0-9_]+$", res):
-            layer = self.parameterAsRasterLayer(parameters, paramName, context)
-            res = layer.dataProvider().dataSourceUri().split("|")[0]
-
-        return res

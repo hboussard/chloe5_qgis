@@ -1,15 +1,13 @@
-# -*- coding: utf-8 -*-
-
 from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
-    QgsProcessingParameterRasterLayer,
     QgsProcessingParameterNumber,
     QgsProcessingParameterString,
     QgsProcessingParameterFile,
     QgsProcessingParameterEnum,
     QgsProcessingParameterFileDestination,
     QgsProcessingParameterFolderDestination,
+    QgsMapLayer,
 )
 
 from processing.tools.system import isWindows
@@ -18,36 +16,39 @@ from ....helpers.helpers import convert_int_to_odd
 
 from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
 
-
+from ...gui.custom_parameters.chloe_raster_parameter_file_input import (
+    ChloeRasterParameterFileInput,
+)
+from ...helpers.helpers import (
+    enum_to_list,
+    format_path_for_properties_file,
+    get_enum_element_index,
+)
 from ..chloe_algorithm import ChloeAlgorithm
 from ..helpers.constants import (
     ANALYZE_TYPE,
     DISTANCE_FUNCTION,
     FRICTION_FILE,
     INPUT_RASTER,
+    LANDSCAPE_METRICS_GROUP_ID,
+    LANDSCAPE_METRICS_GROUP_NAME,
     METRICS,
     OUTPUT_CSV,
     OUTPUT_WINDOWS_PATH_DIR,
-    PIXEL_POINT_SELECTOR_OPTIONS,
-    PIXELS_POINTS_FILE,
-    PIXELS_POINTS_SELECT,
+    POINTS_FILE,
     SAVE_PROPERTIES,
     WINDOW_SHAPE,
     WINDOW_SIZES,
 )
 
-from ...helpers.helpers import (
-    enum_to_list,
-    format_path_for_properties_file,
-    get_enum_element_index,
-)
+
 from ..helpers.enums import AnalyzeType, AnalyzeTypeFastMode, WindowShapeType
 
 # Main dialog
 
 
 class SelectedAlgorithm(ChloeAlgorithm):
-    """Algorithm selection."""
+    """Algorithm selected."""
 
     def __init__(self):
         super().__init__()
@@ -60,8 +61,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
         self.friction_file: str = ""
         self.analyze_type: str = ""
         self.distance_formula: str = ""
-        self.pixels_point_selection: Union[int, None] = None
-        self.pixels_points_file: str = ""
+        self.points_file: str = ""
         self.output_csv: str = ""
         self.output_windows_path_dir: str = ""
 
@@ -73,14 +73,14 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
     def init_input_params(self):
         """Init input parameters."""
-        input_raster_param = QgsProcessingParameterRasterLayer(
-            name=INPUT_RASTER, description=self.tr("Input layer asc"), optional=True
+        input_raster_param = ChloeRasterParameterFileInput(
+            name=INPUT_RASTER, description=self.tr("Input raster layer")
         )
 
         input_raster_param.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.raster_input.widget_wrapper.ChloeAscRasterWidgetWrapper"
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.layer_input.widget_wrapper.ChloeRasterInputWidgetWrapper"
                 }
             }
         )
@@ -100,11 +100,11 @@ class SelectedAlgorithm(ChloeAlgorithm):
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.double_combobox.widget_wrapper.ChloeDoubleComboboxWidgetWrapper",
                     "default_selected_metric": "diversity metrics",
                     "input_raster_layer_param_name": INPUT_RASTER,
-                    "parentWidgetConfig": {
-                        "linkedParams": [
+                    "parent_widget_config": {
+                        "linked_parameters": [
                             {
-                                "paramName": INPUT_RASTER,
-                                "refreshMethod": "refresh_metrics_combobox",
+                                "parameter_name": INPUT_RASTER,
+                                "action": "refresh_metrics_combobox",
                             },
                         ]
                     },
@@ -136,22 +136,13 @@ class SelectedAlgorithm(ChloeAlgorithm):
         )
         self.addParameter(window_size_param)
 
-        # PIXELS POINTS SELECT
-
-        point_pixel_selector_param = QgsProcessingParameterEnum(
-            name=PIXELS_POINTS_SELECT,
-            description=self.tr("Pixels/points selection"),
-            options=PIXEL_POINT_SELECTOR_OPTIONS,
-        )
-
-        self.addParameter(point_pixel_selector_param)
-
         # PIXELS_POINTS FILE
         self.addParameter(
             QgsProcessingParameterFile(
-                name=PIXELS_POINTS_FILE,
-                description=self.tr("Pixels/points file"),
+                name=POINTS_FILE,
+                description=self.tr("Point file"),
                 optional=False,
+                fileFilter="CSV (*.csv *.CSV);;TXT (*.txt *.TXT);; DBF (*.dbf *.DBF)",
             )
         )
 
@@ -186,13 +177,24 @@ class SelectedAlgorithm(ChloeAlgorithm):
         self.addParameter(window_shape_param)
 
         # FRICTION FILE
-        friction_file_param = QgsProcessingParameterFile(
-            name=FRICTION_FILE, description=self.tr("Friction file"), optional=True
+        friction_file_param = ChloeRasterParameterFileInput(
+            name=FRICTION_FILE,
+            description=self.tr("Friction file"),
+            optional=True,
         )
-        friction_file_param.setFileFilter("GeoTIFF (*.tif *.TIF);; ASCII (*.asc *.ASC)")
+
+        friction_file_param.setMetadata(
+            {
+                "widget_wrapper": {
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.layer_input.widget_wrapper.ChloeRasterInputWidgetWrapper"
+                }
+            }
+        )
+
         friction_file_param.setFlags(
             friction_file_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
         )
+        self.addParameter(friction_file_param)
         # ANALYZE TYPE
 
         analyze_type_param = QgsProcessingParameterEnum(
@@ -274,31 +276,20 @@ class SelectedAlgorithm(ChloeAlgorithm):
         return self.tr("selected")
 
     def group(self):
-        return self.tr("landscape metrics")
+        return self.tr(LANDSCAPE_METRICS_GROUP_NAME)
 
     def groupId(self):
-        return "landscapemetrics"
+        return LANDSCAPE_METRICS_GROUP_ID
 
     def commandName(self):
         return "selected"
 
-    def checkParameterValues(self, parameters, context):
-        """Override checkParameterValues base class method. check additional parameters."""
-
-        input_raster = self.parameterAsString(parameters, INPUT_RASTER, context)
-
-        if not input_raster:
-            return False, self.tr("You must select an input raster file")
-
-        # If these parameters are valid, call the parent class's checkParameterValues method for the rest
-        return super().checkParameterValues(parameters, context)
-
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
 
-        self.input_raster_layer = self.parameterRasterAsFilePath(
+        self.input_raster_layer = self.parameterAsLayer(
             parameters, INPUT_RASTER, context
-        )
+        ).source()
 
     def set_properties_algorithm_values(self, parameters, context, feedback):
         """Set algorithm parameters."""
@@ -306,8 +297,15 @@ class SelectedAlgorithm(ChloeAlgorithm):
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        self.friction_file = self.parameterAsString(parameters, FRICTION_FILE, context)
-
+        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+            parameters, FRICTION_FILE, context
+        )
+        self.friction_file = (
+            friction_layer.source()
+            if friction_layer is not None
+            and self.window_shape == WindowShapeType.FUNCTIONAL.value
+            else ""
+        )
         self.window_sizes = self.parameterAsInt(parameters, WINDOW_SIZES, context)
 
         self.analyze_type = enum_to_list(AnalyzeType)[
@@ -318,13 +316,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
             parameters, DISTANCE_FUNCTION, context
         )
 
-        self.pixels_point_selection = self.parameterAsInt(
-            parameters, PIXELS_POINTS_SELECT, context
-        )
-
-        self.pixels_points_file = self.parameterAsString(
-            parameters, PIXELS_POINTS_FILE, context
-        )
+        self.points_file = self.parameterAsString(parameters, POINTS_FILE, context)
 
         self.metrics = self.parameterAsString(parameters, METRICS, context)
 
@@ -347,18 +339,18 @@ class SelectedAlgorithm(ChloeAlgorithm):
     def set_properties_values(self, parameters, context, feedback):
         """set properties values."""
 
-        self.set_properties_input_values(parameters, context)
+        self.set_properties_input_values(parameters, context, feedback)
 
-        self.set_properties_algorithm_values(parameters, context)
+        self.set_properties_algorithm_values(parameters, context, feedback)
 
-        self.set_properties_output_values(parameters, context)
+        self.set_properties_output_values(parameters, context, feedback)
 
     def get_properties_lines(self) -> list[str]:
         """get properties lines."""
 
         properties_lines: list[str] = []
 
-        properties_lines.append(f"treatment={self.name()}")
+        properties_lines.append("treatment=selected")
         properties_lines.append(
             format_path_for_properties_file(
                 f"input_raster={self.input_raster_layer}", isWindows()
@@ -375,17 +367,12 @@ class SelectedAlgorithm(ChloeAlgorithm):
         if self.analyze_type == AnalyzeType.WEIGHTED.value:
             properties_lines.append(f"distance_function={str(self.distance_formula)}")
         properties_lines.append(f"shape={str(self.window_shape)}")
-        if self.window_shape == WindowShapeType.FUNCTIONAL.value:
+        if self.friction_file:
             properties_lines.append(f"friction={self.friction_file}")
 
-        pixels_points_files = format_path_for_properties_file(
-            self.pixels_points_file, isWindows()
-        )
+        points_files = format_path_for_properties_file(self.points_file, isWindows())
 
-        if self.pixels_point_selection == 0:  # pixel(s) file
-            properties_lines.append(f"pixels={pixels_points_files}")
-        elif self.pixels_point_selection == 1:  # point(s) file
-            properties_lines.append(f"points={pixels_points_files}")
+        properties_lines.append(f"points={points_files}")
 
         properties_lines.append(
             format_path_for_properties_file(

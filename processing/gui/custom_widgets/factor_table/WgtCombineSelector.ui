@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>410</width>
-    <height>148</height>
+    <height>195</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,18 +18,14 @@
     <widget class="QTableView" name="tableView"/>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLineEdit" name="LineEdit_formula">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QPlainTextEdit" name="plainTextEdit_formula">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>100</height>
+      </size>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QPushButton" name="button_load_layers">

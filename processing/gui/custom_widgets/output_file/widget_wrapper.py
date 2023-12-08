@@ -48,7 +48,7 @@ class ChloeOutputFileWidgetWrapper(MapLayerWidgetWrapper):
 
         return filename, selected_filter
 
-    def postInitialize(self, widgetWrapperList):
+    def postInitialize(self, wrappers):
         # no initial selection
         if self.dialogType == DIALOG_STANDARD:
             self.combo.setLayer(None)

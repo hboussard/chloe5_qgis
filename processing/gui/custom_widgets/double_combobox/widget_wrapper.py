@@ -10,14 +10,8 @@ from ....algorithms.helpers.constants import FAST
 
 
 class ChloeDoubleComboboxWidgetWrapper(WidgetWrapper):
-    def createLabel(self):
-        """Label create"""
-        if self.dialogType == DIALOG_STANDARD:
-            return super().createLabel()
-        else:
-            return super().createLabel()
-
     def postInitialize(self, wrappers):
+        """Post initialization of the widget/component."""
         # Find the wrapper for the 'FAST' parameter
         for wrapper in wrappers:
             if wrapper.parameterDefinition().name() == FAST:
@@ -34,19 +28,21 @@ class ChloeDoubleComboboxWidgetWrapper(WidgetWrapper):
 
     def createWidget(
         self,
-        default_selected_metric,
-        input_raster_layer_param_name,
-        parentWidgetConfig=None,
+        default_selected_metric: str,
+        input_raster_layer_param_name: str,
+        parent_widget_config=None,
     ):
         """Widget creation to put like panel in dialog"""
-        self.parentWidgetConfig = parentWidgetConfig
+        self.parent_widget_config = parent_widget_config
 
-        return DoubleCmbBoxSelectionPanel(
+        widget = DoubleCmbBoxSelectionPanel(
             parent=self.dialog,
             dialog_type=self.dialogType,
             default_selected_metric=default_selected_metric,
             input_raster_layer_param_name=input_raster_layer_param_name,
         )
+
+        return widget
 
     def setValue(self, value):
         """Set value on the widget/component."""
@@ -58,8 +54,8 @@ class ChloeDoubleComboboxWidgetWrapper(WidgetWrapper):
         """Get value on the widget/component."""
         return self.widget.getValue()
 
-    def getParentWidgetConfig(self):
-        return self.parentWidgetConfig
+    def get_parent_widget_config(self):
+        return self.parent_widget_config
 
     def refresh_metrics_combobox(self):
         self.widget.set_metrics()

@@ -1,4 +1,4 @@
-FAST_MODE_EXCLUSION_METRICS: list[str] = ["patch metrics", "quantitative metrics"]
+FAST_MODE_EXCLUSION_METRICS: list[str] = ["patch metrics"]
 
 TYPES_OF_METRICS: dict[str, list[str]] = {
     "basic metrics": [
@@ -20,12 +20,9 @@ TYPES_OF_METRICS: dict[str, list[str]] = {
     ],
     "diversity metrics": [
         "HET",
-        "HET-agg",
         "HET-frag",
         "SHDI",
         "SHEI",
-        "SIDI",
-        "SIEI",
     ],
     "patch metrics": [
         "LPI",

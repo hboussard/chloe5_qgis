@@ -45,7 +45,7 @@ def add_cross_metrics(
     if len(no_zero_raster_values) < 100:
         for cross_metric_name, cross_metrics_list in TYPES_OF_METRICS_CROSS.items():
             new_metric = [
-                mc + str(val1) + "-" + str(val2)
+                f"{mc}{str(val1)}-{str(val2)}"
                 for mc in cross_metrics_list
                 for val1 in no_zero_raster_values
                 for val2 in no_zero_raster_values

@@ -1,14 +1,11 @@
-# -*- coding: utf-8 -*-
-
 from enum import Enum
-from pathlib import Path
+from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
-    QgsProcessingParameterRasterLayer,
     QgsProcessingParameterNumber,
     QgsProcessingParameterBoolean,
     QgsProcessingParameterString,
-    QgsProcessingParameterFile,
+    QgsMapLayer,
     QgsProcessingParameterEnum,
     QgsProcessingParameterFileDestination,
 )
@@ -19,7 +16,9 @@ from ....helpers.helpers import convert_int_to_odd
 from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
     ChloeRasterParameterFileDestination,
 )
-
+from ...gui.custom_parameters.chloe_raster_parameter_file_input import (
+    ChloeRasterParameterFileInput,
+)
 from ...gui.custom_widgets.constants import CUSTOM_WIDGET_DIRECTORY
 
 from ...helpers.helpers import (
@@ -39,6 +38,8 @@ from ..helpers.constants import (
     FRICTION_FILE,
     INPUT_RASTER,
     INTERPOLATE_VALUES_BOOL,
+    LANDSCAPE_METRICS_GROUP_ID,
+    LANDSCAPE_METRICS_GROUP_NAME,
     MAXIMUM_RATE_MISSING_VALUES,
     METRICS,
     OUTPUT_RASTER,
@@ -81,15 +82,14 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
     def init_input_params(self):
         """Init input parameters."""
-        # INPUT ASC
-        input_asc_param = QgsProcessingParameterRasterLayer(
-            name=INPUT_RASTER, description=self.tr("Input raster layer"), optional=True
+        input_asc_param = ChloeRasterParameterFileInput(
+            name=INPUT_RASTER, description=self.tr("Input raster layer")
         )
 
         input_asc_param.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.raster_input.widget_wrapper.ChloeAscRasterWidgetWrapper"
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.layer_input.widget_wrapper.ChloeRasterInputWidgetWrapper"
                 }
             }
         )
@@ -108,6 +108,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
                     "enabled_widgets_configs": [
                         {"param_name": WINDOW_SHAPE, "enabled_by_value": False},
                         {"param_name": DISTANCE_FUNCTION, "enabled_by_value": False},
+                        {"param_name": FRICTION_FILE, "enabled_by_value": False},
                     ],
                 }
             }
@@ -126,11 +127,11 @@ class SlidingAlgorithm(ChloeAlgorithm):
                     "class": f"{CUSTOM_WIDGET_DIRECTORY}.double_combobox.widget_wrapper.ChloeDoubleComboboxWidgetWrapper",
                     "default_selected_metric": "diversity metrics",
                     "input_raster_layer_param_name": INPUT_RASTER,
-                    "parentWidgetConfig": {
-                        "linkedParams": [
+                    "parent_widget_config": {
+                        "linked_parameters": [
                             {
-                                "paramName": INPUT_RASTER,
-                                "refreshMethod": "refresh_metrics_combobox",
+                                "parameter_name": INPUT_RASTER,
+                                "action": "refresh_metrics_combobox",
                             },
                         ]
                     },
@@ -195,14 +196,22 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
         # FRICTION FILE (OPTIONAL)
 
-        friction_file_param = QgsProcessingParameterFile(
-            name=FRICTION_FILE, description=self.tr("Friction file"), optional=True
+        friction_file_param = ChloeRasterParameterFileInput(
+            name=FRICTION_FILE,
+            description=self.tr("Friction file"),
+            optional=True,
         )
-        friction_file_param.setFileFilter("GeoTIFF (*.tif *.TIF);; ASCII (*.asc *.ASC)")
+        friction_file_param.setMetadata(
+            {
+                "widget_wrapper": {
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.layer_input.widget_wrapper.ChloeRasterInputWidgetWrapper"
+                }
+            }
+        )
+
         friction_file_param.setFlags(
             friction_file_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
         )
-
         self.addParameter(friction_file_param)
 
         # ANALYZE TYPE
@@ -286,7 +295,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         filter_do_analyze_parameter.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.values_selection.widget_wrapper.ChloeValuesWidgetWrapper"
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.values_selector.widget_wrapper.ChloeRasterValuesWidgetWrapper"
                 }
             }
         )
@@ -306,7 +315,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         filter_no_analyze_parameter.setMetadata(
             {
                 "widget_wrapper": {
-                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.values_selection.widget_wrapper.ChloeValuesWidgetWrapper"
+                    "class": f"{CUSTOM_WIDGET_DIRECTORY}.values_selector.widget_wrapper.ChloeRasterValuesWidgetWrapper"
                 }
             }
         )
@@ -367,21 +376,16 @@ class SlidingAlgorithm(ChloeAlgorithm):
         return self.tr("sliding")
 
     def group(self):
-        return self.tr("landscape metrics")
+        return self.tr(LANDSCAPE_METRICS_GROUP_NAME)
 
     def groupId(self):
-        return "landscapemetrics"
+        return LANDSCAPE_METRICS_GROUP_ID
 
     def commandName(self):
-        return "java"
+        return "sliding"
 
     def checkParameterValues(self, parameters, context):
         """Override checkParameterValues base class method. check additional parameters."""
-
-        input_raster = self.parameterAsString(parameters, INPUT_RASTER, context)
-
-        if not input_raster:
-            return False, self.tr("You must select an input raster file")
 
         output_csv = self.parameterAsOutputLayer(parameters, OUTPUT_CSV, context)
         output_raster = self.parameterAsOutputLayer(parameters, OUTPUT_RASTER, context)
@@ -394,9 +398,9 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
-        self.input_raster = self.parameterRasterAsFilePath(
+        self.input_raster = self.parameterAsLayer(
             parameters, INPUT_RASTER, context
-        )
+        ).source()
 
     def set_properties_algorithm_values(self, parameters, context, feedback):
         """Set algorithm parameters."""
@@ -407,8 +411,15 @@ class SlidingAlgorithm(ChloeAlgorithm):
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        self.friction_file = self.parameterAsString(parameters, FRICTION_FILE, context)
-
+        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+            parameters, FRICTION_FILE, context
+        )
+        self.friction_file = (
+            friction_layer.source()
+            if friction_layer is not None
+            and self.window_shape == WindowShapeType.FUNCTIONAL.value
+            else ""
+        )
         self.window_sizes = self.parameterAsInt(parameters, WINDOW_SIZES, context)
 
         analyze_enum_class: Enum = AnalyzeType
@@ -451,7 +462,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         self.output_raster = self.parameterAsOutputLayer(
             parameters, OUTPUT_RASTER, context
         )
-        self.create_projection_file(output_path_raster=Path(self.output_raster))
+
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
 
         # === SAVE_PROPERTIES
@@ -510,10 +521,16 @@ class SlidingAlgorithm(ChloeAlgorithm):
             properties_lines.append(f"distance_function={str(self.distance_formula)}")
 
         properties_lines.append(f"metrics={{{self.metrics}}}")
-        properties_lines.append(f"delta_displacement={str(self.delta_displacement)}")
-        properties_lines.append(f"shape={str(self.window_shape)}")
+        properties_lines.append(f"displacement={str(self.delta_displacement)}")
 
-        if self.window_shape == WindowShapeType.FUNCTIONAL.value:
+        if not self.is_fast_mode:
+            properties_lines.append(f"shape={str(self.window_shape)}")
+
+        if (
+            self.window_shape == WindowShapeType.FUNCTIONAL.value
+            and self.friction_file
+            and not self.is_fast_mode
+        ):
             properties_lines.append(f"friction={self.friction_file}")
 
         if self.b_interpolate_values:

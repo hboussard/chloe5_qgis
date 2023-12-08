@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 *********************************************************************************************
     factor_table_panel.py
@@ -16,23 +14,19 @@
 # This will get replaced with a git SHA1 when you do a git archive
 
 from pathlib import Path
-from typing import Union
-
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QMessageBox, QHeaderView
 
 
 from qgis.core import QgsProcessingParameterDefinition, QgsMessageLog, Qgis
-from processing.gui.BatchPanel import BatchPanel
-from processing.gui.wrappers import DIALOG_MODELER, DIALOG_STANDARD, DIALOG_BATCH
+from processing.gui.wrappers import DIALOG_MODELER, DIALOG_STANDARD
 from .....helpers.helpers import get_layer_name
 from ....algorithms.helpers.constants import INPUTS_MATRIX
-from ....gui.chloe_algorithm_dialog import ChloeParametersPanel
 from ..helpers import (
     extract_raster_layer_path,
-    get_parameter_value_from_algorithm_dialog,
-    get_parameter_widget_from_batch_panel,
+    get_param_wrappers_from_algorithm_dialog,
+    get_parameter_value_from_batch_standard_algorithm_dialog,
 )
 from .dataclasses import CombineFactorElement, LayerInfo
 from .models import FactorTableModel
@@ -98,7 +92,7 @@ class FactorTablePanel(BASE, WIDGET):
         self.tableView.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
 
         # Set the placeholder text for the combination formula text box.
-        self.LineEdit_formula.setPlaceholderText(self.tr("Combination Formula"))
+        self.plainTextEdit_formula.setPlaceholderText(self.tr("Combination Formula"))
 
         # Connect the populate button to the populateTableModel method.
         self.button_load_layers.clicked.connect(self.populate_table_model)
@@ -127,9 +121,9 @@ class FactorTablePanel(BASE, WIDGET):
         list_layers: list[LayerInfo] = []
 
         # TODO : Accessing the modeler widget that way is a bit hacky, find a better way to do this
-        modeler_widget = self.parent_dialog.widget.widget.wrappers[
-            self.input_matrix_parameter_name
-        ]
+        modeler_widget = get_param_wrappers_from_algorithm_dialog(
+            algorithm_dialog=self.parent_dialog, dialog_type=DIALOG_MODELER
+        )[self.input_matrix_parameter_name]
         if modeler_widget is None or not isinstance(modeler_widget.value(), list):
             error_message: str = self.tr("Error: no modeler wrapper found")
             QgsMessageLog.logMessage(error_message, level=Qgis.Critical)
@@ -145,10 +139,12 @@ class FactorTablePanel(BASE, WIDGET):
             value_algorithm_child_id: str = value.outputChildId()
 
             # Check if the current layer is a modeler input
+            is_modeler_input: bool = False
             if isinstance(
                 self.parent_dialog.model.parameterDefinition(value.parameterName()),
                 QgsProcessingParameterDefinition,
             ):
+                is_modeler_input = True
                 # If it is, set layer_id to the name of the input parameter
                 layer_id = self.parent_dialog.model.parameterDefinition(
                     value.parameterName()
@@ -164,7 +160,9 @@ class FactorTablePanel(BASE, WIDGET):
                 layer_id = f'{alg.algorithm().displayName().replace(" ", "_")}_{value.outputName()}'
             list_layers.append(
                 LayerInfo(
-                    layer_path=extract_raster_layer_path(layer_path),
+                    layer_path=layer_path
+                    if is_modeler_input
+                    else extract_raster_layer_path(layer_path),
                     modeler_input_id=layer_id,
                 )
             )
@@ -181,7 +179,7 @@ class FactorTablePanel(BASE, WIDGET):
         """
         list_layers: list[LayerInfo] = []
 
-        widget_values = get_parameter_value_from_algorithm_dialog(
+        widget_values = get_parameter_value_from_batch_standard_algorithm_dialog(
             dialog_type=self.dialog_type,
             param_name=self.input_matrix_parameter_name,
             algorithm_dialog=self.parent_dialog,
@@ -264,7 +262,7 @@ class FactorTablePanel(BASE, WIDGET):
             return
 
         # Check for a valid formula
-        formula = self.LineEdit_formula.text()
+        formula = self.plainTextEdit_formula.toPlainText()
         if not formula or not self.formula_is_valid(formula):
             return
 
@@ -292,5 +290,5 @@ class FactorTablePanel(BASE, WIDGET):
             This order is constraint by the way the value is stored in the model xml file
         """
         if value and len(value) > 1:
-            self.LineEdit_formula.setText(str(value[1]))
+            self.plainTextEdit_formula.setPlainText(str(value[1]))
             self._table_model.set_data(value[0])

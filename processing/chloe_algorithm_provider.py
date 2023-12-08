@@ -4,9 +4,22 @@ from qgis.core import QgsProcessingProvider, QgsRuntimeProfiler
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtGui import QIcon
 from .algorithms.landscape_metrics.sliding_algorithm import SlidingAlgorithm
+from .algorithms.landscape_metrics.sliding_multi_algorithm import SlidingMultiAlgorithm
 from .algorithms.landscape_metrics.selected_algorithm import SelectedAlgorithm
+from .algorithms.landscape_metrics.selected_multi_algorithm import (
+    SelectedMultiAlgorithm,
+)
+from .algorithms.landscape_metrics.grid_algorithm import GridAlgorithm
+from .algorithms.landscape_metrics.grid_multi_algorithm import GridMultiAlgorithm
+from .algorithms.landscape_metrics.map_algorithm import MapAlgorithm
 from .algorithms.tools.combine_algorithm import CombineAlgorithm
 from .algorithms.tools.search_and_replace_algorithm import SearchAndReplaceAlgorithm
+from .algorithms.tools.classification_algorithm import ClassificationAlgorithm
+from .algorithms.tools.distance_algorithm import DistanceAlgorithm
+from .algorithms.tools.cluster_algorithm import ClusterAlgorithm
+from .algorithms.generate_grid.from_csv_algorithm_multi import FromCSVMultiAlgorithm
+from .algorithms.generate_grid.from_csv_algorithm_single import FromCSVSingleAlgorithm
+from .algorithms.generate_grid.from_shapefile_algorithm import FromShapefileAlgorithm
 from .helpers.constants import CHLOE_PROVIDER_SUPPORTED_RASTER_EXTENSIONS
 
 
@@ -63,9 +76,20 @@ class ChloeAlgorithmProvider(QgsProcessingProvider):
         """Load the algorithms that belong to this provider."""
         self.algs = [
             SlidingAlgorithm(),
+            SlidingMultiAlgorithm(),
             SelectedAlgorithm(),
+            SelectedMultiAlgorithm(),
             CombineAlgorithm(),
+            DistanceAlgorithm(),
             SearchAndReplaceAlgorithm(),
+            FromCSVMultiAlgorithm(),
+            FromCSVSingleAlgorithm(),
+            FromShapefileAlgorithm(),
+            ClassificationAlgorithm(),
+            GridAlgorithm(),
+            GridMultiAlgorithm(),
+            MapAlgorithm(),
+            ClusterAlgorithm(),
         ]
 
         [self.addAlgorithm(alg) for alg in self.algs]

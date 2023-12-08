@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from typing import Any, Union
 from pathlib import Path
 from csv import reader
@@ -9,7 +8,7 @@ from processing.gui.wrappers import DIALOG_STANDARD
 from ....algorithms.helpers.constants import MAP_CSV
 from .....helpers.helpers import (
     get_raster_nodata_value,
-    get_unique_raster_values_as_int,
+    get_unique_raster_values,
 )
 from ..helpers import (
     csv_file_column_is_type_integer,
@@ -17,10 +16,10 @@ from ..helpers import (
     csv_file_has_min_column_count,
     get_csv_file_headers_list,
     get_input_raster_param_path,
-    get_parameter_value_from_algorithm_dialog,
+    get_parameter_value_from_batch_standard_algorithm_dialog,
 )
 
-from .models import IntValueDelegate, MappingTableModel
+from .models import MappingModelIntValueDelegate, MappingTableModel
 
 WIDGET, BASE = uic.loadUiType(
     Path(__file__).resolve().parent / "DlgMappingTableInput.ui"
@@ -36,7 +35,7 @@ class TableMappingPanel(BASE, WIDGET):
         input_raster_layer_param_name: str = "",
         dialog_type: str = DIALOG_STANDARD,
     ):
-        super().__init__(None)
+        super().__init__()
         self.setupUi(self)
         self.dialog = parent
         self.dialog_type: str = dialog_type
@@ -60,13 +59,12 @@ class TableMappingPanel(BASE, WIDGET):
     def init_gui(self) -> None:
         self.tableView_mapping.setModel(self._table_model)
         self.tableView_mapping.setItemDelegateForColumn(
-            0, IntValueDelegate(self.tableView_mapping)
+            0, MappingModelIntValueDelegate(self.tableView_mapping)
         )
         #  Set columns to stretch to the remaining space
         self.tableView_mapping.horizontalHeader().setSectionResizeMode(
             QHeaderView.Stretch
         )
-        # TODO : keep a row number limit to the model ?
 
     def add_table_row(self) -> None:
         """Add a row to the mapping table"""
@@ -88,20 +86,20 @@ class TableMappingPanel(BASE, WIDGET):
             algorithm_dialog=self.dialog,
         )
         # get raster values
-        raster_int_values: list[int] = get_unique_raster_values_as_int(
-            raster_file_path=raster_file_path
+        raster_int_values: list[float] = get_unique_raster_values(
+            raster_file_path=raster_file_path, as_int=True
         )
 
-        nodata_value: Union[int, None] = get_raster_nodata_value(
+        nodata_value: Union[float, None] = get_raster_nodata_value(
             raster_file_path=raster_file_path
         )
 
         raster_data_list: list[int] = []
 
         if nodata_value is not None:
-            raster_data_list.append(nodata_value)
+            raster_data_list.append(int(nodata_value))
 
-        raster_data_list.extend(raster_int_values)
+        raster_data_list.extend([int(raster) for raster in raster_int_values])
 
         self._table_model.set_data(
             set((str(raster_value), "") for raster_value in raster_data_list)
@@ -122,7 +120,9 @@ class TableMappingPanel(BASE, WIDGET):
             str: The path to the CSV file, or an empty string if no file was selected.
         """
 
-        csv_file: Union[Any, None] = get_parameter_value_from_algorithm_dialog(
+        csv_file: Union[
+            Any, None
+        ] = get_parameter_value_from_batch_standard_algorithm_dialog(
             dialog_type=self.dialog_type,
             param_name=MAP_CSV,
             algorithm_dialog=self.dialog,
@@ -160,7 +160,7 @@ class TableMappingPanel(BASE, WIDGET):
             return
 
         csv_headers_list: list[str] = get_csv_file_headers_list(
-            csv_file_path=csv_file_path
+            csv_file_path=csv_file_path, skip_columns_indexes=[0]
         )
         self.combobox_csv_headers_selector.addItems(csv_headers_list)
 

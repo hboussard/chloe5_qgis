@@ -40,6 +40,9 @@ from ..helpers.helpers import run_command
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 GRAIN_FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'chloe_grain_dialog.ui'))
 
+def s(path):
+    return path.replace(os.sep, '/')
+
 class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
@@ -63,6 +66,9 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
         self.inputarasementslayerfile.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.groupBox_arasements.layout().insertWidget(0,self.inputarasementslayerfile)
 
+        self.groupBox_enjeux.toggled.connect(self.setEnjeux)
+        self.setEnjeux()
+
         self.cursor = QTextCursor(self.textEdit_journal.document())
         self.pushButton_interrupt.clicked.connect(self.interruptWork)
 
@@ -73,9 +79,12 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
         #self.mMapLayerComboBox_Plantations.mMapLayer.setFilters(QgsMapLayerProxyModel.VectorLayer)
         #self.mMapLayerComboBox_Plantations.layerChanged.connect(self.mFieldComboBox_hauteurVegetation.setLayer)
     
+    def setEnjeux(self):
+            self.checkBox_enjeux.setEnabled(self.groupBox_enjeux.isChecked())
+    
     def create_properties_file(self) -> str:
         # récupérer dossier courant
-        prop_file = self.mQgsFileWidget_resultDir.filePath() + '/chloe_grain_'+datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S.%f")+'.properties'
+        prop_file = s(self.mQgsFileWidget_resultDir.filePath()) + '/chloe_grain_'+datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S.%f")+'.properties'
 
         # créer le fichier properties
         with open(prop_file, "w") as f:
@@ -93,7 +102,7 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
 
 
             # Dossier de sortie
-            dirPath = self.mQgsFileWidget_resultDir.filePath()
+            dirPath = s(self.mQgsFileWidget_resultDir.filePath())
             prefix = self.lineEdit_resultPrefix.text()
             filepath = dirPath+'/'+prefix+'_'
             f.write('output_path='+dirPath+'\n')
@@ -108,16 +117,16 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
                 f.write( 'buffer_area='+str(self.mQgsDoubleSpinBox_buffer.value())+'\n')
 
             if self.radioButton_rasterMNHC.isChecked():
-                f.write( 'bocage='+self.inputMNHClayerfile.currentFilePath() +'\n')
+                f.write( 'bocage='+s(self.inputMNHClayerfile.currentFilePath()) +'\n')
             else:
-                f.write( 'bocage='+self.mQgsFileWidget_dirMNHC.filePath() +'\n')
+                f.write( 'bocage='+s(self.mQgsFileWidget_dirMNHC.filePath()) +'\n')
 
             # scénario (onglet 3)
             if self.groupBox_arasements.isChecked():
-                f.write( 'suppression='+self.inputarasementslayerfile.currentFilePath()+'\n')
+                f.write( 'suppression='+s(self.inputarasementslayerfile.currentFilePath())+'\n')
                         
             if self.groupBox_plantations.isChecked() :
-                f.write( 'plantations='+self.inputplantationslayerfile.currentFilePath()+'\n')
+                f.write( 'plantations='+s(self.inputplantationslayerfile.currentFilePath())+'\n')
                 if self.radioButton_valeurHauteurVegetation.isChecked():
                     f.write( 'hauteur_plantations='+self.lineEdit_hauteurVegetation.text() +'\n')
                 elif self.radioButton_champHauteurVegetation.isChecked():
@@ -148,12 +157,12 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
 
             if self.checkBox_grainMask.isChecked(): # clusterisation_fonctionnalite
                 treatment = 'clusterisation_fonctionnalite'
-                f.write( 'grain_bocager_fonctionnel=' + filepath + 'grain_bocager_fonctionnel.tif"' +'\n')
+                f.write( 'grain_bocager_fonctionnel=' + filepath + 'grain_bocager_fonctionnel.tif' +'\n')
             if self.checkBox_clusters.isChecked(): # clusterisation_fonctionnalite
                 treatment = 'clusterisation_fonctionnalite'
                 f.write( 'clusterisation_grain_bocager_fonctionnel=' + filepath + 'clusters.tif'+'\n' ) 
 
-            if self.checkBox_enjeux.isChecked(): # calcul_enjeux_globaux
+            if self.checkBox_enjeux.isEnabled() and self.checkBox_enjeux.isChecked(): # calcul_enjeux_globaux
                 treatment = 'calcul_enjeux_globaux'
                 f.write( 'enjeux_window_radius='+self.lineEdit_radiusEnjeux.text()+'"\n' )
                 f.write( 'proportion_grain_bocager_fonctionnel=' + filepath + 'proportion_grain_fonctionnel.tif'+'"\n' )

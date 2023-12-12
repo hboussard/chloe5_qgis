@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Chloé - Analyse écopaysagère</string>
+   <string>Chloé - Grain bocager</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="leftMargin">
@@ -77,7 +77,11 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QgsFileWidget" name="mQgsFileWidget_dirMNHC"/>
+             <widget class="QgsFileWidget" name="mQgsFileWidget_dirMNHC">
+              <property name="storageMode">
+               <enum>QgsFileWidget::GetDirectory</enum>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

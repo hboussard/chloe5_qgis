@@ -89,8 +89,8 @@ class DialListCheckBox(QDialog):
         """Set the checked state of all items in the list view model"""
         for index in range(self.list_view_model.rowCount()):
             item = self.list_view_model.item(index)
-            if item.isCheckable() and item.checkState() is not checked:
-                item.setCheckState(checked)
+            if item.isCheckable() and item.checkState() != checked:
+                item.setCheckState(Qt.Checked if checked else Qt.Unchecked)
 
     def submit(self):
         """Get value of checked items and exit"""

@@ -315,5 +315,5 @@ class ClusterAlgorithm(ChloeAlgorithm):
             )
 
         if self.cluster_distance:
-            properties_lines.append(f"cluster_distance={str(self.cluster_distance)}")
+            properties_lines.append(f"max_distance={str(self.cluster_distance)}")
         return properties_lines

@@ -57,6 +57,9 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
         self.inputMNHClayerfile.setFilters(QgsMapLayerProxyModel.RasterLayer)
         self.groupBox_MNHC.layout().addWidget(self.inputMNHClayerfile,0,1)
 
+        self.radioButton_rasterMNHC.toggled.connect(self.setRasterMNHC)
+        self.setRasterMNHC()
+
         self.inputplantationslayerfile = InputLayerFileWidget()
         self.inputplantationslayerfile.setFilters(QgsMapLayerProxyModel.LineLayer|QgsMapLayerProxyModel.PolygonLayer)
         self.groupBox_plantations.layout().insertWidget(0,self.inputplantationslayerfile)
@@ -80,7 +83,11 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
         #self.mMapLayerComboBox_Plantations.layerChanged.connect(self.mFieldComboBox_hauteurVegetation.setLayer)
     
     def setEnjeux(self):
-            self.checkBox_enjeux.setEnabled(self.groupBox_enjeux.isChecked())
+        self.checkBox_enjeux.setEnabled(self.groupBox_enjeux.isChecked())
+
+    def setRasterMNHC(self):
+        self.inputMNHClayerfile.setEnabled(self.radioButton_rasterMNHC.isChecked())
+        self.mQgsFileWidget_dirMNHC.setEnabled(self.radioButton_dirMNHC.isChecked())
     
     def create_properties_file(self) -> str:
         # récupérer dossier courant

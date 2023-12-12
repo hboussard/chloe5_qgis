@@ -12,6 +12,7 @@ from .algorithms.landscape_metrics.selected_multi_algorithm import (
 from .algorithms.landscape_metrics.grid_algorithm import GridAlgorithm
 from .algorithms.landscape_metrics.grid_multi_algorithm import GridMultiAlgorithm
 from .algorithms.landscape_metrics.map_algorithm import MapAlgorithm
+from .algorithms.landscape_metrics.entity_algorithm import FromEntityAlgorithm
 from .algorithms.tools.combine_algorithm import CombineAlgorithm
 from .algorithms.tools.search_and_replace_algorithm import SearchAndReplaceAlgorithm
 from .algorithms.tools.classification_algorithm import ClassificationAlgorithm
@@ -81,6 +82,7 @@ class ChloeAlgorithmProvider(QgsProcessingProvider):
             SelectedMultiAlgorithm(),
             CombineAlgorithm(),
             DistanceAlgorithm(),
+            FromEntityAlgorithm(),
             SearchAndReplaceAlgorithm(),
             FromCSVMultiAlgorithm(),
             FromCSVSingleAlgorithm(),

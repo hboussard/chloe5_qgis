@@ -153,11 +153,11 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
 
             if self.checkBox_distanceInfluence.isChecked(): # calcul_distance_influence_boisement
                 treatment = 'calcul_distance_influence_boisement'
-                f.write( 'distance_influence=' + filepath + 'distance_influence.tif"' +'\n')
+                f.write( 'distance_influence=' + filepath + 'distance_influence.tif' +'\n')
 
             if self.checkBox_grain.isChecked(): # calcul_grain_bocager
                 treatment = 'calcul_grain_bocager'
-                f.write( 'grain_bocager=' + filepath + 'grain_bocager.tif"' +'\n')
+                f.write( 'grain_bocager=' + filepath + 'grain_bocager.tif' +'\n')
             if self.checkBox_grain4classes.isChecked(): # calcul_grain_bocager
                 treatment = 'calcul_grain_bocager'
                 f.write( 'grain_bocager_4classes=' + filepath + 'grain_bocager_4classes.tif'+'\n' )
@@ -171,9 +171,9 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
 
             if self.checkBox_enjeux.isEnabled() and self.checkBox_enjeux.isChecked(): # calcul_enjeux_globaux
                 treatment = 'calcul_enjeux_globaux'
-                f.write( 'enjeux_window_radius='+self.lineEdit_radiusEnjeux.text()+'"\n' )
-                f.write( 'proportion_grain_bocager_fonctionnel=' + filepath + 'proportion_grain_fonctionnel.tif'+'"\n' )
-                f.write( 'fragmentation_grain_bocager_fonctionnel=' + filepath + 'fragmentation_grain_fonctionnel.tif'+'"\n' )
+                f.write( 'enjeux_window_radius='+self.lineEdit_radiusEnjeux.text()+'\n' )
+                f.write( 'proportion_grain_bocager_fonctionnel=' + filepath + 'proportion_grain_fonctionnel.tif'+'\n' )
+                f.write( 'fragmentation_grain_bocager_fonctionnel=' + filepath + 'fragmentation_grain_fonctionnel.tif'+'\n' )
 
             # self.checkBox_scenarioDiffs.isChecked()
 

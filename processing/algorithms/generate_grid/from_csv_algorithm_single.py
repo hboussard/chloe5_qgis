@@ -200,7 +200,7 @@ class FromCSVSingleAlgorithm(ChloeAlgorithm):
         return "single from csv"
 
     def displayName(self):
-        return self.tr("Generate single raster from CSV data file")
+        return self.tr("from CSV data - single mode")
 
     def group(self):
         return self.tr(GENERATE_GRID_GROUP_NAME)

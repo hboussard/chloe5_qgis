@@ -108,7 +108,7 @@ class ClassificationAlgorithm(ChloeAlgorithm):
         return "classification"
 
     def displayName(self):
-        return self.tr("classification")
+        return self.tr("Classification")
 
     def group(self):
         return self.tr(UTILS_GROUP_NAME)

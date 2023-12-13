@@ -116,7 +116,7 @@ class CombineAlgorithm(ChloeAlgorithm):
         return "combine"
 
     def displayName(self):
-        return self.tr("Combine")
+        return self.tr("Combination")
 
     def group(self):
         return self.tr(UTILS_GROUP_NAME)

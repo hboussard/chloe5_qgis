@@ -120,7 +120,7 @@ class FromEntityMultiAlgorithm(ChloeAlgorithm):
         return "entity multi"
 
     def displayName(self):
-        return self.tr("from entity multi")
+        return self.tr("From entities")
 
     def group(self):
         return self.tr(LANDSCAPE_METRICS_MULTI_GROUP_NAME)

@@ -273,7 +273,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
         return "selected"
 
     def displayName(self):
-        return self.tr("selected")
+        return self.tr("Using selected points")
 
     def group(self):
         return self.tr(LANDSCAPE_METRICS_GROUP_NAME)

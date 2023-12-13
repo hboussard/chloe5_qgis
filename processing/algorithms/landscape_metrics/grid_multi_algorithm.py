@@ -137,7 +137,7 @@ class GridMultiAlgorithm(ChloeAlgorithm):
         return "grid multi"
 
     def displayName(self):
-        return self.tr("grid multi")
+        return self.tr("Using grid(s)")
 
     def group(self):
         return self.tr(LANDSCAPE_METRICS_MULTI_GROUP_NAME)

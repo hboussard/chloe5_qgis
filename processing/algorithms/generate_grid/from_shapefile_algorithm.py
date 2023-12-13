@@ -141,7 +141,7 @@ class FromShapefileAlgorithm(ChloeAlgorithm):
         )
 
     def name(self):
-        return "from shapefile"
+        return "From shapefile layer"
 
     def displayName(self):
         return self.tr("from shapefile")

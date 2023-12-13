@@ -136,7 +136,7 @@ class FromEntityAlgorithm(ChloeAlgorithm):
         return "entity"
 
     def displayName(self):
-        return self.tr("from entity")
+        return self.tr("From entities")
 
     def group(self):
         return self.tr(LANDSCAPE_METRICS_GROUP_NAME)

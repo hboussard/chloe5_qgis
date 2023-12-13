@@ -355,7 +355,7 @@ class SlidingMultiAlgorithm(ChloeAlgorithm):
         return "sliding multi"
 
     def displayName(self):
-        return self.tr("sliding multi")
+        return self.tr("Using sliding window(s)")
 
     def group(self):
         return self.tr(LANDSCAPE_METRICS_MULTI_GROUP_NAME)

@@ -168,7 +168,7 @@ class DistanceAlgorithm(ChloeAlgorithm):
         return "distance"
 
     def displayName(self):
-        return self.tr("distance")
+        return self.tr("Distance")
 
     def group(self):
         return self.tr(UTILS_GROUP_NAME)

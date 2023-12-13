@@ -145,7 +145,7 @@ class GridAlgorithm(ChloeAlgorithm):
         return "grid"
 
     def displayName(self):
-        return self.tr("grid")
+        return self.tr("Using grid")
 
     def group(self):
         return self.tr(LANDSCAPE_METRICS_GROUP_NAME)

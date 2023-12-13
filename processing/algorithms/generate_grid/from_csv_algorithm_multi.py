@@ -219,7 +219,7 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
         return "multi from csv"
 
     def displayName(self):
-        return self.tr("Generate multiple rasters from CSV data file")
+        return self.tr("from CSV data - multiple mode")
 
     def group(self):
         return self.tr(GENERATE_GRID_GROUP_NAME)

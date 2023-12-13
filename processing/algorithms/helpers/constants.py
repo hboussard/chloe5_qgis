@@ -1,13 +1,13 @@
 # Constants used in the algorithms
 
 # algorithms group names
-GENERATE_GRID_GROUP_NAME: str = "generate grid"
+GENERATE_GRID_GROUP_NAME: str = "Generate raster grid"
 GENERATE_GRID_GROUP_ID: str = "generategrid"
-UTILS_GROUP_NAME: str = "utils"
+UTILS_GROUP_NAME: str = "Utils"
 UTILS_GROUP_ID: str = "utils"
-LANDSCAPE_METRICS_GROUP_NAME: str = "landscape metrics"
+LANDSCAPE_METRICS_GROUP_NAME: str = "Landscape metrics calculation"
 LANDSCAPE_METRICS_GROUP_ID: str = "landscapemetrics"
-LANDSCAPE_METRICS_MULTI_GROUP_NAME: str = "landscape metrics multiple"
+LANDSCAPE_METRICS_MULTI_GROUP_NAME: str = "Multiple landscape metrics calculation"
 LANDSCAPE_METRICS_MULTI_GROUP_ID: str = "landscapemetrics_multi"
 # Parameters names constants
 FAST: str = "FAST"

@@ -373,7 +373,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         return "sliding"
 
     def displayName(self):
-        return self.tr("sliding")
+        return self.tr("Using sliding window")
 
     def group(self):
         return self.tr(LANDSCAPE_METRICS_GROUP_NAME)

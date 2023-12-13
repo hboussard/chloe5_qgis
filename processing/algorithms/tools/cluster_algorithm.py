@@ -194,7 +194,7 @@ class ClusterAlgorithm(ChloeAlgorithm):
         return "cluster"
 
     def displayName(self):
-        return self.tr("cluster")
+        return self.tr("Clustering")
 
     def group(self):
         return self.tr(UTILS_GROUP_NAME)

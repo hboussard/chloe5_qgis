@@ -111,7 +111,7 @@ class MapAlgorithm(ChloeAlgorithm):
         return "map"
 
     def displayName(self):
-        return self.tr("map")
+        return self.tr("On the whole map")
 
     def group(self):
         return self.tr(LANDSCAPE_METRICS_GROUP_NAME)

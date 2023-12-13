@@ -139,7 +139,7 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
         return "search and replace"
 
     def displayName(self):
-        return self.tr("search and replace")
+        return self.tr("Search and replace")
 
     def group(self):
         return self.tr(UTILS_GROUP_NAME)

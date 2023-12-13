@@ -266,7 +266,7 @@ class SelectedMultiAlgorithm(ChloeAlgorithm):
         return "selected multi"
 
     def displayName(self):
-        return self.tr("selected multi")
+        return self.tr("Using selected points")
 
     def group(self):
         return self.tr(LANDSCAPE_METRICS_MULTI_GROUP_NAME)

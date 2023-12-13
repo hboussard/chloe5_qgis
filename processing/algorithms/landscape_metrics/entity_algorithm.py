@@ -66,7 +66,7 @@ class FromEntityAlgorithm(ChloeAlgorithm):
         """Init algorithm parameters."""
 
         entity_raster_param = ChloeRasterParameterFileInput(
-            name=ENTITY_RASTER, description=self.tr("Input raster layer")
+            name=ENTITY_RASTER, description=self.tr("Entity raster layer")
         )
 
         entity_raster_param.setMetadata(

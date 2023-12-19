@@ -11,6 +11,7 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 
+from .....helpers.helpers import tr
 from .dataclasses import DomainValue, from_string_to_domain, DOMAIN_REGEX
 
 
@@ -44,8 +45,8 @@ class ClassificationModelIntValueDelegate(QItemDelegate):
         except ValueError:
             QMessageBox.critical(
                 None,
-                self.tr("Invalid value"),
-                self.tr(f"Value {value_str} is not a valid integer"),
+                tr("Invalid value"),
+                f"{tr('Value')} {value_str} {tr('is not a valid integer')}",
             )
             return
 
@@ -85,8 +86,8 @@ class DomainValueDelegate(QItemDelegate):
             if overlapping_domains:
                 QMessageBox.warning(
                     editor,
-                    "Invalid domain value",
-                    f"The domain value {str(domain_value)} overlaps with the following domains in the table : {','.join([str(dom) for dom in overlapping_domains])}",
+                    tr("Invalid domain value"),
+                    f"{tr('The domain value')} {str(domain_value)} {tr('overlaps with the following domains in the table')} : {','.join([str(dom) for dom in overlapping_domains])}",
                 )
                 return
             model.setData(index, str(domain_value), Qt.EditRole)

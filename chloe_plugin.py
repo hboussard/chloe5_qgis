@@ -123,7 +123,7 @@ class ChloePlugin:
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate("bba", message)
+        return QCoreApplication.translate("chloe5", message)
 
     def init_translator(self):
         """Initialize locale."""
@@ -202,7 +202,7 @@ class ChloePlugin:
         elif add_to_toolbar:
             # Adds plugin icon to Plugins toolbar
             self.iface.addToolBarIcon(action)
-            
+
         if add_to_menu:
             menu.addAction(action)
 

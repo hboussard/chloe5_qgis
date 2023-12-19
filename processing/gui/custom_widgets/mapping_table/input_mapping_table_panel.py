@@ -6,10 +6,7 @@ from qgis.PyQt.QtWidgets import QMessageBox, QHeaderView
 
 from processing.gui.wrappers import DIALOG_STANDARD
 from ....algorithms.helpers.constants import MAP_CSV
-from .....helpers.helpers import (
-    get_raster_nodata_value,
-    get_unique_raster_values,
-)
+from .....helpers.helpers import get_raster_nodata_value, get_unique_raster_values, tr
 from ..helpers import (
     csv_file_column_is_type_integer,
     csv_file_has_duplicates,
@@ -169,15 +166,15 @@ class TableMappingPanel(BASE, WIDGET):
         if csv_file is None or csv_file == Path():
             QMessageBox.critical(
                 None,
-                self.tr("Csv file error"),
-                self.tr("No csv file selected. Please select a csv file first."),
+                tr("Csv file error"),
+                tr("No csv file selected. Please select a csv file first."),
             )
             return False
         if not csv_file.exists():
             QMessageBox.critical(
                 None,
-                self.tr("Csv file error"),
-                self.tr(f"{csv_file} does not exist"),
+                tr("Csv file error"),
+                f"{csv_file} {tr('does not exist')}",
             )
             return False
         return True
@@ -189,22 +186,16 @@ class TableMappingPanel(BASE, WIDGET):
         ):
             QMessageBox.critical(
                 None,
-                self.tr("Csv file error"),
-                self.tr(
-                    self.tr(
-                        f"First column of {csv_file.stem} does not contain only integer values. Please check the csv file."
-                    )
-                ),
+                tr("Csv file error"),
+                f"{tr('First column of')} {csv_file.stem} {tr('does not contain only integer values. Please check the csv file.')}",
             )
             return False
         if csv_file_has_duplicates(csv_file_path=csv_file, column_idx_to_check=0):
             QMessageBox.critical(
                 None,
-                self.tr("Csv file error"),
-                self.tr(
-                    str(
-                        f"First column of {csv_file.stem} contains duplicates. Please check the csv file."
-                    )
+                tr("Csv file error"),
+                str(
+                    f"{tr('First column of')} {csv_file.stem} {tr('contains duplicates. Please check the csv file.')}"
                 ),
             )
             return False
@@ -272,10 +263,8 @@ class TableMappingPanel(BASE, WIDGET):
                 except ValueError:
                     QMessageBox.critical(
                         None,
-                        self.tr("Csv file value error"),
-                        self.tr(
-                            f"all values of {csv_file_path.stem} are not integers. Please check the csv file."
-                        ),
+                        tr("Csv file value error"),
+                        f"{tr('all values of')} {csv_file_path.stem} {tr('are not integers. Please check the csv file.')}",
                     )
                     # TODO : return empty list to be more restrictive ?
 

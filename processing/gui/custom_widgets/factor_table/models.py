@@ -4,6 +4,7 @@ from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QMessageBox
 from .dataclasses import CombineFactorElement
+from .....helpers.helpers import tr
 
 
 class FactorTableModel(QStandardItemModel):
@@ -28,7 +29,7 @@ class FactorTableModel(QStandardItemModel):
         super().__init__()
         self.setColumnCount(4)
         self.setHorizontalHeaderLabels(
-            [self.tr("Factor name"), self.tr("Layer name"), self.tr("Layer path")]
+            [tr("Factor name"), tr("Layer name"), tr("Layer path")]
         )
 
     # "list[CombineFactorElement | list[str]]"
@@ -97,8 +98,8 @@ class FactorTableModel(QStandardItemModel):
         if duplicates:
             QMessageBox.critical(
                 None,
-                self.tr("Duplicated factor names"),
-                self.tr(f"Duplicated factor names ({', '.join(duplicates)})"),
+                tr("Duplicated factor names"),
+                f"{tr('Duplicated factor names')} ({', '.join(duplicates)})",
             )
             return True
         return False
@@ -125,10 +126,8 @@ class FactorTableModel(QStandardItemModel):
         if empty_layer_names:
             QMessageBox.critical(
                 None,
-                self.tr("Rasters with an empty factor name"),
-                self.tr(
-                    f"Rasters with an empty factor name ({', '.join(empty_layer_names)})"
-                ),
+                tr("Rasters with an empty factor name"),
+                f"{tr('Rasters with an empty factor name')} ({', '.join(empty_layer_names)})",
             )
             return True
         return False

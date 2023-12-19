@@ -13,6 +13,8 @@ from processing.gui.wrappers import (
     DIALOG_MODELER,
     DIALOG_BATCH,
 )
+
+from ....helpers.helpers import tr
 from ..chloe_algorithm_dialog import ChloeParametersPanel
 
 # TODO : Add translation to messages
@@ -148,7 +150,8 @@ def replace_param_widget_value(
     param_widget = wrappers[param_name]
     if param_widget is None:
         QgsMessageLog.logMessage(
-            f"Could not find widget for parameter {param_name}", level=Qgis.Critical
+            f"{tr('Could not find widget for parameter')} {param_name}",
+            level=Qgis.Critical,
         )
     else:
         try:
@@ -156,7 +159,7 @@ def replace_param_widget_value(
         except AttributeError:
             # log
             QgsMessageLog.logMessage(
-                f"Could not set parameter value for parameter {param_name}",
+                f"{tr('Could not set parameter value for parameter')} {param_name}",
                 level=Qgis.Critical,
             )
 
@@ -220,20 +223,22 @@ def csv_file_has_min_column_count(
             header = next(csv_reader)
             return len(header) >= minimum_column_count
     except FileNotFoundError:
-        QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
+        QMessageBox.critical(
+            None, "Error", f"{str(csv_file_path)} {tr('does not exist')}"
+        )
         return False
     except PermissionError:
         QMessageBox.critical(
             None,
             "Error",
-            f"{str(csv_file_path)} is not accessible. Please check the file permissions.",
+            f"{str(csv_file_path)} {tr('is not accessible. Please check the file permissions.')}",
         )
         return False
     except UnicodeDecodeError:
         QMessageBox.critical(
             None,
             "Error",
-            f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
+            f"{str(csv_file_path)} {tr('is not a valid csv file. Please check the file encoding.')}",
         )
         return False
 
@@ -253,20 +258,22 @@ def csv_file_column_is_type_integer(
                     return False
             return True
     except FileNotFoundError:
-        QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
+        QMessageBox.critical(
+            None, "Error", f"{str(csv_file_path)} {tr('does not exist')}"
+        )
         return False
     except PermissionError:
         QMessageBox.critical(
             None,
             "Error",
-            f"{str(csv_file_path)} is not accessible. Please check the file permissions.",
+            f"{str(csv_file_path)} {tr('is not accessible. Please check the file permissions.')}",
         )
         return False
     except UnicodeDecodeError:
         QMessageBox.critical(
             None,
             "Error",
-            f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
+            f"{str(csv_file_path)} {tr('is not a valid csv file. Please check the file encoding.')}",
         )
         return False
 
@@ -289,25 +296,27 @@ def csv_file_has_duplicates(csv_file_path: Path, column_idx_to_check: int = 0) -
                 QMessageBox.critical(
                     None,
                     "Error",
-                    f"Duplicated values in column {column_idx_to_check} ({', '.join(duplicates)})",
+                    f"{tr('Duplicated values in column')} {column_idx_to_check} ({', '.join(duplicates)})",
                 )
                 return True
             return False
     except FileNotFoundError:
-        QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
+        QMessageBox.critical(
+            None, "Error", f"{str(csv_file_path)} {tr('does not exist')}"
+        )
         return False
     except PermissionError:
         QMessageBox.critical(
             None,
             "Error",
-            f"{str(csv_file_path)} is not accessible. Please check the file permissions.",
+            f"{str(csv_file_path)} {tr('is not accessible. Please check the file permissions.')}",
         )
         return False
     except UnicodeDecodeError:
         QMessageBox.critical(
             None,
             "Error",
-            f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
+            f"{str(csv_file_path)} {tr('is not a valid csv file. Please check the file encoding.')}",
         )
         return False
 
@@ -327,20 +336,22 @@ def get_csv_file_headers_list(
                     headers_list.append(header)
             return headers_list
     except FileNotFoundError:
-        QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
+        QMessageBox.critical(
+            None, "Error", f"{str(csv_file_path)} {tr('does not exist')}"
+        )
         return []
     except PermissionError:
         QMessageBox.critical(
             None,
             "Error",
-            f"{str(csv_file_path)} is not accessible. Please check the file permissions.",
+            f"{str(csv_file_path)} {tr('is not accessible. Please check the file permissions.')}",
         )
         return []
     except UnicodeDecodeError:
         QMessageBox.critical(
             None,
             "Error",
-            f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
+            f"{str(csv_file_path)} {tr('is not a valid csv file. Please check the file encoding.')}",
         )
         return []
 
@@ -375,20 +386,22 @@ def get_filtered_csv_headers_list(
                 headers_list.append(header)
             return headers_list
     except FileNotFoundError:
-        QMessageBox.critical(None, "Error", f"{str(csv_file_path)} does not exist")
+        QMessageBox.critical(
+            None, "Error", f"{str(csv_file_path)} {tr('does not exist')}"
+        )
         return []
     except PermissionError:
         QMessageBox.critical(
             None,
             "Error",
-            f"{str(csv_file_path)} is not accessible. Please check the file permissions.",
+            f"{str(csv_file_path)} {tr('is not accessible. Please check the file permissions.')}",
         )
         return []
     except UnicodeDecodeError:
         QMessageBox.critical(
             None,
             "Error",
-            f"{str(csv_file_path)} is not a valid csv file. Please check the file encoding.",
+            f"{str(csv_file_path)} {tr('is not a valid csv file. Please check the file encoding.')}",
         )
         return []
 
@@ -398,15 +411,15 @@ def csv_file_path_is_valid(csv_file: Path) -> bool:
     if csv_file is None or csv_file == Path():
         QMessageBox.critical(
             None,
-            "Csv file error",
-            "No csv file selected. Please select a csv file first.",
+            tr("Csv file error"),
+            tr("No csv file selected. Please select a csv file first."),
         )
         return False
     if not csv_file.exists():
         QMessageBox.critical(
             None,
-            "Csv file error",
-            f"{csv_file} does not exist",
+            tr("Csv file error"),
+            f"{csv_file} {tr('does not exist')}",
         )
         return False
     return True

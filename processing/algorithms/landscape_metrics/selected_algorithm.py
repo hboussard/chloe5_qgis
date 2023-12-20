@@ -118,7 +118,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
         window_size_param = QgsProcessingParameterNumber(
             name=WINDOW_SIZES,
-            description=self.tr("Windows sizes (pixels)"),
+            description=self.tr("Window size (pixels)"),
             defaultValue=3,
             minValue=3,
         )

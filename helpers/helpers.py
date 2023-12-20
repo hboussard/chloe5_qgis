@@ -364,4 +364,4 @@ def tr(message: str):
     Returns:
         str: The translated message.
     """
-    return QCoreApplication.translate("helpers", message)
+    return QCoreApplication.translate("Chloe5Plugin", message)

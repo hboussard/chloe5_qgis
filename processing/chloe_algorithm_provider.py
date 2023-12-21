@@ -57,7 +57,7 @@ class ChloeAlgorithmProvider(QgsProcessingProvider):
 
     def name(self) -> str:
         """Returns the provider name, which is used to describe the provider within the GUI."""
-        return "Chloe 5 - Landscape metrics"
+        return self.tr("Chloe 5 - Landscape metrics")
 
     def longName(self) -> str:
         """Returns the a longer version of the provider name, which can include extra details such as version numbers."""

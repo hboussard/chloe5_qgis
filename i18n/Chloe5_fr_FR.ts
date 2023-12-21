@@ -4,26 +4,6 @@
 <context>
     <name>@default</name>
     <message>
-        <location filename="../processing/algorithms/helpers/constants.py" line="6"/>
-        <source>Generate raster grid</source>
-        <translation>Générer un fichier raster</translation>
-    </message>
-    <message>
-        <location filename="../processing/algorithms/helpers/constants.py" line="8"/>
-        <source>Utils</source>
-        <translation>Outils</translation>
-    </message>
-    <message>
-        <location filename="../processing/algorithms/helpers/constants.py" line="10"/>
-        <source>Landscape metrics calculation</source>
-        <translation type="unfinished">Calcul de métriques paysagères</translation>
-    </message>
-    <message>
-        <location filename="../processing/algorithms/helpers/constants.py" line="12"/>
-        <source>Multiple landscape metrics calculation</source>
-        <translation type="unfinished">Calcul de multiples métriques paysagères</translation>
-    </message>
-    <message>
         <location filename="../processing/gui/custom_widgets/mapping_table/input_mapping_table_panel.py" line="194"/>
         <source>Csv file error</source>
         <translation>Erreur fichier csv</translation>
@@ -143,6 +123,11 @@
         <location filename="../processing/chloe_algorithm_provider.py" line="41"/>
         <source>Activate</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../processing/chloe_algorithm_provider.py" line="60"/>
+        <source>Chloe 5 - Landscape metrics</source>
+        <translation type="unfinished">Chloe 5 - Métriques paysagères</translation>
     </message>
 </context>
 <context>
@@ -421,17 +406,17 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>ChloePlugin</name>
     <message>
-        <location filename="../chloe_plugin.py" line="46"/>
+        <location filename="../chloe5_plugin.py" line="46"/>
         <source>Chloe5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../chloe_plugin.py" line="80"/>
+        <location filename="../chloe5_plugin.py" line="80"/>
         <source>Chloé 5 : Grain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../chloe_plugin.py" line="92"/>
+        <location filename="../chloe5_plugin.py" line="92"/>
         <source>Configuration du plugin</source>
         <translation type="unfinished"></translation>
     </message>
@@ -462,6 +447,11 @@ p, li { white-space: pre-wrap; }
         <location filename="../processing/algorithms/tools/classification_algorithm.py" line="111"/>
         <source>Classification</source>
         <translation>Classification</translation>
+    </message>
+    <message>
+        <location filename="../processing/algorithms/tools/classification_algorithm.py" line="114"/>
+        <source>Utils</source>
+        <translation>Outils</translation>
     </message>
 </context>
 <context>
@@ -529,6 +519,11 @@ p, li { white-space: pre-wrap; }
         <source>You must select at least one output file</source>
         <translation type="unfinished">Vous devez sélectionner au moins un fichier de sortie</translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/tools/cluster_algorithm.py" line="200"/>
+        <source>Utils</source>
+        <translation type="unfinished">Outils</translation>
+    </message>
 </context>
 <context>
     <name>CombineAlgorithm</name>
@@ -551,6 +546,11 @@ p, li { white-space: pre-wrap; }
         <location filename="../processing/algorithms/tools/combine_algorithm.py" line="107"/>
         <source>Properties file</source>
         <translation>Fichier de propriétés</translation>
+    </message>
+    <message>
+        <location filename="../processing/algorithms/tools/combine_algorithm.py" line="122"/>
+        <source>Utils</source>
+        <translation>Outils</translation>
     </message>
 </context>
 <context>
@@ -636,6 +636,11 @@ p, li { white-space: pre-wrap; }
         <source>Distance</source>
         <translation>Distance</translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/tools/distance_algorithm.py" line="174"/>
+        <source>Utils</source>
+        <translation>Outils</translation>
+    </message>
 </context>
 <context>
     <name>FilterAlgorithm</name>
@@ -668,6 +673,11 @@ p, li { white-space: pre-wrap; }
         <location filename="../processing/algorithms/tools/filter_algorithm.py" line="118"/>
         <source>filter</source>
         <translation>Filtre</translation>
+    </message>
+    <message>
+        <location filename="../processing/algorithms/tools/filter_algorithm.py" line="121"/>
+        <source>Utils</source>
+        <translation>Outils</translation>
     </message>
 </context>
 <context>
@@ -835,6 +845,11 @@ p, li { white-space: pre-wrap; }
         <source>The selected crs is geographic, please select a projected crs.</source>
         <translation type="unfinished">Le Systèmes de Coordonnées de Référence (CRS) sélectionné est géographique. Veuillez sélectionner un CRS projeté.</translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/generate_grid/from_csv_algorithm_multi.py" line="225"/>
+        <source>Generate raster grid</source>
+        <translation type="unfinished">Générer un fichier raster</translation>
+    </message>
 </context>
 <context>
     <name>FromCSVSingleAlgorithm</name>
@@ -908,6 +923,11 @@ p, li { white-space: pre-wrap; }
         <source>The selected crs is geographic, please select a projected crs.</source>
         <translation type="unfinished">Le Système de référence de coordonnées (CRS) sélectionné est géographique. Veuillez sélectionner un CRS projeté.</translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/generate_grid/from_csv_algorithm_single.py" line="206"/>
+        <source>Generate raster grid</source>
+        <translation type="unfinished">Générer un fichier raster</translation>
+    </message>
 </context>
 <context>
     <name>FromEntityAlgorithm</name>
@@ -951,6 +971,11 @@ p, li { white-space: pre-wrap; }
         <source>You must select at least one output file</source>
         <translation>Vous devez sélectionner au moins un fichier de sortie</translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/landscape_metrics/entity_algorithm.py" line="142"/>
+        <source>Landscape metrics calculation</source>
+        <translation>Calcul de métriques paysagères</translation>
+    </message>
 </context>
 <context>
     <name>FromEntityMultiAlgorithm</name>
@@ -983,6 +1008,11 @@ p, li { white-space: pre-wrap; }
         <location filename="../processing/algorithms/landscape_metrics/entity_multi_algorithm.py" line="123"/>
         <source>From entities</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../processing/algorithms/landscape_metrics/entity_multi_algorithm.py" line="126"/>
+        <source>Multiple landscape metrics calculation</source>
+        <translation type="unfinished">Calcul de multiples métriques paysagères</translation>
     </message>
 </context>
 <context>
@@ -1032,6 +1062,11 @@ p, li { white-space: pre-wrap; }
         <source>from shapefile</source>
         <translation type="unfinished">A partir d&apos;un fichier Shapefile</translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/generate_grid/from_shapefile_algorithm.py" line="150"/>
+        <source>Generate raster grid</source>
+        <translation type="unfinished">Générer un fichier raster</translation>
+    </message>
 </context>
 <context>
     <name>GridAlgorithm</name>
@@ -1080,6 +1115,11 @@ p, li { white-space: pre-wrap; }
         <source>You must select at least one output file</source>
         <translation>Vous devez sélectionner au moins un fichier de sortie</translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/landscape_metrics/grid_algorithm.py" line="151"/>
+        <source>Landscape metrics calculation</source>
+        <translation>Calcul de métriques paysagères</translation>
+    </message>
 </context>
 <context>
     <name>GridMultiAlgorithm</name>
@@ -1118,6 +1158,11 @@ p, li { white-space: pre-wrap; }
         <source>Using grid(s)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/landscape_metrics/grid_multi_algorithm.py" line="143"/>
+        <source>Multiple landscape metrics calculation</source>
+        <translation type="unfinished">Calcul de multiples métriques paysagères</translation>
+    </message>
 </context>
 <context>
     <name>MapAlgorithm</name>
@@ -1146,6 +1191,11 @@ p, li { white-space: pre-wrap; }
         <source>On the whole map</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/landscape_metrics/map_algorithm.py" line="117"/>
+        <source>Landscape metrics calculation</source>
+        <translation type="unfinished">Calcul de métriques paysagères</translation>
+    </message>
 </context>
 <context>
     <name>OverlayAlgorithm</name>
@@ -1168,6 +1218,11 @@ p, li { white-space: pre-wrap; }
         <location filename="../processing/algorithms/tools/overlay_algorithm.py" line="74"/>
         <source>overlay</source>
         <translation>Superposition</translation>
+    </message>
+    <message>
+        <location filename="../processing/algorithms/tools/overlay_algorithm.py" line="77"/>
+        <source>Utils</source>
+        <translation>Outils</translation>
     </message>
 </context>
 <context>
@@ -1206,6 +1261,11 @@ p, li { white-space: pre-wrap; }
         <location filename="../processing/algorithms/tools/search_and_replace_algorithm.py" line="142"/>
         <source>Search and replace</source>
         <translation>Rechercher et remplacer</translation>
+    </message>
+    <message>
+        <location filename="../processing/algorithms/tools/search_and_replace_algorithm.py" line="145"/>
+        <source>Utils</source>
+        <translation>Outils</translation>
     </message>
 </context>
 <context>
@@ -1270,6 +1330,11 @@ p, li { white-space: pre-wrap; }
         <source>Using selected points</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/landscape_metrics/selected_algorithm.py" line="279"/>
+        <source>Landscape metrics calculation</source>
+        <translation type="unfinished">Calcul de métriques paysagères</translation>
+    </message>
 </context>
 <context>
     <name>SelectedMultiAlgorithm</name>
@@ -1332,6 +1397,11 @@ p, li { white-space: pre-wrap; }
         <location filename="../processing/algorithms/landscape_metrics/selected_multi_algorithm.py" line="269"/>
         <source>Using selected points</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../processing/algorithms/landscape_metrics/selected_multi_algorithm.py" line="272"/>
+        <source>Multiple landscape metrics calculation</source>
+        <translation type="unfinished">Calcul de multiples métriques paysagères</translation>
     </message>
 </context>
 <context>
@@ -1426,6 +1496,11 @@ p, li { white-space: pre-wrap; }
         <source>You must select at least one output file</source>
         <translation>Vous devez sélectionner au moins un fichier de sortie</translation>
     </message>
+    <message>
+        <location filename="../processing/algorithms/landscape_metrics/sliding_algorithm.py" line="379"/>
+        <source>Landscape metrics calculation</source>
+        <translation>Calcul de métriques paysagères</translation>
+    </message>
 </context>
 <context>
     <name>SlidingMultiAlgorithm</name>
@@ -1508,6 +1583,11 @@ p, li { white-space: pre-wrap; }
         <location filename="../processing/algorithms/landscape_metrics/sliding_multi_algorithm.py" line="358"/>
         <source>Using sliding window(s)</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../processing/algorithms/landscape_metrics/sliding_multi_algorithm.py" line="361"/>
+        <source>Multiple landscape metrics calculation</source>
+        <translation type="unfinished">Calcul de multiples métriques paysagères</translation>
     </message>
 </context>
 </TS>

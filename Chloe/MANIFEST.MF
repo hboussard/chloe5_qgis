@@ -48,4 +48,6 @@ Class-Path: ../bin/apiland-1.0.jar
  ../lib/jakarta.xml.bind-api-4.0.0.jar 
  ../lib/activation-1.1.1.jar 
  ../lib/jackson-core-2.9.9.jar 
+ ../lib/weka-stable-3.8.4.jar 
+ ../lib/bounce_0.18.jar 
 

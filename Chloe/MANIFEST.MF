@@ -4,7 +4,7 @@ Class-Path: ../bin/apiland-1.0.jar
  ../lib/antlr4-runtime-4.5.3.jar 
  ../lib/aparapi-3.0.0.jar 
  ../lib/aparapi-jni-1.4.3.jar 
- ../lib/commons-lang3-3.8.1.jar 
+ ../lib/commons-lang3-3.12.0.jar 
  ../lib/csv-1.0.jar 
  ../lib/ejml-core-0.34.jar 
  ../lib/ejml-ddense-0.34.jar 

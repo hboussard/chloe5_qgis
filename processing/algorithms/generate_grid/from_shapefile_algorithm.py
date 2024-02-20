@@ -141,10 +141,10 @@ class FromShapefileAlgorithm(ChloeAlgorithm):
         )
 
     def name(self):
-        return "From shapefile layer"
+        return "From shapefile"
 
     def displayName(self):
-        return self.tr("from shapefile")
+        return self.tr("From shapefile layer")
 
     def group(self):
         return self.tr(GENERATE_GRID_GROUP_NAME)

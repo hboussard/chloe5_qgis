@@ -8,6 +8,7 @@ from qgis.PyQt.QtWidgets import (
 )
 from qgis.PyQt.QtGui import QStandardItem, QStandardItemModel
 from qgis.core import QgsMessageLog, Qgis
+from .....helpers.helpers import tr
 
 
 class DialListCheckBox(QDialog):
@@ -41,9 +42,9 @@ class DialListCheckBox(QDialog):
         main_layout.addLayout(buttons_vertical_layout)
 
         # List buttons
-        btn_all = QPushButton(self.tr("All"))
-        btn_nothing = QPushButton(self.tr("Nothing"))
-        btn_submit = QPushButton(self.tr("Ok"))
+        btn_all = QPushButton(tr("All"))
+        btn_nothing = QPushButton(tr("Nothing"))
+        btn_submit = QPushButton(tr("Ok"))
 
         buttons_vertical_layout.addWidget(btn_all)
         buttons_vertical_layout.addWidget(btn_nothing)
@@ -102,7 +103,7 @@ class DialListCheckBox(QDialog):
                     self.return_values.append(item.text())
                 except ValueError:
                     QgsMessageLog.logMessage(
-                        self.tr(f"The value {item.text()} is not an integer"),
+                        f"{tr('The value')} {item.text()} {tr('is not an integer')}",
                         level=Qgis.Critical,
                     )
         self.close()

@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
 )
 
+from .....helpers.helpers import tr
 from ..helpers import value_exists_in_model_column
 
 
@@ -42,8 +43,8 @@ class MappingModelIntValueDelegate(QItemDelegate):
         ):
             QMessageBox.critical(
                 None,
-                self.tr("Duplicated value"),
-                self.tr(f"Value {value_str} already exists"),
+                tr("Duplicated value"),
+                f"{tr('Value')} {value_str} {tr('already exists')}",
             )
             return
         # convert to int if possible, otherwise return
@@ -52,8 +53,8 @@ class MappingModelIntValueDelegate(QItemDelegate):
         except ValueError:
             QMessageBox.critical(
                 None,
-                self.tr("Invalid value"),
-                self.tr(f"Value {value_str} is not a valid integer"),
+                tr("Invalid value"),
+                f"{tr('Value')} {value_str} {tr('is not a valid integer')}",
             )
             return
 
@@ -71,7 +72,7 @@ class MappingTableModel(QStandardItemModel):
     def __init__(self):
         super().__init__()
         self.setColumnCount(2)
-        self.setHorizontalHeaderLabels([self.tr("value"), self.tr("new value")])
+        self.setHorizontalHeaderLabels([tr("value"), tr("new value")])
 
         self.rowsInserted.connect(self.model_updated)
         self.rowsInserted.connect(self.on_row_inserted)
@@ -114,8 +115,8 @@ class MappingTableModel(QStandardItemModel):
         if value_exists_in_model_column(model=self, value=value, column_index=0):
             QMessageBox.critical(
                 None,
-                self.tr("Duplicated value"),
-                self.tr(f"Value {value} already exists"),
+                tr("Duplicated value"),
+                f"{tr('Value')} {value} {tr('already exists')}",
             )
             return
         value_item = QStandardItem(value)

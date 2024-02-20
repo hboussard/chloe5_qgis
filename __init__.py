@@ -23,6 +23,6 @@
 
 def classFactory(iface):
     # load plugin class from file
-    from .chloe_plugin import ChloePlugin
+    from .chloe5_plugin import Chloe5Plugin
 
-    return ChloePlugin(iface)
+    return Chloe5Plugin(iface)

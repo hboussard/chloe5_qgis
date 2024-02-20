@@ -1,5 +1,4 @@
 # Constants used in the algorithms
-
 # algorithms group names
 GENERATE_GRID_GROUP_NAME: str = "Generate raster grid"
 GENERATE_GRID_GROUP_ID: str = "generategrid"

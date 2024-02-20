@@ -80,7 +80,7 @@ class ChloeImportRasterMetadataButtonWidgetWrapper(ChloeActionWidgetWrapper):
         if file_path == Path() or not file_path.exists():
             QMessageBox.warning(
                 self.dialog,
-                self.tr("File selected do not exist"),
+                self.tr("Selected file do not exist"),
                 self.tr("Please select a file"),
             )
             return

@@ -6,6 +6,7 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
 )
 
+from .....helpers.helpers import tr
 
 DOMAIN_REGEX: str = r"[\[\]](-?\d+\.?\d*)?,(-?\d+\.?\d*)?[\[\]]"
 
@@ -67,8 +68,10 @@ def from_string_to_domain(value: str) -> Union[DomainValue, None]:
     if not regex.exactMatch(value):
         QMessageBox.warning(
             None,
-            "Invalid domain value",
-            "The domain value should follow the interval syntax. Examples: [0,1[ or ],-1] or [2,[.",
+            tr("Invalid domain value"),
+            tr(
+                "The domain value should follow the interval syntax. Examples: [0,1[ or ],-1] or [2,[."
+            ),
         )
         return None
 
@@ -86,8 +89,8 @@ def from_string_to_domain(value: str) -> Union[DomainValue, None]:
     if not first_value and not second_value:
         QMessageBox.warning(
             None,
-            "Invalid domain value",
-            "At least one value should be set in the domain",
+            tr("Invalid domain value"),
+            tr("At least one value should be set in the domain"),
         )
         return None
 
@@ -101,7 +104,7 @@ def from_string_to_domain(value: str) -> Union[DomainValue, None]:
     except ValueError as e:
         QMessageBox.warning(
             None,
-            "Invalid domain value",
+            tr("Invalid domain value"),
             f"{e}",
         )
         return None

@@ -10,6 +10,7 @@ from subprocess import Popen, PIPE, STDOUT, DEVNULL
 import numpy as np
 from math import floor
 from osgeo import gdal
+from qgis.PyQt.QtCore import QCoreApplication
 from qgis.utils import iface
 from qgis.core import (
     QgsRasterLayer,
@@ -351,3 +352,16 @@ def get_layer_name(
     else:
         res = str(layer)
     return res
+
+
+def tr(message: str):
+    """
+    Translates the given message using the translation context "helpers".
+
+    Args:
+        message (str): The message to be translated.
+
+    Returns:
+        str: The translated message.
+    """
+    return QCoreApplication.translate("Chloe5Plugin", message)

@@ -21,7 +21,7 @@ from qgis.PyQt.QtWidgets import QMessageBox, QHeaderView
 
 from qgis.core import QgsProcessingParameterDefinition, QgsMessageLog, Qgis
 from processing.gui.wrappers import DIALOG_MODELER, DIALOG_STANDARD
-from .....helpers.helpers import get_layer_name
+from .....helpers.helpers import get_layer_name, tr
 from ....algorithms.helpers.constants import INPUTS_MATRIX
 from ..helpers import (
     extract_raster_layer_path,
@@ -92,7 +92,7 @@ class FactorTablePanel(BASE, WIDGET):
         self.tableView.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
 
         # Set the placeholder text for the combination formula text box.
-        self.plainTextEdit_formula.setPlaceholderText(self.tr("Combination Formula"))
+        self.plainTextEdit_formula.setPlaceholderText(tr("Combination Formula"))
 
         # Connect the populate button to the populateTableModel method.
         self.button_load_layers.clicked.connect(self.populate_table_model)
@@ -125,7 +125,7 @@ class FactorTablePanel(BASE, WIDGET):
             algorithm_dialog=self.parent_dialog, dialog_type=DIALOG_MODELER
         )[self.input_matrix_parameter_name]
         if modeler_widget is None or not isinstance(modeler_widget.value(), list):
-            error_message: str = self.tr("Error: no modeler wrapper found")
+            error_message: str = tr("Error: no modeler wrapper found")
             QgsMessageLog.logMessage(error_message, level=Qgis.Critical)
             return list_layers
 
@@ -211,9 +211,7 @@ class FactorTablePanel(BASE, WIDGET):
 
         # If the list of layers is empty, show an error message and return.
         if not list_layers:
-            QMessageBox.critical(
-                self, self.tr("Select rasters"), self.tr("No rasters selected")
-            )
+            QMessageBox.critical(self, tr("Select rasters"), tr("No rasters selected"))
             return
         else:
             # For each layer in the list of layers, create a CombineFactorElement object and append it to the factor_elements list.

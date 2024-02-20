@@ -144,7 +144,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
         # WINDOW SIZE
         window_size_parameter = QgsProcessingParameterNumber(
             name=WINDOW_SIZES,
-            description=self.tr("Windows sizes (pixels)"),
+            description=self.tr("Window size (pixels)"),
             defaultValue=3,
             minValue=3,
         )

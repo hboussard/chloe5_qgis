@@ -121,7 +121,7 @@ class GridMultiAlgorithm(ChloeAlgorithm):
         """Init output parameters."""
         output_folder_parameter = QgsProcessingParameterFolderDestination(
             name=OUTPUT_DIR,
-            description=self.tr("Output windows folder"),
+            description=self.tr("Output folder"),
         )
         self.addParameter(output_folder_parameter)
 

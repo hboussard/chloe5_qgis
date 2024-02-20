@@ -23,7 +23,7 @@
 """
 from pathlib import Path
 from qgis.gui import QgsMessageBar
-from qgis.core import QgsApplication, QgsProcessingProvider
+from qgis.core import QgsApplication, QgsProcessingProvider, Qgis, QgsMessageLog
 from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator
 from qgis.PyQt.QtWidgets import QAction, QWidget, QMenu, QToolBar, QMenuBar
 from qgis.PyQt.QtGui import QIcon
@@ -32,7 +32,7 @@ from .settings.settings_dialog import SettingsDialog
 from .dialogs.chloe_grain import ChloeGrainDialog
 
 
-class ChloePlugin:
+class Chloe5Plugin:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -123,17 +123,30 @@ class ChloePlugin:
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate("bba", message)
+        return QCoreApplication.translate("Chloe5Plugin", message)
 
     def init_translator(self):
         """Initialize locale."""
         locale = QSettings().value("locale/userLocale")[0:2]
-        locale_path: Path = Path(__file__).parent / "i18n" / f"Chloe_{locale}.qm"
-
+        locale_path: Path = (
+            Path(__file__).parent / "i18n" / f"Chloe5_{locale}_{locale.upper()}.qm"
+        )
+        self.translator = QTranslator()
         if locale_path.exists():
-            self.translator = QTranslator()
-            self.translator.load(locale_path)
-            QCoreApplication.installTranslator(self.translator)
+            self.translator.load(str(locale_path))
+        else:
+            # warning
+            QgsMessageLog.logMessage(
+                f"Could not load translation file {locale}", level=Qgis.Critical
+            )
+
+            self.iface.messageBar().pushMessage(
+                "Chloe5Plugin",
+                f"Could not load translation file {locale}",
+                level=QgsMessageBar.WARNING,
+            )
+
+        QCoreApplication.installTranslator(self.translator)
 
     def add_action(
         self,
@@ -202,7 +215,7 @@ class ChloePlugin:
         elif add_to_toolbar:
             # Adds plugin icon to Plugins toolbar
             self.iface.addToolBarIcon(action)
-            
+
         if add_to_menu:
             menu.addAction(action)
 

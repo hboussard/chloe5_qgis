@@ -22,7 +22,6 @@
  ***************************************************************************/
 """
 from pathlib import Path
-from qgis.gui import QgsMessageBar
 from qgis.core import QgsApplication, QgsProcessingProvider, Qgis, QgsMessageLog
 from qgis.PyQt.QtCore import QCoreApplication, QSettings, QTranslator
 from qgis.PyQt.QtWidgets import QAction, QWidget, QMenu, QToolBar, QMenuBar
@@ -67,7 +66,7 @@ class Chloe5Plugin:
             self.iface.messageBar().pushMessage(
                 "Chloe processing provider",
                 "Chloe processing provider failed to load",
-                level=QgsMessageBar.CRITICAL,
+                level=Qgis.CRITICAL,
             )
 
     def init_menu(self):
@@ -143,7 +142,7 @@ class Chloe5Plugin:
             self.iface.messageBar().pushMessage(
                 "Chloe5Plugin",
                 f"Could not load translation file {locale}",
-                level=QgsMessageBar.WARNING,
+                level=Qgis.WARNING,
             )
 
         QCoreApplication.installTranslator(self.translator)

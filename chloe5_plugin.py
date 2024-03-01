@@ -66,7 +66,7 @@ class Chloe5Plugin:
             self.iface.messageBar().pushMessage(
                 "Chloe processing provider",
                 "Chloe processing provider failed to load",
-                level=Qgis.CRITICAL,
+                level=Qgis.Critical,
             )
 
     def init_menu(self):
@@ -142,7 +142,7 @@ class Chloe5Plugin:
             self.iface.messageBar().pushMessage(
                 "Chloe5Plugin",
                 f"Could not load translation file {locale}",
-                level=Qgis.WARNING,
+                level=Qgis.Warning,
             )
 
         QCoreApplication.installTranslator(self.translator)

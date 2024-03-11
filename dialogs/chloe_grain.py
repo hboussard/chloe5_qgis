@@ -27,7 +27,7 @@ from typing import Union
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets,QtCore
-from qgis.core import QgsMapLayerProxyModel
+from qgis.core import QgsMapLayerProxyModel,QgsProcessingFeedback
 from qgis.PyQt.QtWidgets import QWidget,QVBoxLayout,QLabel,QHBoxLayout,QPushButton,QFileDialog,QDialogButtonBox
 from qgis.PyQt.QtGui import QTextCursor
 from qgis.gui import QgsMapLayerComboBox
@@ -43,10 +43,11 @@ GRAIN_FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'ch
 def s(path):
     return path.replace(os.sep, '/')
 
-class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
+class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedback):
     def __init__(self, parent=None):
         """Constructor."""
         super(ChloeGrainDialog, self).__init__(parent)
+        QgsProcessingFeedback.__init__(self)
         # Set up the user interface from Designer through FORM_CLASS.
         # After self.setupUi() you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
@@ -115,8 +116,8 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
             f.write('output_path='+dirPath+'\n')
             f.write('name='+prefix+'\n')
 
-            extent = self.mExtentGroupBox.currentExtent()
-            if extent.xMinimum()!=0. and extent.xMaximum()!=0. and extent.yMinimum()!=0. and extent.yMaximum()!=0.:
+            extent = self.mExtentGroupBox.outputExtent()
+            if extent.xMinimum()!=0. or extent.xMaximum()!=0. or extent.yMinimum()!=0. or extent.yMaximum()!=0.:
                 f.write("enveloppe={"+str(extent.xMinimum())+";"+str(extent.xMaximum())+";"+str(extent.yMinimum())+";"+str(extent.yMaximum())+"}\n")
 
             # self.mExtentGroupBox.currentExtent()
@@ -200,6 +201,9 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
         self.pushButton_interrupt.setEnabled(True)
         self.textEdit_journal.clear()
         self.tabWidget.setCurrentIndex(4)
+        self.tab_journal.show()
+        self.tab_journal.update()
+        self.tab_journal.repaint()
 
         # control and run
         errors = self.control_parameters()

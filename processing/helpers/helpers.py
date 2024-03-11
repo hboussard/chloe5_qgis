@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Union
+import copy
 
 from jinja2 import Template
 from ..algorithms.helpers.constants_metrics import (
@@ -75,9 +76,8 @@ def get_metrics(
     raster_values: list[int], fast_mode: bool = False
 ) -> dict[str, list[str]]:
     """Get the metric dictionnary based on the raster values"""
-    # make a copy of the types_of_metrics
-
-    metrics: dict[str, list[str]] = TYPES_OF_METRICS.copy()
+    # make a deep copy of the types_of_metrics
+    metrics: dict[str, list[str]] = copy.deepcopy(TYPES_OF_METRICS)
 
     metrics = add_simple_metrics(metrics, raster_values)
     metrics = add_cross_metrics(metrics, raster_values)

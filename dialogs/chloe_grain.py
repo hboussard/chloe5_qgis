@@ -113,12 +113,12 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
             dirPath = s(self.mQgsFileWidget_resultDir.filePath())
             prefix = self.lineEdit_resultPrefix.text()
             filepath = dirPath+'/'+prefix+'_'
-            f.write('output_path='+dirPath+'\n')
-            f.write('name='+prefix+'\n')
+            f.write('output_folder='+dirPath+'\n')
+            f.write('output_prefix='+prefix+'\n')
 
             extent = self.mExtentGroupBox.outputExtent()
             if extent.xMinimum()!=0. or extent.xMaximum()!=0. or extent.yMinimum()!=0. or extent.yMaximum()!=0.:
-                f.write("enveloppe={"+str(extent.xMinimum())+";"+str(extent.xMaximum())+";"+str(extent.yMinimum())+";"+str(extent.yMaximum())+"}\n")
+                f.write("envelope={"+str(extent.xMinimum())+";"+str(extent.xMaximum())+";"+str(extent.yMinimum())+";"+str(extent.yMaximum())+"}\n")
 
             # self.mExtentGroupBox.currentExtent()
             if not self.mQgsDoubleSpinBox_buffer.text().isspace():
@@ -131,50 +131,50 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
 
             # scénario (onglet 3)
             if self.groupBox_arasements.isChecked():
-                f.write( 'suppression='+s(self.inputarasementslayerfile.currentFilePath())+'\n')
+                f.write( 'wood_removal='+s(self.inputarasementslayerfile.currentFilePath())+'\n')
                         
             if self.groupBox_plantations.isChecked() :
-                f.write( 'plantations='+s(self.inputplantationslayerfile.currentFilePath())+'\n')
+                f.write( 'wood_planting='+s(self.inputplantationslayerfile.currentFilePath())+'\n')
                 if self.radioButton_valeurHauteurVegetation.isChecked():
                     f.write( 'hauteur_plantations='+self.lineEdit_hauteurVegetation.text() +'\n')
                 elif self.radioButton_champHauteurVegetation.isChecked():
-                    f.write( 'attribut_hauteur_plantations='+self.mFieldComboBox_hauteurVegetation.currentField() +'\n')
+                    f.write( 'height_planting_attribute='+self.mFieldComboBox_hauteurVegetation.currentField() +'\n')
 
 
             # sorties (onglet 4)
             treatment = ''
             
             if self.checkBox_hauteurBoisements.isChecked(): # recuperation_hauteur_boisement
-                treatment = 'recuperation_hauteur_boisement'
-                f.write( 'hauteur_boisement=' + filepath + 'hauteur_boisement.tif'+'\n' )
+                treatment = 'wood_height_recovery'
+                f.write( 'wood_height=' + filepath + 'hauteur_boisement.tif'+'\n' )
 
             if self.checkBox_typesBoisements.isChecked(): # detection_type_boisement
-                treatment = 'detection_type_boisement'
-                f.write( 'type_boisement=' + filepath + 'type_boisement.tif'+'\n' )
+                treatment = 'wood_type_detection'
+                f.write( 'wood_type=' + filepath + 'type_boisement.tif'+'\n' )
 
             if self.checkBox_distanceInfluence.isChecked(): # calcul_distance_influence_boisement
-                treatment = 'calcul_distance_influence_boisement'
-                f.write( 'distance_influence=' + filepath + 'distance_influence.tif' +'\n')
+                treatment = 'influence_distance_calculation'
+                f.write( 'influence_distance=' + filepath + 'distance_influence.tif' +'\n')
 
             if self.checkBox_grain.isChecked(): # calcul_grain_bocager
-                treatment = 'calcul_grain_bocager'
+                treatment = 'grain_bocager_calculation'
                 f.write( 'grain_bocager=' + filepath + 'grain_bocager.tif' +'\n')
             if self.checkBox_grain4classes.isChecked(): # calcul_grain_bocager
-                treatment = 'calcul_grain_bocager'
+                treatment = 'grain_bocager_calculation'
                 f.write( 'grain_bocager_4classes=' + filepath + 'grain_bocager_4classes.tif'+'\n' )
 
             if self.checkBox_grainMask.isChecked(): # clusterisation_fonctionnalite
-                treatment = 'clusterisation_fonctionnalite'
-                f.write( 'grain_bocager_fonctionnel=' + filepath + 'grain_bocager_fonctionnel.tif' +'\n')
+                treatment = 'functional_clustering'
+                f.write( 'functional_grain_bocager=' + filepath + 'grain_bocager_fonctionnel.tif' +'\n')
             if self.checkBox_clusters.isChecked(): # clusterisation_fonctionnalite
-                treatment = 'clusterisation_fonctionnalite'
-                f.write( 'clusterisation_grain_bocager_fonctionnel=' + filepath + 'clusters.tif'+'\n' ) 
+                treatment = 'functional_clustering'
+                f.write( 'functional_grain_bocager_clustering=' + filepath + 'clusters.tif'+'\n' ) 
 
             if self.checkBox_enjeux.isEnabled() and self.checkBox_enjeux.isChecked(): # calcul_enjeux_globaux
-                treatment = 'calcul_enjeux_globaux'
-                f.write( 'enjeux_window_radius='+self.lineEdit_radiusEnjeux.text()+'\n' )
-                f.write( 'proportion_grain_bocager_fonctionnel=' + filepath + 'proportion_grain_fonctionnel.tif'+'\n' )
-                f.write( 'fragmentation_grain_bocager_fonctionnel=' + filepath + 'fragmentation_grain_fonctionnel.tif'+'\n' )
+                treatment = 'global_issues_calculation'
+                f.write( 'issues_window_radius='+self.lineEdit_radiusEnjeux.text()+'\n' )
+                f.write( 'functional_grain_bocager_proportion=' + filepath + 'proportion_grain_fonctionnel.tif'+'\n' )
+                f.write( 'functional_grain_bocager_fragmentation=' + filepath + 'fragmentation_grain_fonctionnel.tif'+'\n' )
 
             # self.checkBox_scenarioDiffs.isChecked()
 

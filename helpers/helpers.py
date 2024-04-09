@@ -297,7 +297,10 @@ def load_rasters_from_directory_to_qgis_instance(config: RasterLoadConfig) -> No
     root_group.setItemVisibilityChecked(config.group_is_checked)
 
     for filename in config.raster_directory.iterdir():
-        if filename.suffix in config.raster_file_extensions:
+        if (
+            filename.suffix in config.raster_file_extensions
+            and filename.stem.startswith(config.raster_file_prefix)
+        ):
             raster_layer: QgsRasterLayer = QgsRasterLayer(str(filename), filename.stem)
             if not raster_layer.isValid():
                 iface.messageBar().pushMessage(

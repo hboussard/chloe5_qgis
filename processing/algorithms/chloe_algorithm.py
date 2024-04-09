@@ -171,6 +171,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             output_dir_rasters_config: RasterLoadConfig = RasterLoadConfig(
                 raster_directory=output_dir,
                 group_name="Windows_paths",
+                raster_file_prefix="window",
                 qml_file_path=STYLES_PATH / "continuous.qml",
             )
             load_rasters_from_directory_to_qgis_instance(output_dir_rasters_config)

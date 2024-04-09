@@ -280,6 +280,7 @@ class RasterLoadConfig:
     raster_file_extensions: list[str] = field(
         default_factory=lambda: CHLOE_RASTER_FILE_EXTENSIONS
     )
+    raster_file_prefix: str = ""
     group_is_expanded: bool = False
     group_is_checked: bool = False
     qml_file_path: Path = Path()

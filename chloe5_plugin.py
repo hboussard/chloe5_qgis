@@ -126,24 +126,29 @@ class Chloe5Plugin:
 
     def init_translator(self):
         """Initialize locale."""
-        locale = QSettings().value("locale/userLocale")[0:2]
-        locale_path: Path = (
-            Path(__file__).parent / "i18n" / f"Chloe5_{locale}_{locale.upper()}.qm"
-        )
         self.translator = QTranslator()
-        if locale_path.exists():
-            self.translator.load(str(locale_path))
-        else:
-            # warning
-            QgsMessageLog.logMessage(
-                f"Could not load translation file {locale}", level=Qgis.Critical
+
+        locale = QSettings().value("locale/userLocale")[0:2]
+
+        if locale == "fr":
+            locale_path: Path = (
+                Path(__file__).parent / "i18n" / f"Chloe5_{locale}_{locale.upper()}.qm"
             )
 
-            self.iface.messageBar().pushMessage(
-                "Chloe5Plugin",
-                f"Could not load translation file {locale}",
-                level=Qgis.Warning,
-            )
+            if locale_path.exists():
+                self.translator.load(str(locale_path))
+            else:
+                # warning
+                QgsMessageLog.logMessage(
+                    f"Impossible de charger le fichier de traduction {locale}",
+                    level=Qgis.Critical,
+                )
+
+                self.iface.messageBar().pushMessage(
+                    "Chloe5Plugin",
+                    f"Impossible de charger le fichier de traduction {locale}",
+                    level=Qgis.Warning,
+                )
 
         QCoreApplication.installTranslator(self.translator)
 

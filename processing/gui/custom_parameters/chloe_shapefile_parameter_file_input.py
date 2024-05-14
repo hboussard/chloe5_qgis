@@ -21,11 +21,9 @@ class ChloeShapefileParameterFileInput(QgsProcessingParameterVectorLayer):
         copy = ChloeShapefileParameterFileInput(self.name(), self.description())
         return copy
 
-    def defaultFileExtension(self):
-        return "shp"
-
     def createFileFilter(self):
+        """Create a file filter for shapefiles.
+        Note that the filtering capabilities seem to be limited to the file selection dialog
+        and the parameter's configuration, rather than the selection of rasters that are already loaded in the QGIS canvas (combobox selector)
+        """
         return f"{QCoreApplication.translate('ChloeAlgorithm', 'Shapefile')}(*.shp)"
-
-    def supportedOutputRasterLayerExtensions(self):
-        return ["shp"]

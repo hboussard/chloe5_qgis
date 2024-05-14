@@ -16,6 +16,7 @@ class ChloeClassificationTableWidgetWrapper(WidgetWrapper):
         return self.parent_widget_config
 
     def check_domains(self):
+        self.widget.set_raster_values()
         self.widget.check_domains()
 
     def setValue(self, value):

@@ -19,6 +19,7 @@ class ClassificationTablePanel(BASE, WIDGET):
         self.algorithm_dialog = parent
         self.dialog_type: str = dialog_type
         self.input_raster_param_name = input_raster_param_name
+        self.input_raster_values: list[float] = []
 
         self._table_model: ClassificationTableModel = ClassificationTableModel()
 
@@ -59,6 +60,24 @@ class ClassificationTablePanel(BASE, WIDGET):
         """Update le text"""
         self.lineEdit_domains.setText(self._table_model.get_data_as_propertie_list())
 
+    def set_raster_values(self) -> None:
+        """Set the raster values reference from the input raster file.
+
+        This method retrieves the unique raster values from the input raster file
+        and assigns them to the `input_raster_values` attribute of the class.
+
+        Returns:
+            None
+        """
+
+        self.input_raster_values = get_unique_raster_values(
+            raster_file_path=get_input_raster_param_path(
+                dialog_type=self.dialog_type,
+                input_raster_layer_param_name=self.input_raster_param_name,
+                algorithm_dialog=self.algorithm_dialog,
+            )
+        )
+
     def check_domains(self):
         """
         Check the domains of the raster values.
@@ -70,26 +89,18 @@ class ClassificationTablePanel(BASE, WIDGET):
             None
         """
 
-        raster_values: list[float] = get_unique_raster_values(
-            raster_file_path=get_input_raster_param_path(
-                dialog_type=self.dialog_type,
-                input_raster_layer_param_name=self.input_raster_param_name,
-                algorithm_dialog=self.algorithm_dialog,
-            )
-        )
-
-        if not raster_values:
+        if not self.input_raster_values:
             return
 
-        values_not_covered: list[
-            float
-        ] = self._table_model.values_not_contained_in_domains(raster_values)
+        values_not_covered: list[float] = (
+            self._table_model.values_not_contained_in_domains(self.input_raster_values)
+        )
 
         if values_not_covered:
             # log warning to the log label
             self.label_domain_warning.setVisible(True)
             self.label_domain_warning.setText(
-                f"All raster input values are not contained in the domains ({min(raster_values)} - {max(raster_values)})"
+                f"All raster input values are not contained in the domains ({min(self.input_raster_values)} - {max(self.input_raster_values)})"
             )
             # set text in orange
             self.label_domain_warning.setStyleSheet("color: orange;")

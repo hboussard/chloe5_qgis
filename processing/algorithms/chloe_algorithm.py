@@ -1,6 +1,4 @@
-import os
 from pathlib import Path
-from re import match
 from time import gmtime, strftime
 from typing import Any
 from qgis.PyQt.QtCore import QCoreApplication, QLocale
@@ -26,10 +24,16 @@ from ...helpers.constants import CHLOE_PLUGIN_PATH
 from ..helpers.helpers import (
     file_get_content,
 )
+from ..helpers.constants import CHLOE_PROVIDER_SUPPORTED_RASTER_EXTENSIONS
 from ..styles.constants import STYLES_PATH
 from ..gui.chloe_algorithm_dialog import ChloeAlgorithmDialog
 
-from .helpers.constants import OUTPUT_WINDOWS_PATH_DIR, SAVE_PROPERTIES, OUTPUT_RASTER
+from .helpers.constants import (
+    INPUT_RASTER,
+    OUTPUT_WINDOWS_PATH_DIR,
+    SAVE_PROPERTIES,
+    OUTPUT_RASTER,
+)
 
 
 class ChloeAlgorithm(QgsProcessingAlgorithm):
@@ -256,3 +260,27 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         if context == "":
             context = self.__class__.__name__
         return QCoreApplication.translate(context, string)
+
+    def checkParameterValues(self, parameters, context):
+        """Override checkParameterValues base class method. Almost all algorithms will need to override this method to perform custom validation of the input raster parameter.
+        This override is needed because QgsProcessingParameterRasterLayer does not support file filters on the selection combobox for existing layers in the canvas.
+        Users can select any raster layer loaded in the canvas, regardless of the file extension. This method checks if the selected raster layer is a supported file extension.
+        """
+
+        input_raster: QgsRasterLayer = self.parameterAsRasterLayer(
+            parameters, INPUT_RASTER, context
+        )
+        if input_raster and input_raster.isValid():
+            input_raster_path: Path = Path(input_raster.dataProvider().dataSourceUri())
+            input_raster_file_extension: str = input_raster_path.suffix.lower()[1:]
+
+            if (
+                input_raster_file_extension
+                not in CHLOE_PROVIDER_SUPPORTED_RASTER_EXTENSIONS
+            ):
+                return False, self.tr(
+                    f"The selected raster layer type {input_raster_file_extension} is not supported. Please select a GeoTIFF or ASCII file."
+                )
+
+        # If these parameters are valid, call the parent class's checkParameterValues method for the rest
+        return super().checkParameterValues(parameters, context)

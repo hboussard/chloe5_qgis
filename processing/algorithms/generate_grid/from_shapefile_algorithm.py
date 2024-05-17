@@ -1,9 +1,10 @@
 from typing import Union
-
+from pathlib import Path
 from qgis.core import (
     QgsProcessingParameterNumber,
     QgsProcessingParameterFileDestination,
     QgsRectangle,
+    QgsVectorLayer,
     QgsProcessingParameterExtent,
     QgsProcessingException,
     QgsMapLayer,
@@ -154,6 +155,27 @@ class FromShapefileAlgorithm(ChloeAlgorithm):
 
     def commandName(self):
         return "fromshapefile"
+
+    def checkParameterValues(self, parameters, context):
+        """Override checkParameterValues base class method.
+        This override is needed because QgsProcessingParameterVectorLayer does not support file filters on the selection combobox for existing layers in the canvas.
+        Users can select any vector layer loaded in the canvas, regardless of the file extension. This method checks if the selected vector layer is a supported file extension.
+        """
+
+        input_vector: QgsVectorLayer = self.parameterAsVectorLayer(
+            parameters, INPUT_SHAPEFILE, context
+        )
+        if input_vector and input_vector.isValid():
+            input_vector_path: Path = Path(input_vector.dataProvider().dataSourceUri())
+            input_vector_file_extension: str = input_vector_path.suffix.lower()[1:]
+
+            if input_vector_file_extension != "shp":
+                return False, self.tr(
+                    f"The selected vector layer type {input_vector_file_extension} is not supported. Please select a Shapefile."
+                )
+
+        # If these parameters are valid, call the parent class's checkParameterValues method for the rest
+        return super().checkParameterValues(parameters, context)
 
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""

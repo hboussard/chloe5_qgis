@@ -102,12 +102,10 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
             # onglet (1)
 
             # onglet (2)
-            self.doubleSpinBox_seuilFonctionnel.text()
-            self.doubleSpinBox_seuilPotentiel.text()
-            self.doubleSpinBox_seuilOuvert.text()
-            self.spinBox_radius.text()
-            self.doubleSpinBox_pixelSize.text()
 
+            f.write( 'grain_bocager_cellsize='+self.doubleSpinBox_pixelSize.text()+'\n' )
+            f.write( 'grain_bocager_window_radius='+self.spinBox_radius.text()+'\n' )
+            f.write( 'thresholds={'+self.doubleSpinBox_seuilFonctionnel.text()+';'+self.doubleSpinBox_seuilPotentiel.text()+';'+self.doubleSpinBox_seuilOuvert.text()+'}\n' )
 
             # Dossier de sortie
             dirPath = s(self.mQgsFileWidget_resultDir.filePath())
@@ -172,9 +170,10 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
 
             if self.checkBox_enjeux.isEnabled() and self.checkBox_enjeux.isChecked(): # calcul_enjeux_globaux
                 treatment = 'global_issues_calculation'
-                f.write( 'issues_window_radius='+self.lineEdit_radiusEnjeux.text()+'\n' )
-                f.write( 'functional_grain_bocager_proportion=' + filepath + 'proportion_grain_fonctionnel.tif'+'\n' )
-                f.write( 'functional_grain_bocager_fragmentation=' + filepath + 'fragmentation_grain_fonctionnel.tif'+'\n' )
+                f.write( 'issues_cellsize='+self.doubleSpinBox_pixelEnjeux.text()+'\n' )
+                f.write( 'issues_window_radius='+self.spinBox_radiusEnjeux.text()+'\n' )
+                f.write( 'functional_grain_bocager_proportion=' + filepath + 'proportion_grain_fonctionnel' + self.spinBox_radiusEnjeux.text() + 'm.tif'+'\n' )
+                f.write( 'functional_grain_bocager_fragmentation=' + filepath + 'fragmentation_grain_fonctionnel' + self.spinBox_radiusEnjeux.text() + 'm.tif'+'\n' )
 
             # self.checkBox_scenarioDiffs.isChecked()
 

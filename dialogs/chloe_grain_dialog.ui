@@ -437,6 +437,9 @@ p, li { white-space: pre-wrap; }
                <property name="value">
                 <double>50.000000000000000</double>
                </property>
+			   <property name="maximum">
+                <number>1000</number>
+               </property>
               </widget>
              </item>
              <item row="0" column="2">
@@ -741,6 +744,36 @@ p, li { white-space: pre-wrap; }
             <property name="spacing">
              <number>-1</number>
             </property>
+			<item>
+             <widget class="QCheckBox" name="checkBox_hauteurBoisements">
+              <property name="text">
+               <string>Hauteurs de boisements</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+			 <item>
+             <widget class="QCheckBox" name="checkBox_typesBoisements">
+              <property name="text">
+               <string>Types de boisements</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+			<item>
+             <widget class="QCheckBox" name="checkBox_distanceInfluence">
+              <property name="text">
+               <string>Distances d'influence</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
             <item>
              <widget class="QCheckBox" name="checkBox_grain">
               <property name="enabled">
@@ -777,6 +810,9 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>Grain bocager à quatre classes</string>
               </property>
+			  <property name="checked">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
@@ -784,12 +820,18 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>Masque de grain bocager fonctionnel</string>
               </property>
+			  <property name="checked">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
              <widget class="QCheckBox" name="checkBox_clusters">
               <property name="text">
                <string>Clusters fonctionnels</string>
+              </property>
+			  <property name="checked">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -809,51 +851,6 @@ p, li { white-space: pre-wrap; }
               </property>
               <property name="text">
                <string>Carte des enjeux globaux</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="groupBox_11">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="title">
-            <string>Sorties - Etapes</string>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_12">
-            <item>
-             <widget class="QCheckBox" name="checkBox_hauteurBoisements">
-              <property name="text">
-               <string>Hauteurs de boisements</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBox_typesBoisements">
-              <property name="text">
-               <string>Types de boisements</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBox_distanceInfluence">
-              <property name="text">
-               <string>Distances d'influence</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
               </property>
              </widget>
             </item>

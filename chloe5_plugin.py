@@ -79,7 +79,7 @@ class Chloe5Plugin:
         self.add_action(
             self.menu,
             QIcon(str(grainIcon_path)),
-            text=self.tr("Chloé 5 : Grain"),
+            text=self.tr("Grain Bocager"),
             callback=self.runGrain,
             parent=self.iface.mainWindow(),
         )

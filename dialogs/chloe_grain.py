@@ -84,6 +84,8 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
         #self.mMapLayerComboBox_Plantations.layerChanged.connect(self.mFieldComboBox_hauteurVegetation.setLayer)
     
     def setEnjeux(self):
+        self.checkBox_grainMask.setEnabled(self.groupBox_enjeux.isChecked())
+        self.checkBox_clusters.setEnabled(self.groupBox_enjeux.isChecked())
         self.checkBox_enjeux.setEnabled(self.groupBox_enjeux.isChecked())
 
     def setRasterMNHC(self):
@@ -134,7 +136,7 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
             if self.groupBox_plantations.isChecked() :
                 f.write( 'wood_planting='+s(self.inputplantationslayerfile.currentFilePath())+'\n')
                 if self.radioButton_valeurHauteurVegetation.isChecked():
-                    f.write( 'hauteur_plantations='+self.lineEdit_hauteurVegetation.text() +'\n')
+                    f.write( 'height_planting='+self.doubleSpinBox_hauteurVegetation.text() +'\n')
                 elif self.radioButton_champHauteurVegetation.isChecked():
                     f.write( 'height_planting_attribute='+self.mFieldComboBox_hauteurVegetation.currentField() +'\n')
 
@@ -156,24 +158,24 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
 
             if self.checkBox_grain.isChecked(): # calcul_grain_bocager
                 treatment = 'grain_bocager_calculation'
-                f.write( 'grain_bocager=' + filepath + 'grain_bocager.tif' +'\n')
+                f.write( 'grain_bocager=' + filepath + 'grain_bocager_'+self.doubleSpinBox_pixelSize.text()+'m.tif' +'\n')
             if self.checkBox_grain4classes.isChecked(): # calcul_grain_bocager
                 treatment = 'grain_bocager_calculation'
-                f.write( 'grain_bocager_4classes=' + filepath + 'grain_bocager_4classes.tif'+'\n' )
+                f.write( 'grain_bocager_4classes=' + filepath + 'grain_bocager_'+self.doubleSpinBox_pixelSize.text()+'m_4classes.tif'+'\n' )
 
-            if self.checkBox_grainMask.isChecked(): # clusterisation_fonctionnalite
+            if self.checkBox_enjeux.isEnabled() and self.checkBox_grainMask.isChecked(): # clusterisation_fonctionnalite
                 treatment = 'functional_clustering'
                 f.write( 'functional_grain_bocager=' + filepath + 'grain_bocager_fonctionnel.tif' +'\n')
-            if self.checkBox_clusters.isChecked(): # clusterisation_fonctionnalite
+            if self.checkBox_enjeux.isEnabled() and self.checkBox_clusters.isChecked(): # clusterisation_fonctionnalite
                 treatment = 'functional_clustering'
-                f.write( 'functional_grain_bocager_clustering=' + filepath + 'clusters.tif'+'\n' ) 
+                f.write( 'functional_grain_bocager_clustering=' + filepath + 'grain_bocager_cluster_'+self.doubleSpinBox_pixelSize.text()+'m.tif'+'\n' ) 
 
             if self.checkBox_enjeux.isEnabled() and self.checkBox_enjeux.isChecked(): # calcul_enjeux_globaux
                 treatment = 'global_issues_calculation'
                 f.write( 'issues_cellsize='+self.doubleSpinBox_pixelEnjeux.text()+'\n' )
                 f.write( 'issues_window_radius='+self.spinBox_radiusEnjeux.text()+'\n' )
-                f.write( 'functional_grain_bocager_proportion=' + filepath + 'proportion_grain_fonctionnel' + self.spinBox_radiusEnjeux.text() + 'm.tif'+'\n' )
-                f.write( 'functional_grain_bocager_fragmentation=' + filepath + 'fragmentation_grain_fonctionnel' + self.spinBox_radiusEnjeux.text() + 'm.tif'+'\n' )
+                f.write( 'functional_grain_bocager_proportion=' + filepath + 'proportion_grain_bocager_fonc' + self.spinBox_radiusEnjeux.text() + 'm.tif'+'\n' )
+                f.write( 'functional_grain_bocager_fragmentation=' + filepath + 'fragmentation_grain_bocager_fonc' + self.spinBox_radiusEnjeux.text() + 'm.tif'+'\n' )
 
             # self.checkBox_scenarioDiffs.isChecked()
 

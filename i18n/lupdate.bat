@@ -1,7 +1,7 @@
 @echo off
 
-SET file=Chloe_fr_FR.pro
-SET tsfile=Chloe_fr_FR.ts
+SET file=Chloe5_fr_FR.pro
+SET tsfile=Chloe5_fr_FR.ts
 echo Construction du fichier %file%...
 echo SOURCES = \ > %file%
 for /r .. %%X in (*.py) do call echo    %%X \ >> %file%
@@ -15,6 +15,6 @@ REM for /r .. %%X in (*.ts) do call echo    %%X \ >> %file%
 REM for /r .. %%X in (*.py) do call set "list=%%list%% \ \n %%X";   
 echo Mise a jour du fichier %tsfile%...
 REM type %file%
-"C:\Program Files\QGIS 3.28.4\apps\Python39\Scripts\pylupdate5.exe" -noobsolete %file%
+"C:\Program Files\QGIS 3.28.13\apps\Python39\Scripts\pylupdate5.exe" -noobsolete %file%
 echo OK
 

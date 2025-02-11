@@ -236,7 +236,7 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
         self.pushInfo('<span style="color:grey">' + message + '</span>\n')
 
     def setProgress(self, progress: float) -> None:
-        self.progressBar.setValue(progress)
+        self.progressBar.setValue(int(progress))
 
     def isCanceled(self) -> bool:
         return self.isInterrupted

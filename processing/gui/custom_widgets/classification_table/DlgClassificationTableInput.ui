@@ -98,6 +98,13 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="pushButton_validate_domains">
+                <property name="text">
+                 <string>Validate domains</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="verticalSpacer_2">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>

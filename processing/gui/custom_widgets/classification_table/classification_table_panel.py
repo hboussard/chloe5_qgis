@@ -25,9 +25,10 @@ class ClassificationTablePanel(BASE, WIDGET):
 
         self.pushButton_add_tableview_row.clicked.connect(self.add_table_row)
         self.pushButton_delete_tableview_row.clicked.connect(self.remove_table_row)
+        self.pushButton_validate_domains.clicked.connect(self.validate_domains)
 
         self._table_model.signal_model_updated.connect(self.update_propertie_value)
-        self._table_model.signal_model_updated.connect(self.check_domains)
+        # self._table_model.signal_model_updated.connect(self.check_domains)
 
         self.init_gui()
 
@@ -77,6 +78,19 @@ class ClassificationTablePanel(BASE, WIDGET):
                 algorithm_dialog=self.algorithm_dialog,
             )
         )
+
+    def reset_domain_validation(self):
+        """Reset the domain warning label."""
+        self.input_raster_values = []
+        self.label_domain_warning.setText("")
+        self.label_domain_warning.setVisible(False)
+
+    def validate_domains(self):
+        """Validate the domains in the classification table."""
+        # only trigger set_raster_values if the input_raster_values are not already set
+        if not self.input_raster_values:
+            self.set_raster_values()
+        self.check_domains()
 
     def check_domains(self):
         """

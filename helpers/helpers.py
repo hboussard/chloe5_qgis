@@ -238,6 +238,9 @@ def get_unique_raster_values(
     Returns:
         list[int]: A list of values from the raster layer as integers expect nodata.
     """
+    if not os.path.exists(raster_file_path):
+        return []
+
     dataset = gdal.Open(raster_file_path)  # DataSet
     if dataset is None:
         return []
@@ -261,6 +264,9 @@ def get_raster_nodata_value(raster_file_path: str) -> Union[float, None]:
     Returns:
         Union[int,None]: The nodata value as an integer or None if the raster layer has no nodata value.
     """
+    if not os.path.exists(raster_file_path):
+        return None
+
     dataset = gdal.Open(raster_file_path)  # DataSet
     if dataset is None:
         return None

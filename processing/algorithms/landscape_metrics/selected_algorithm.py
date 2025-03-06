@@ -287,9 +287,11 @@ class SelectedAlgorithm(ChloeAlgorithm):
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
 
-        self.input_raster_layer = self.parameterAsLayer(
+        self.input_raster_layer = self.parameterAsRasterLayer(
             parameters, INPUT_RASTER, context
         ).source()
+
+        print(self.input_raster_layer)
 
     def set_properties_algorithm_values(self, parameters, context, feedback):
         """Set algorithm parameters."""
@@ -316,8 +318,8 @@ class SelectedAlgorithm(ChloeAlgorithm):
             parameters, DISTANCE_FUNCTION, context
         )
 
-        self.points_file = self.parameterAsString(parameters, POINTS_FILE, context)
-
+        self.points_file = self.parameterAsFile(parameters, POINTS_FILE, context)
+        print(self.points_file)
         self.metrics = self.parameterAsString(parameters, METRICS, context)
 
     def set_properties_output_values(self, parameters, context, feedback):
@@ -368,7 +370,7 @@ class SelectedAlgorithm(ChloeAlgorithm):
             properties_lines.append(f"distance_function={str(self.distance_formula)}")
         properties_lines.append(f"shape={str(self.window_shape)}")
         if self.friction_file:
-            properties_lines.append(f"friction={self.friction_file}")
+            properties_lines.append(f"friction_raster={self.friction_file}")
 
         points_files = format_path_for_properties_file(self.points_file, isWindows())
 

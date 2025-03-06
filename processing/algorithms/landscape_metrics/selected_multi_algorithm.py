@@ -361,7 +361,7 @@ class SelectedMultiAlgorithm(ChloeAlgorithm):
             properties_lines.append(f"distance_function={str(self.distance_formula)}")
         properties_lines.append(f"shape={str(self.window_shape)}")
         if self.friction_file:
-            properties_lines.append(f"friction={self.friction_file}")
+            properties_lines.append(f"friction_raster={self.friction_file}")
 
         points_files = format_path_for_properties_file(self.points_file, isWindows())
 

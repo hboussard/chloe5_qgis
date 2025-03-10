@@ -156,6 +156,8 @@ class RasterFileParser:
             Union[RasterMetadataData, None]: The raster metadata if successfully parsed, None otherwise.
         """
         # Logic for parsing a raster file
+        if not file_path.exists():
+            return None
         dataset = gdal.Open(str(file_path))  # DataSet
         if dataset is None:
             return None

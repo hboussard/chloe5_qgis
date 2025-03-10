@@ -531,7 +531,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
             and self.friction_file
             and not self.is_fast_mode
         ):
-            properties_lines.append(f"friction={self.friction_file}")
+            properties_lines.append(f"friction_raster={self.friction_file}")
 
         if self.b_interpolate_values:
             properties_lines.append("interpolation=true")

@@ -56,7 +56,7 @@
          <item>
           <widget class="QGroupBox" name="groupBox_MNHC">
            <property name="title">
-            <string>MNHC</string>
+            <string>Hauteurs de boisements</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_3">
             <item row="0" column="0">

@@ -28,6 +28,7 @@ TYPES_OF_METRICS: dict[str, list[str]] = {
         "LPI",
         "MPS",
         "NP",
+        "EMS",
     ],
     "quantitative metrics": [
         "average",
@@ -45,10 +46,16 @@ TYPES_OF_METRICS_SIMPLE: dict[str, list[str]] = {
         "NV_",
         "pNV_",
     ],
+    "couple metrics": [
+        "Interface_",
+        "pInterface_",
+        "pInterfaceHete_",
+    ],
     "patch metrics": [
         "LPI-class_",
         "MPS-class_",
         "NP-class_",
+        "EMS-class_",
     ],
 }
 

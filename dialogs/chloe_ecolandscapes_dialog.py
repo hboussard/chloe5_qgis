@@ -22,18 +22,21 @@
  ***************************************************************************/
 """
 
-import os,datetime
+import os, datetime
 
 from qgis.PyQt import uic
-from qgis.PyQt import QtWidgets,QtCore
+from qgis.PyQt import QtWidgets, QtCore
 from qgis.core import QgsMapLayerProxyModel
-from qgis.PyQt.QtWidgets import QWidget,QVBoxLayout,QLabel,QHBoxLayout,QPushButton,QFileDialog
+from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QPushButton, QFileDialog
 from qgis.gui import QgsMapLayerComboBox
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
-ECOLANDSCAPES_FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'chloe_ecolandscapes_dialog.ui'))
-GRAIN_FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'chloe_grain_dialog.ui'))
-
+ECOLANDSCAPES_FORM_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "chloe_ecolandscapes_dialog.ui")
+)
+GRAIN_FORM_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "chloe_grain_dialog.ui")
+)
 
 
 class CollapsibleBox(QtWidgets.QWidget):
@@ -44,17 +47,13 @@ class CollapsibleBox(QtWidgets.QWidget):
             text=title, checkable=True, checked=False
         )
         self.toggle_button.setStyleSheet("QToolButton { border: none; }")
-        self.toggle_button.setToolButtonStyle(
-            QtCore.Qt.ToolButtonTextBesideIcon
-        )
+        self.toggle_button.setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
         self.toggle_button.setArrowType(QtCore.Qt.RightArrow)
         self.toggle_button.pressed.connect(self.on_pressed)
 
         self.toggle_animation = QtCore.QParallelAnimationGroup(self)
 
-        self.content_area = QtWidgets.QScrollArea(
-            maximumHeight=0, minimumHeight=0
-        )
+        self.content_area = QtWidgets.QScrollArea(maximumHeight=0, minimumHeight=0)
         self.content_area.setSizePolicy(
             QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
         )
@@ -79,7 +78,7 @@ class CollapsibleBox(QtWidgets.QWidget):
     @QtCore.pyqtSlot()
     def on_pressed(self):
         checked = self.toggle_button.isChecked()
-        #self.toggle_button.setChecked(not checked)
+        # self.toggle_button.setChecked(not checked)
         self.toggle_button.setArrowType(
             QtCore.Qt.DownArrow if not checked else QtCore.Qt.RightArrow
         )
@@ -94,9 +93,7 @@ class CollapsibleBox(QtWidgets.QWidget):
         lay = self.content_area.layout()
         del lay
         self.content_area.setLayout(layout)
-        collapsed_height = (
-            self.sizeHint().height() - self.content_area.maximumHeight()
-        )
+        collapsed_height = self.sizeHint().height() - self.content_area.maximumHeight()
         content_height = layout.sizeHint().height()
         for i in range(self.toggle_animation.animationCount()):
             animation = self.toggle_animation.animationAt(i)
@@ -112,7 +109,6 @@ class CollapsibleBox(QtWidgets.QWidget):
         content_animation.setEndValue(content_height)
 
 
-
 class InputLayerFileWidget(QWidget):
     def __init__(self, parent=None):
         self.parent = parent
@@ -121,26 +117,28 @@ class InputLayerFileWidget(QWidget):
         self.mlcb = QgsMapLayerComboBox(self)
         self.file_selection_button = QPushButton("\u2026", self)
         self.file_selection_button.setMaximumWidth(30)
-        self.file_selection_button.setToolTip('Select from file')
+        self.file_selection_button.setToolTip("Select from file")
         for c in self.children():
             self.h_layout.addWidget(c)
         self.setLayout(self.h_layout)
-        
+
         self.file_selection_button.clicked.connect(self.getFile)
 
-    def setFilters(self,filters):
+    def setFilters(self, filters):
         self.mlcb.setFilters(filters)
         if filters == QgsMapLayerProxyModel.RasterLayer:
-            self.filters = '*.tif,*.asc'
+            self.filters = "*.tif,*.asc"
         else:
-            self.filters = '*.shp'
+            self.filters = "*.shp"
 
     def getFile(self):
-        file_name = QFileDialog.getOpenFileName(None, 'Select file', '', filter=self.filters)
+        file_name = QFileDialog.getOpenFileName(
+            None, "Select file", "", filter=self.filters
+        )
         if file_name:
             self.mlcb.setAdditionalItems([file_name[0]])
-            self.mlcb.setCurrentIndex(self.mlcb.model().rowCount()-1)
-                
+            self.mlcb.setCurrentIndex(self.mlcb.model().rowCount() - 1)
+
     def currentLayer(self):
         layer = self.mlcb.currentLayer()
         if layer is not None:
@@ -148,12 +146,12 @@ class InputLayerFileWidget(QWidget):
         else:
             path = self.mlcb.currentText()
             name = Path(path).stem
-            layer = QgsVectorLayer(path, name, 'ogr')
+            layer = QgsVectorLayer(path, name, "ogr")
             if layer.isValid():
                 return layer
         return None
-    
-    def connectLayerChangedSlot(self,setLayerSlot):
+
+    def connectLayerChangedSlot(self, setLayerSlot):
         self.mlcb.layerChanged.connect(setLayerSlot)
 
 
@@ -168,6 +166,7 @@ class ChloeEcolandscapesDialog(QtWidgets.QDialog, ECOLANDSCAPES_FORM_CLASS):
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
 
+
 class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
@@ -180,27 +179,38 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
         self.setupUi(self)
         self.inputMNHClayerfile = InputLayerFileWidget()
         self.inputMNHClayerfile.setFilters(QgsMapLayerProxyModel.RasterLayer)
-        self.groupBox_MNHC.layout().addWidget(self.inputMNHClayerfile,0,1)
+        self.groupBox_MNHC.layout().addWidget(self.inputMNHClayerfile, 0, 1)
 
         self.inputplantationslayerfile = InputLayerFileWidget()
-        self.inputplantationslayerfile.setFilters(QgsMapLayerProxyModel.LineLayer|QgsMapLayerProxyModel.PolygonLayer)
-        self.groupBox_plantations.layout().insertWidget(0,self.inputplantationslayerfile)
-        self.inputplantationslayerfile.connectLayerChangedSlot(self.mFieldComboBox_hauteurVegetation.setLayer)
+        self.inputplantationslayerfile.setFilters(
+            QgsMapLayerProxyModel.LineLayer | QgsMapLayerProxyModel.PolygonLayer
+        )
+        self.groupBox_plantations.layout().insertWidget(
+            0, self.inputplantationslayerfile
+        )
+        self.inputplantationslayerfile.connectLayerChangedSlot(
+            self.mFieldComboBox_hauteurVegetation.setLayer
+        )
 
         self.inputarasementslayerfile = InputLayerFileWidget()
         self.inputarasementslayerfile.setFilters(QgsMapLayerProxyModel.PolygonLayer)
-        self.groupBox_arasements.layout().insertWidget(0,self.inputarasementslayerfile)
+        self.groupBox_arasements.layout().insertWidget(0, self.inputarasementslayerfile)
 
-        #self.mMapLayerComboBox_Plantations.mMapLayer.setFilters(QgsMapLayerProxyModel.VectorLayer)
-        #self.mMapLayerComboBox_Plantations.layerChanged.connect(self.mFieldComboBox_hauteurVegetation.setLayer)
-    
+        # self.mMapLayerComboBox_Plantations.mMapLayer.setFilters(QgsMapLayerProxyModel.VectorLayer)
+        # self.mMapLayerComboBox_Plantations.layerChanged.connect(self.mFieldComboBox_hauteurVegetation.setLayer)
+
     def makePropertiesFile(self):
         # récupérer dossier courant
-        propFile = self.mQgsFileWidget_resultDir.filePath() + '/chloe_grain_'+datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S.%f")+'.properties'
+        propFile = (
+            self.mQgsFileWidget_resultDir.filePath()
+            + "/chloe_grain_"
+            + datetime.datetime.now().strftime("%d-%m-%Y_%H-%M-%S.%f")
+            + ".properties"
+        )
 
         # créer le fichier properties
         with open(propFile, "w") as f:
-            f.write('procedure=grain_bocager\n')
+            f.write("procedure=grain_bocager\n")
 
             # les variables de la boite de dialogue :
             # onglet (1)
@@ -212,74 +222,139 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
             self.spinBox_radius.text()
             self.doubleSpinBox_pixelSize.text()
 
-
             # Dossier de sortie
             dirPath = self.mQgsFileWidget_resultDir.filePath()
             prefix = self.lineEdit_resultPrefix.text()
-            filepath = dirPath+'/'+prefix+'_'
-            f.write('procedure=grain_bocager'+'\n')
-            f.write('output_path="'+dirPath+'"'+'\n')
-            f.write('name="'+prefix+'"'+'\n')
+            filepath = dirPath + "/" + prefix + "_"
+            f.write("procedure=grain_bocager" + "\n")
+            f.write('output_path="' + dirPath + '"' + "\n")
+            f.write('name="' + prefix + '"' + "\n")
 
             extent = mExtentGroupBox.currentExtent()
-            f.write("territoire={"+str(extent.xMinimum)+";"+str(extent.xMinimum)+";"+str(extent.xMinimum)+";"+str(extent.xMinimum)+"}")
+            f.write(
+                "territoire={"
+                + str(extent.xMinimum)
+                + ";"
+                + str(extent.xMinimum)
+                + ";"
+                + str(extent.xMinimum)
+                + ";"
+                + str(extent.xMinimum)
+                + "}"
+            )
 
             # self.mExtentGroupBox.currentExtent()
             if not self.lineEdit_bufferEmprise.text().isspace():
-                f.write( 'buffer_area='+self.mQgsDoubleSpinBox_buffer.text()+'\n')
+                f.write("buffer_area=" + self.mQgsDoubleSpinBox_buffer.text() + "\n")
 
-            f.write( 'bocage="'+self.inputMNHClayerfile.currentLayer().source()+'"' +'\n')
+            f.write(
+                'bocage="'
+                + self.inputMNHClayerfile.currentLayer().source()
+                + '"'
+                + "\n"
+            )
 
             # scénario (onglet 3)
             if self.groupBox_arasements.isChecked():
-                f.write( 'suppression="'+self.inputarasementslayerfile.currentLayer().source()+'"' +'\n')
-                        
-            if self.groupBox_plantations.isChecked() :
-                f.write( 'plantations="'+self.inputplantationslayerfile.currentLayer().source()+'"'+'\n')
-                if self.radioButton_valeurHauteurVegetation.isChecked():
-                    f.write( 'hauteur_plantations='+self.lineEdit_hauteurVegetation.text() +'\n')
-                elif self.radioButton_champHauteurVegetation.isChecked():
-                    f.write( 'attribut_hauteur_plantations='+self.mFieldComboBox_hauteurVegetation.currentField() +'\n')
+                f.write(
+                    'suppression="'
+                    + self.inputarasementslayerfile.currentLayer().source()
+                    + '"'
+                    + "\n"
+                )
 
+            if self.groupBox_plantations.isChecked():
+                f.write(
+                    'plantations="'
+                    + self.inputplantationslayerfile.currentLayer().source()
+                    + '"'
+                    + "\n"
+                )
+                if self.radioButton_valeurHauteurVegetation.isChecked():
+                    f.write(
+                        "hauteur_plantations="
+                        + self.lineEdit_hauteurVegetation.text()
+                        + "\n"
+                    )
+                elif self.radioButton_champHauteurVegetation.isChecked():
+                    f.write(
+                        "attribut_hauteur_plantations="
+                        + self.mFieldComboBox_hauteurVegetation.currentField()
+                        + "\n"
+                    )
 
             # sorties (onglet 4)
-            treatment = ''
-            
-            if self.checkBox_hauteurBoisements.isChecked(): # recuperation_hauteur_boisement
-                treatment = 'recuperation_hauteur_boisement'
-                f.write( 'hauteur_boisement="' + filepath + 'hauteur_boisement.tif"'+'\n' )
+            treatment = ""
 
-            if self.checkBox_typesBoisements.isChecked(): # detection_type_boisement
-                treatment = 'detection_type_boisement'
-                f.write( 'type_boisement="' + filepath + 'type_boisement.tif"'+'\n' )
+            if (
+                self.checkBox_hauteurBoisements.isChecked()
+            ):  # recuperation_hauteur_boisement
+                treatment = "recuperation_hauteur_boisement"
+                f.write(
+                    'hauteur_boisement="' + filepath + 'hauteur_boisement.tif"' + "\n"
+                )
 
-            if self.checkBox_distanceInfluence.isChecked(): # calcul_distance_influence_boisement
-                treatment = 'calcul_distance_influence_boisement'
-                f.write( 'distance_influence="' + filepath + 'distance_influence.tif"' +'\n')
+            if self.checkBox_typesBoisements.isChecked():  # detection_type_boisement
+                treatment = "detection_type_boisement"
+                f.write('type_boisement="' + filepath + 'type_boisement.tif"' + "\n")
 
-            if self.checkBox_grain.isChecked(): # calcul_grain_bocager
-                treatment = 'calcul_grain_bocager'
-                f.write( 'grain_bocager="' + filepath + 'grain_bocager.tif"' +'\n')
-            if self.checkBox_grain4classes.isChecked(): # calcul_grain_bocager
-                treatment = 'calcul_grain_bocager'
-                f.write( 'grain_bocager_4classes="' + filepath + 'grain_bocager_4classes.tif"'+'\n' )
+            if (
+                self.checkBox_distanceInfluence.isChecked()
+            ):  # calcul_distance_influence_boisement
+                treatment = "calcul_distance_influence_boisement"
+                f.write(
+                    'distance_influence="' + filepath + 'distance_influence.tif"' + "\n"
+                )
 
-            if self.checkBox_grainMask.isChecked(): # clusterisation_fonctionnalite
-                treatment = 'clusterisation_fonctionnalite'
-                f.write( 'grain_bocager_fonctionnel="' + filepath + 'grain_bocager_fonctionnel.tif"' +'\n')
-            if self.checkBox_clusters.isChecked(): # clusterisation_fonctionnalite
-                treatment = 'clusterisation_fonctionnalite'
-                f.write( 'clusterisation_grain_bocager_fonctionnel="' + filepath + 'clusters.tif"'+'\n' ) 
+            if self.checkBox_grain.isChecked():  # calcul_grain_bocager
+                treatment = "calcul_grain_bocager"
+                f.write('grain_bocager="' + filepath + 'grain_bocager.tif"' + "\n")
+            if self.checkBox_grain4classes.isChecked():  # calcul_grain_bocager
+                treatment = "calcul_grain_bocager"
+                f.write(
+                    'grain_bocager_4classes="'
+                    + filepath
+                    + 'grain_bocager_4classes.tif"'
+                    + "\n"
+                )
 
-            if self.checkBox_enjeux.isChecked(): # calcul_enjeux_globaux
-                treatment = 'calcul_enjeux_globaux'
-                f.write( 'enjeux_window_radius="'+self.lineEdit_radiusEnjeux.text()+'"\n' )
-                f.write( 'proportion_grain_bocager_fonctionnel="' + filepath + 'proportion_grain_fonctionnel.tif'+'"\n' )
-                f.write( 'fragmentation_grain_bocager_fonctionnel="' + filepath + 'fragmentation_grain_fonctionnel.tif'+'"\n' )
+            if self.checkBox_grainMask.isChecked():  # clusterisation_fonctionnalite
+                treatment = "clusterisation_fonctionnalite"
+                f.write(
+                    'grain_bocager_fonctionnel="'
+                    + filepath
+                    + 'grain_bocager_fonctionnel.tif"'
+                    + "\n"
+                )
+            if self.checkBox_clusters.isChecked():  # clusterisation_fonctionnalite
+                treatment = "clusterisation_fonctionnalite"
+                f.write(
+                    'clusterisation_grain_bocager_fonctionnel="'
+                    + filepath
+                    + 'clusters.tif"'
+                    + "\n"
+                )
+
+            if self.checkBox_enjeux.isChecked():  # calcul_enjeux_globaux
+                treatment = "calcul_enjeux_globaux"
+                f.write(
+                    'enjeux_window_radius="' + self.lineEdit_radiusEnjeux.text() + '"\n'
+                )
+                f.write(
+                    'proportion_grain_bocager_fonctionnel="'
+                    + filepath
+                    + "proportion_grain_fonctionnel.tif"
+                    + '"\n'
+                )
+                f.write(
+                    'fragmentation_grain_bocager_fonctionnel="'
+                    + filepath
+                    + "fragmentation_grain_fonctionnel.tif"
+                    + '"\n'
+                )
 
             # self.checkBox_scenarioDiffs.isChecked()
 
-            f.write('treatment='+treatment+'\n')
+            f.write("treatment=" + treatment + "\n")
 
         f.close()
-

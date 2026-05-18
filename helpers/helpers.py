@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import signal
 import platform
-from typing import Protocol, Tuple, Union
+from typing import Protocol, Union
 from re import search
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
 import numpy as np
@@ -33,20 +33,15 @@ from ..settings.helpers import get_java_path, check_java_path
 
 
 class CustomFeedback(Protocol):
-    def pushInfo(self, message: str) -> None:
-        ...
+    def pushInfo(self, message: str) -> None: ...
 
-    def pushCommandInfo(self, message: str) -> None:
-        ...
+    def pushCommandInfo(self, message: str) -> None: ...
 
-    def pushConsoleInfo(self, message: str) -> None:
-        ...
+    def pushConsoleInfo(self, message: str) -> None: ...
 
-    def setProgress(self, progress: float) -> None:
-        ...
+    def setProgress(self, progress: float) -> None: ...
 
-    def isCanceled(self) -> bool:
-        ...
+    def isCanceled(self) -> bool: ...
 
 
 def run_command(
@@ -198,7 +193,7 @@ def set_raster_layer_symbology(layer: QgsRasterLayer, qml_file_path: Path) -> No
 
     # getting statistics from the layer
     stats: QgsRasterBandStats = layer.dataProvider().bandStatistics(
-        1, QgsRasterBandStats.All, layer.extent()
+        1, Qgis.RasterBandStatistic.All, layer.extent()
     )
     min_raster_value: float = stats.minimumValue
     max_raster_value: float = stats.maximumValue
@@ -364,7 +359,7 @@ def get_layer_name(
     return res
 
 
-def tr(message: str):
+def tr(message: str) -> str:
     """
     Translates the given message using the translation context "helpers".
 

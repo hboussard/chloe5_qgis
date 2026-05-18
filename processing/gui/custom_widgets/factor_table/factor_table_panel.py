@@ -160,9 +160,11 @@ class FactorTablePanel(BASE, WIDGET):
                 layer_id = f'{alg.algorithm().displayName().replace(" ", "_")}_{value.outputName()}'
             list_layers.append(
                 LayerInfo(
-                    layer_path=layer_path
-                    if is_modeler_input
-                    else extract_raster_layer_path(layer_path),
+                    layer_path=(
+                        layer_path
+                        if is_modeler_input
+                        else extract_raster_layer_path(layer_path)
+                    ),
                     modeler_input_id=layer_id,
                 )
             )

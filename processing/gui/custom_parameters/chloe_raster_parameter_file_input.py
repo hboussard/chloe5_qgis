@@ -1,7 +1,5 @@
 from typing import Any
-from qgis.core import (
-    QgsProcessingParameterRasterLayer,
-)
+from qgis.core import QgsProcessingParameterRasterLayer
 from qgis.PyQt.QtCore import QCoreApplication
 
 

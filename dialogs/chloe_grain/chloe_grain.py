@@ -23,17 +23,14 @@
 """
 
 import os, datetime
-from typing import Union
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsMapLayerProxyModel, QgsProcessingFeedback
 from qgis.PyQt.QtWidgets import QPushButton, QDialogButtonBox
 from qgis.PyQt.QtGui import QTextCursor
-from .helpers.helpers import InputLayerFileWidget, get_console_command
-
-from ..helpers.helpers import run_command
-
+from ..helpers.helpers import InputLayerFileWidget, get_console_command
+from ...helpers.helpers import run_command
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 GRAIN_FORM_CLASS, _ = uic.loadUiType(
@@ -295,7 +292,7 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
         f.close()
         return prop_file
 
-    def control_parameters(self) -> Union[str, None]:
+    def control_parameters(self) -> str | None:
         errors = ""
         if (
             self.radioButton_rasterMNHC.isChecked()

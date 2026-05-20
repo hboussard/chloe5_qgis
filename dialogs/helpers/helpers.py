@@ -22,6 +22,9 @@ class InputLayerFileWidget(QWidget):
 
         self.file_selection_button.clicked.connect(self.getFile)
 
+    def setComboboxIndex(self, index):
+        self.mlcb.setCurrentIndex(index)
+
     def setFilters(self, filters):
         self.mlcb.setFilters(filters)
         if filters == QgsMapLayerProxyModel.RasterLayer:
@@ -36,6 +39,7 @@ class InputLayerFileWidget(QWidget):
         if file_name:
             self.mlcb.setAdditionalItems([file_name[0]])
             self.mlcb.setCurrentIndex(self.mlcb.model().rowCount() - 1)
+            self.mlcb.layerChanged.emit(self.currentLayer())
 
     def currentText(self):
         return self.mlcb.currentText()
@@ -55,9 +59,9 @@ class InputLayerFileWidget(QWidget):
     def currentFilePath(self):
         layer = self.currentLayer()
         if layer is not None:
-            return layer.source()
+            return layer.source().replace("\\", "/")
         else:
-            return self.currentText()
+            return self.currentText().replace("\\", "/")
 
     def connectLayerChangedSlot(self, setLayerSlot):
         self.mlcb.layerChanged.connect(setLayerSlot)

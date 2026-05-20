@@ -427,12 +427,14 @@ class SlidingMultiAlgorithm(ChloeAlgorithm):
 
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
-        self.output_folder = self.parameterAsString(parameters, OUTPUT_DIR, context)
+        self.output_folder = self.parameterAsFileOutput(parameters, OUTPUT_DIR, context)
         self.set_output_parameter_value(OUTPUT_DIR, self.output_folder)
 
         # === SAVE_PROPERTIES
 
-        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
+        f_save_properties = self.parameterAsFileOutput(
+            parameters, SAVE_PROPERTIES, context
+        )
 
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 

@@ -324,9 +324,9 @@ class SelectedAlgorithm(ChloeAlgorithm):
 
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
-        self.output_csv = self.parameterAsString(parameters, OUTPUT_CSV, context)
+        self.output_csv = self.parameterAsFileOutput(parameters, OUTPUT_CSV, context)
 
-        self.output_windows_path_dir = self.parameterAsString(
+        self.output_windows_path_dir = self.parameterAsFileOutput(
             parameters, OUTPUT_WINDOWS_PATH_DIR, context
         )
         self.set_output_parameter_value(OUTPUT_CSV, self.output_csv)
@@ -335,7 +335,9 @@ class SelectedAlgorithm(ChloeAlgorithm):
                 OUTPUT_WINDOWS_PATH_DIR, self.output_windows_path_dir
             )
 
-        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
+        f_save_properties = self.parameterAsFileOutput(
+            parameters, SAVE_PROPERTIES, context
+        )
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 
     def set_properties_values(self, parameters, context, feedback):

@@ -58,7 +58,7 @@ class ChloeImportRasterMetadataButtonWidgetWrapper(ChloeActionWidgetWrapper):
 
         file_names: list[str] = []
 
-        if file_dialog.exec_():
+        if file_dialog.exec():
             file_names: list[str] = file_dialog.selectedFiles()
 
         if not file_names:
@@ -85,9 +85,9 @@ class ChloeImportRasterMetadataButtonWidgetWrapper(ChloeActionWidgetWrapper):
             )
             return
 
-        raster_metadata: Union[
-            RasterMetadataData, None
-        ] = self.get_file_raster_metadata(file_path)
+        raster_metadata: Union[RasterMetadataData, None] = (
+            self.get_file_raster_metadata(file_path)
+        )
         # replace widget values with the data
         if raster_metadata is None:
             return

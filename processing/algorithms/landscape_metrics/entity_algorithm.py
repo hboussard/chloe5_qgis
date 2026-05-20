@@ -176,7 +176,7 @@ class FromEntityAlgorithm(ChloeAlgorithm):
 
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
-        self.output_csv = self.parameterAsString(parameters, OUTPUT_CSV, context)
+        self.output_csv = self.parameterAsFileOutput(parameters, OUTPUT_CSV, context)
         self.set_output_parameter_value(OUTPUT_CSV, self.output_csv)
 
         self.output_raster = self.parameterAsOutputLayer(
@@ -186,7 +186,9 @@ class FromEntityAlgorithm(ChloeAlgorithm):
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
         # === SAVE_PROPERTIES
 
-        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
+        f_save_properties = self.parameterAsFileOutput(
+            parameters, SAVE_PROPERTIES, context
+        )
 
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 

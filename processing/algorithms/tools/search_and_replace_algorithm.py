@@ -171,7 +171,9 @@ class SearchAndReplaceAlgorithm(ChloeAlgorithm):
 
         # === SAVE_PROPERTIES
 
-        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
+        f_save_properties = self.parameterAsFileOutput(
+            parameters, SAVE_PROPERTIES, context
+        )
 
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 

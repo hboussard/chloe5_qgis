@@ -207,7 +207,9 @@ class FromShapefileAlgorithm(ChloeAlgorithm):
 
         self.set_output_parameter_value(OUTPUT_RASTER, self.output_raster)
 
-        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
+        f_save_properties = self.parameterAsFileOutput(
+            parameters, SAVE_PROPERTIES, context
+        )
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 
     def set_properties_values(self, parameters, context, feedback):

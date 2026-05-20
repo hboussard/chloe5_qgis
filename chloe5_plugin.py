@@ -3,7 +3,7 @@
 /***************************************************************************
  chloe plugin
                                 Chloe 5 plugin
- 
+
 
                               -------------------
         begin                : 2023-09-21
@@ -253,7 +253,7 @@ class Chloe5Plugin:
         if not self.dlg_grain.isVisible():
             self.dlg_grain.show()
             # Run the dialog event loop
-            result = self.dlg_grain.exec_()
+            result = self.dlg_grain.exec()
             # See if OK was pressed
             if result:
                 # Do something useful here - delete the line containing pass and

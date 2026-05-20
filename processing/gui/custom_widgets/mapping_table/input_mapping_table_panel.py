@@ -1,4 +1,4 @@
-from typing import Any, Union
+from typing import Any
 from pathlib import Path
 from csv import reader
 from qgis.PyQt import uic
@@ -87,7 +87,7 @@ class TableMappingPanel(BASE, WIDGET):
             raster_file_path=raster_file_path, as_int=True
         )
 
-        nodata_value: Union[float, None] = get_raster_nodata_value(
+        nodata_value: float | None = get_raster_nodata_value(
             raster_file_path=raster_file_path
         )
 
@@ -117,9 +117,7 @@ class TableMappingPanel(BASE, WIDGET):
             str: The path to the CSV file, or an empty string if no file was selected.
         """
 
-        csv_file: Union[
-            Any, None
-        ] = get_parameter_value_from_batch_standard_algorithm_dialog(
+        csv_file: Any | None = get_parameter_value_from_batch_standard_algorithm_dialog(
             dialog_type=self.dialog_type,
             param_name=MAP_CSV,
             algorithm_dialog=self.dialog,

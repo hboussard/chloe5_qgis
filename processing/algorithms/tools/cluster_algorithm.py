@@ -1,4 +1,3 @@
-from typing import Union
 from qgis.core import (
     QgsProcessingParameterNumber,
     QgsProcessingParameterString,
@@ -240,7 +239,7 @@ class ClusterAlgorithm(ChloeAlgorithm):
             else ""
         )
 
-        distance_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+        distance_layer: QgsMapLayer | None = self.parameterAsLayer(
             parameters, CLUSTER_DISTANCE_FILE, context
         )
         self.distance_file = (

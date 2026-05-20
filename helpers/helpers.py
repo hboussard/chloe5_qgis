@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import signal
 import platform
-from typing import Protocol, Union
+from typing import Protocol
 from re import search
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
 import numpy as np
@@ -46,14 +46,14 @@ class CustomFeedback(Protocol):
 
 def run_command(
     command_line: str,
-    feedback: Union[CustomFeedback, None] = None,
+    feedback: CustomFeedback | None = None,
 ) -> None:
     """
     Runs a command line command and logs the output.
 
     Args:
         command_line (str): The command line command to run.
-        feedback (Union[CustomFeedback, None], optional): The feedback object to use for logging. Defaults to None.
+        feedback (CustomFeedback | None, optional): The feedback object to use for logging. Defaults to None.
     """
 
     if feedback is None:
@@ -249,7 +249,7 @@ def get_unique_raster_values(
     return [value for value in values if value != nodata_value]
 
 
-def get_raster_nodata_value(raster_file_path: str) -> Union[float, None]:
+def get_raster_nodata_value(raster_file_path: str) -> float | None:
     """
     Extract the nodata value from a raster layer and return it as an integer.
 
@@ -257,7 +257,7 @@ def get_raster_nodata_value(raster_file_path: str) -> Union[float, None]:
         raster_file_path (str): The file path of the raster layer.
 
     Returns:
-        Union[int,None]: The nodata value as an integer or None if the raster layer has no nodata value.
+        int | None: The nodata value as an integer or None if the raster layer has no nodata value.
     """
     if not os.path.exists(raster_file_path):
         return None
@@ -272,6 +272,7 @@ def get_raster_nodata_value(raster_file_path: str) -> Union[float, None]:
     return floor(nodata) if nodata is not None else None
 
 
+# TODO : move to processing helpers ??
 @dataclass
 class RasterLoadConfig:
     """Configuration for loading rasters from a directory to the QGIS instance."""
@@ -287,6 +288,7 @@ class RasterLoadConfig:
     qml_file_path: Path = Path()
 
 
+# TODO : move to processing helpers ??
 def load_rasters_from_directory_to_qgis_instance(config: RasterLoadConfig) -> None:
     """load rasters from a given directory to the QGIS instance."""
     qgs_project = QgsProject.instance()
@@ -332,14 +334,13 @@ def convert_int_to_odd(input_integer: int) -> int:
         return int(input_integer)
 
 
-def get_layer_name(
-    layer: Union[str, QgsRasterLayer], default_output: str = "output"
-) -> str:
+# TODO : move to processing helpers ??
+def get_layer_name(layer: str | QgsRasterLayer, default_output: str = "output") -> str:
     """
     Get the name of a QgsRasterLayer or a file path string.
 
     Args:
-        layer (Union[str, QgsRasterLayer]): A QgsRasterLayer object or a file path string.
+        layer (str | QgsRasterLayer): A QgsRasterLayer object or a file path string.
         default_output (str, optional): The default output name if layer is None. Defaults to "output".
 
     Returns:

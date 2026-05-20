@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, Union
+from typing import Any
 from processing.gui.wrappers import (
     FileWidgetWrapper,
     EnumWidgetWrapper,
@@ -54,13 +54,13 @@ class ChloeEnumUpdateStateWidgetWrapper(EnumWidgetWrapper):
         """Update the impacted widgets based on the current value of the widget"""
 
         # Find the wrapper for the 'FAST' parameter
-        fast_mode_wrapper: Union[
-            None, WidgetWrapper
-        ] = get_widget_wrapper_from_param_name(wrappers, FAST)
+        fast_mode_wrapper: WidgetWrapper | None = get_widget_wrapper_from_param_name(
+            wrappers, FAST
+        )
 
         for enabled_widget_config in self.enabled_widgets_configs:
             # Find the wrapper for the parameter that will be impacted
-            wrapper: Union[WidgetWrapper, None] = get_widget_wrapper_from_param_name(
+            wrapper: WidgetWrapper | None = get_widget_wrapper_from_param_name(
                 wrappers, enabled_widget_config["param_name"]
             )
             if not wrapper:

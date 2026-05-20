@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterNumber,
@@ -411,7 +410,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+        friction_layer: QgsMapLayer | None = self.parameterAsLayer(
             parameters, FRICTION_FILE, context
         )
         self.friction_file = (

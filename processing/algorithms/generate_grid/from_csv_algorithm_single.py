@@ -1,5 +1,3 @@
-from typing import Union
-
 from qgis.core import (
     QgsProcessingParameterNumber,
     QgsProcessingParameterString,
@@ -44,12 +42,12 @@ class FromCSVSingleAlgorithm(ChloeAlgorithm):
 
         self.input_csv: str = ""
         self.variables: str = ""
-        self.width: Union[int, None] = None
-        self.height: Union[int, None] = None
-        self.xmin: Union[float, None] = None
-        self.ymin: Union[float, None] = None
-        self.cellsize: Union[int, None] = None
-        self.nodata_value: Union[int, None] = None
+        self.width: int | None = None
+        self.height: int | None = None
+        self.xmin: float | None = None
+        self.ymin: float | None = None
+        self.cellsize: int | None = None
+        self.nodata_value: int | None = None
         self.output_crs: str = ""
         self.output_raster: str = ""
 

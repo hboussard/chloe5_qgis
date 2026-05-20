@@ -40,8 +40,9 @@ class FileParserStrategy(Protocol):
         does not contain metadata.
     """
 
-    def get_raster_metadata(self, file_path: Path) -> Union[RasterMetadataData, None]:
-        ...
+    def get_raster_metadata(
+        self, file_path: Path
+    ) -> Union[RasterMetadataData, None]: ...
 
 
 class TxtFileParser:
@@ -81,44 +82,40 @@ class TxtFileParser:
         crs: str = ""
 
         with open(str(file_path), "r", encoding="utf-8") as infile:
-            # check if file is empty
-            first_line = infile.readline()
-            if not first_line:
-                return None
-            # check each line and get the values based on the first element until the first '='
             lines = infile.readlines()
-            for line in lines:
-                if line.startswith("#"):
-                    continue
-                else:
-                    line = line.strip()
-                    if line:
-                        line = line.split("=")
-                        try:
-                            if line[0] == "width":
-                                width = int(line[1])
-                            elif line[0] == "height":
-                                height = int(line[1])
-                            elif line[0] == "minx":
-                                xmin = float(line[1])
-                            elif line[0] == "miny":
-                                ymin = float(line[1])
-                            elif line[0] == "cellsize":
-                                cell_size = float(line[1])
-                            elif line[0] == "noDataValue":
-                                nodata_value = int(line[1])
-                            elif line[0] == "crs":
-                                crs = line[1].replace("\\", "")
-                            else:
-                                continue
-                        except ValueError:
-                            # log the message to a QMessage box and explicitly tell for what element there is a conversion error
-                            QMessageBox.critical(
-                                None,
-                                "Error",
-                                f"Could not convert value {line[1]} for {line[0]} to the expected type",
-                            )
-                            return None
+        if not lines:
+            return None
+
+        for raw_line in lines:
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            parts = line.split("=", 1)
+            if len(parts) != 2:
+                continue
+            key, value = parts[0].strip(), parts[1].strip()
+            try:
+                if key == "width":
+                    width = int(value)
+                elif key == "height":
+                    height = int(value)
+                elif key == "minx":
+                    xmin = float(value)
+                elif key == "miny":
+                    ymin = float(value)
+                elif key == "cellsize":
+                    cell_size = float(value)
+                elif key == "noDataValue":
+                    nodata_value = int(value)
+                elif key == "crs":
+                    crs = value.replace("\\", "")
+            except ValueError:
+                QMessageBox.critical(
+                    None,
+                    "Error",
+                    f"Could not convert value {value} for {key} to the expected type",
+                )
+                return None
 
         raster_metadata: RasterMetadataData = RasterMetadataData(
             width=width,

@@ -23,9 +23,9 @@ from .helpers.helpers import (
     path_validator,
     vector_layer_field_is_numeric,
 )
-from ..helpers.helpers import InputLayerFileWidget, get_console_command
+from ..helpers.helpers import InputLayerFileWidget
 from ..helpers.custom_logger import CustomLogger
-from ...helpers.helpers import run_command
+from ...helpers.helpers import run_command, get_console_command
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(

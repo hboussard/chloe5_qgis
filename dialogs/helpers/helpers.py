@@ -65,24 +65,3 @@ class InputLayerFileWidget(QWidget):
 
     def connectLayerChangedSlot(self, setLayerSlot):
         self.mlcb.layerChanged.connect(setLayerSlot)
-
-
-def get_console_command(properties_file) -> str:
-    """Get full console command to call Chloe
-    return arguments : The full command
-    Example of return : java -jar bin/chloe-4.0.jar /tmp/distance_paramsrrVtm9.properties
-    """
-
-    arguments: list[str] = []
-
-    java_path: Path = get_java_path()
-
-    if not check_java_path(java_path):
-        arguments.append("")
-    else:
-        arguments.append(f'"{str(java_path)}"')
-
-    arguments.append(CHLOE_JAR_PATH)
-    arguments.append(properties_file)
-
-    return " ".join(arguments)

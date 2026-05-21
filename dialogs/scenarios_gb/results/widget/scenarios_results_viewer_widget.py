@@ -4,7 +4,6 @@
 from pathlib import Path
 from qgis.PyQt.QtWidgets import (
     QWidget,
-    QTableView,
 )
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import QSortFilterProxyModel

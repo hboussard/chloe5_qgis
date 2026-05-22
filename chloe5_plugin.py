@@ -28,7 +28,8 @@ from qgis.PyQt.QtWidgets import QAction, QWidget, QMenu, QToolBar, QMenuBar
 from qgis.PyQt.QtGui import QIcon
 from .processing.chloe_algorithm_provider import ChloeAlgorithmProvider
 from .settings.settings_dialog import SettingsDialog
-from .dialogs.chloe_grain import ChloeGrainDialog
+from .dialogs.chloe_grain.chloe_grain import ChloeGrainDialog
+from .dialogs.scenarios_gb.scenarios_gb_dialog import ScenariosGBDialog
 
 
 class Chloe5Plugin:
@@ -42,7 +43,8 @@ class Chloe5Plugin:
         self.actions: list[QAction] = []
 
         self.menu = QMenu(self.iface.mainWindow())
-        self.menu_name: str = self.tr("Chloe5")
+        self.menu_name: str = self.tr("Chloe")
+        self.grain_bocager_menu: QMenu = None
 
         # NO TOOLBAR YET
         # self.toolbar = self.iface.addToolBar("&Chloe")
@@ -50,6 +52,7 @@ class Chloe5Plugin:
 
         self.processing_provider: QgsProcessingProvider = ChloeAlgorithmProvider()
         self.plugin_settings_dialog: SettingsDialog = SettingsDialog()
+        self.dlg_scenario_gb = ScenariosGBDialog()
 
     def initGui(self):
         """Initialize the plugin GUI."""
@@ -76,11 +79,25 @@ class Chloe5Plugin:
         self.menu.setTitle(self.menu_name)
 
         grainIcon_path = Path(__file__).resolve().parent / "images" / "chloe_icon.png"
+        grain_icon = QIcon(str(grainIcon_path))
+
+        self.grain_bocager_menu = QMenu(self.tr("Grain bocager"), self.menu)
+        self.grain_bocager_menu.setIcon(grain_icon)
+        self.menu.addMenu(self.grain_bocager_menu)
+
         self.add_action(
-            self.menu,
-            QIcon(str(grainIcon_path)),
-            text=self.tr("Grain Bocager"),
+            self.grain_bocager_menu,
+            grain_icon,
+            text=self.tr("Echelle territoriale"),
             callback=self.runGrain,
+            parent=self.iface.mainWindow(),
+        )
+
+        self.add_action(
+            self.grain_bocager_menu,
+            grain_icon,
+            text=self.tr("Echelle exploitation agricole"),
+            callback=self.run_scenarios_gb,
             parent=self.iface.mainWindow(),
         )
         # plugin settings separator
@@ -259,3 +276,18 @@ class Chloe5Plugin:
                 # Do something useful here - delete the line containing pass and
                 # substitute with your code.
                 self.dlg_grain.makePropertiesFile()
+
+    def run_scenarios_gb(self):
+        """Run method that performs all the real work"""
+
+        # Create the dialog with elements (after translation) and keep reference
+        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
+        # if self.first_start_grain == True:
+        #     self.first_start_scenario_gb = False
+        #     self.dlg_scenario_gb = ScenariosGBDialog()
+
+        # show the dialog
+        if not self.dlg_scenario_gb.isVisible():
+            self.dlg_scenario_gb.show()
+            # Run the dialog event loop
+            self.dlg_scenario_gb.exec()

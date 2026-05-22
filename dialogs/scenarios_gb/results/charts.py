@@ -10,10 +10,19 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
 )
-from .constants import DEFAULT_COLOR_MAP, SITUATION_CHART_BASE_CSV_COLUMNS
+from .constants import (
+    DEFAULT_COLOR_MAP,
+    SITUATION_CHART_CSV_COLUMNS,
+    SITUATION_CHART_PLOT_X_COLUMN,
+    SITUATION_CHART_PLOT_Y_COLUMN,
+)
 from qgis.core import QgsMessageLog, Qgis
 from qgis.utils import iface
 from dataclasses import dataclass
+
+from ..results.widgets.situation_selector_widget.situation_entities import (
+    SituationSelection,
+)
 
 
 @dataclass
@@ -50,7 +59,13 @@ class SituationChart:
         self._canvas: FigureCanvas = FigureCanvas(self._figure)
         self._toolbar: NavigationToolbar = NavigationToolbar(self._canvas, None)
         self._ax = self._canvas.figure.subplots()
-        self._data = None
+        self._plot_x: np.ndarray | None = None
+        self._plot_y: np.ndarray | None = None
+        self._code_reg: np.ndarray | None = None
+        self._code_dep: np.ndarray | None = None
+        self._code_epci: np.ndarray | None = None
+        self._filtered_x: np.ndarray | None = None
+        self._filtered_y: np.ndarray | None = None
         self._color_map: str = DEFAULT_COLOR_MAP
         self._highlight_points: list[HighlightPoint] = []
 
@@ -59,7 +74,27 @@ class SituationChart:
         error_message: str | None = None
         try:
             df = pd.read_csv(file_path, sep=";")
-            self._data = df[SITUATION_CHART_BASE_CSV_COLUMNS].values
+            missing = [
+                column
+                for column in SITUATION_CHART_CSV_COLUMNS
+                if column not in df.columns
+            ]
+            if missing:
+                raise KeyError(", ".join(missing))
+
+            self._plot_x = df[SITUATION_CHART_PLOT_X_COLUMN].to_numpy(dtype=float)
+            self._plot_y = df[SITUATION_CHART_PLOT_Y_COLUMN].to_numpy(dtype=float)
+            self._code_reg = (
+                df["code_reg"].astype(str).str.strip().to_numpy(dtype=object)
+            )
+            self._code_dep = pd.to_numeric(df["code_dep"], errors="coerce").to_numpy(
+                dtype=np.int32
+            )
+            self._code_epci = (
+                df["code_epci"].astype(str).str.strip().to_numpy(dtype=object)
+            )
+            self._filtered_x = None
+            self._filtered_y = None
             self.draw_chart()
         except FileNotFoundError:
             error_message = f"le fichier csv {file_path} est introuvable."
@@ -80,6 +115,46 @@ class SituationChart:
                     level=Qgis.Critical,
                 )
 
+    def filter_by_situation_selection(
+        self, situation_selection: SituationSelection | None
+    ) -> None:
+        """Filter cached plot data by the cascading situation selector."""
+        if self._plot_x is None or situation_selection is None:
+            return
+
+        mask = self._build_situation_mask(situation_selection)
+        self._filtered_x = self._plot_x[mask]
+        self._filtered_y = self._plot_y[mask]
+        self.draw_chart()
+
+    def _build_situation_mask(
+        self, situation_selection: SituationSelection
+    ) -> np.ndarray:
+        mask = np.ones(len(self._plot_x), dtype=bool)
+
+        if situation_selection.code_reg is not None:
+            code_reg = str(situation_selection.code_reg).strip()
+            mask &= self._code_reg == code_reg
+
+        if situation_selection.code_dep is not None:
+            code_dep = int(situation_selection.code_dep)
+            mask &= self._code_dep == code_dep
+
+        if situation_selection.code_epci is not None:
+            code_epci = str(situation_selection.code_epci).strip()
+            mask &= self._code_epci == code_epci
+
+        return mask
+
+    def _get_plot_arrays(self) -> tuple[np.ndarray, np.ndarray] | None:
+        if self._plot_x is None or self._plot_y is None:
+            return None
+
+        if self._filtered_x is not None and self._filtered_y is not None:
+            return self._filtered_x, self._filtered_y
+
+        return self._plot_x, self._plot_y
+
     def set_highlight_points(self, highlight_points: list[HighlightPoint]) -> None:
         """Sets a specific point to highlight on the heatmap."""
         self._highlight_points = highlight_points
@@ -87,14 +162,20 @@ class SituationChart:
 
     def draw_chart(self) -> None:
         """Creates a heatmap using pcolormesh and optionally overlays a point."""
-        if self._data is None or len(self._data) == 0:
+        plot_arrays = self._get_plot_arrays()
+        if plot_arrays is None:
             return
 
+        x, y = plot_arrays
         self._ax.clear()
 
-        # Extract X and Y values from the data
-        x = self._data[:, 0]
-        y = self._data[:, 1]
+        if len(x) == 0:
+            self._ax.set_xlabel("Taux de boisement externe")
+            self._ax.set_ylabel("Taux de boisement interne")
+            self._ax.set_title("Situation de l'exploitation")
+            self._figure.tight_layout()
+            self._canvas.draw()
+            return
 
         # Create a 2D histogram density plot
         bins = 50  # Adjust bin size for better resolution

@@ -162,6 +162,7 @@ class SituationChart:
         self._ax.set_title("Situation de l'exploitation")
         # Add legend
         self._ax.legend()
+        self._figure.tight_layout()
         self._canvas.draw()
 
     def set_colormap(self, colormap: str) -> None:
@@ -248,6 +249,7 @@ class EvolutionChart:
         self._ax.set_title("Situation de l'exploitation")
         # Add legend
         self._ax.legend()
+        self._figure.tight_layout()
         self._canvas.draw()
 
     def set_colormap(self, colormap: str) -> None:

@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <property name="tabBarAutoHide">
       <bool>false</bool>
@@ -599,8 +599,30 @@ p, li { white-space: pre-wrap; }
        <string>Resultats</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
+       <item row="1" column="0">
         <layout class="QGridLayout" name="gridLayout_result_viewer"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_result_folder">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>70</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Dossier résultats</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QgsFileWidget" name="mQgsFileWidget_result_directory_selector">
+            <property name="storageMode">
+             <enum>QgsFileWidget::GetDirectory</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>

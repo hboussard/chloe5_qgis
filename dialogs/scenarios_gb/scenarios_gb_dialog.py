@@ -13,15 +13,18 @@ from qgis.core import (
     QgsFields,
 )
 
-from .results.widget.scenarios_results_viewer_widget import ScenariosResultViewerWidget
+
 from .results.charts import SituationChart
 from .dataclasses import Properties, ScenarioResult
-from .helpers.completer_combobox_widget import CompleterComboBox
+from .widgets.completer_combobox_widget import CompleterComboBox
 from .helpers.helpers import (
     get_distinct_attributes_values_from_layer,
     input_vector_validator,
     path_validator,
     vector_layer_field_is_numeric,
+)
+from .results.widgets.scenarios_result_viewer_widget.scenarios_results_viewer_widget import (
+    ScenariosResultViewerWidget,
 )
 from ..helpers.helpers import InputLayerFileWidget
 from ..helpers.custom_logger import CustomLogger
@@ -45,7 +48,6 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         self.input_amenagements_vector_layer_selector: InputLayerFileWidget
         self.id_exploitation_combobox: CompleterComboBox
         self._logger: CustomLogger
-        self._situation_chart: SituationChart = SituationChart(self)
         self.results_viewer_tab = ScenariosResultViewerWidget(self)
         self.results: list[ScenarioResult] = []
 
@@ -139,6 +141,9 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
     def setup_results_viewer_tab(self) -> None:
         """setup exploitation situation result viewer"""
         self.gridLayout_result_viewer.addWidget(self.results_viewer_tab)
+        self.mQgsFileWidget_result_directory_selector.fileChanged.connect(
+            self.on_result_directory_changed
+        )
 
     def on_input_exploitation_layer_changed(self) -> None:
         """input exploitation layer changed action"""
@@ -303,14 +308,23 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         file_path: Path = properties.get_properties_file_path()
         command: str = get_console_command(str(file_path))
         # run process with properties file
-        print(command)
+
         run_command(command_line=command, feedback=self._logger)
         # wait for process to finish
-        self.results_viewer_tab.set_result_directory_path(
+        # self.results_viewer_tab.set_result_directory_path(
+        #     Path(self.mQgsFileWidget_resultDir.filePath())
+        # )
+        self.mQgsFileWidget_result_directory_selector.setFilePath(
             Path(self.mQgsFileWidget_resultDir.filePath())
         )
         self.results_viewer_tab.set_selected_exploitation_id(
             self.id_exploitation_combobox.currentText()
+        )
+
+    def on_result_directory_changed(self) -> None:
+        """on result directory changed"""
+        self.results_viewer_tab.set_result_directory_path(
+            Path(self.mQgsFileWidget_result_directory_selector.filePath())
         )
 
     def cancel_command(self) -> None:

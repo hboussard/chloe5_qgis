@@ -2,22 +2,32 @@
 
 
 from pathlib import Path
+
 from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import QSortFilterProxyModel
-from ..constants import SITUATION_CHART_BASE_CSV_PATH
-from ..charts import (
+from qgis.PyQt.QtCore import Qt, QSortFilterProxyModel
+
+# from ..constants import SITUATION_CHART_BASE_CSV_PATH
+from ...constants import SITUATION_CHART_BASE_CSV_PATH
+from ...charts import (
     ChartToolBarWithColormap,
     EvolutionChart,
     SituationChart,
     HighlightPoint,
     ChartToolBar,
 )
-from ..helpers import analyse_results_directory
-from ...dataclasses import ScenarioResult
-from ..results_table_model import ResultsTableModel
+from ...helpers import analyse_results_directory
+from ....dataclasses import ScenarioResult
+from ...results_table_model import ResultsTableModel
+
+from ..situation_selector_widget.situation_selector_widget import (
+    ScenariosSituationSelectorWidget,
+)
+from ...widgets.situation_selector_widget.situation_entities import (
+    SituationSelection,
+)
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(
@@ -34,6 +44,9 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
 
         # self.scenarios_history: list[ScenarioResult] = []
         self._situation_chart: SituationChart = SituationChart(self)
+        self._situation_selector: ScenariosSituationSelectorWidget = (
+            ScenariosSituationSelectorWidget(self)
+        )
         self._evolution_chart: EvolutionChart = EvolutionChart(self)
         self.results_table_model = ResultsTableModel()
         self.results: list[ScenarioResult] = []
@@ -51,21 +64,31 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self.comboBox_id_exploitation.currentIndexChanged.connect(
             self.refresh_results_tab
         )
+        self._situation_selector.selection_changed.connect(
+            self.filter_situation_chart_by_situation_selection
+        )
 
     def setup_exploitation_situation_chart(self) -> None:
         """setup exploitation situation chart"""
-        # adding canvas to the layout
-        self._situation_chart.load_csv(str(SITUATION_CHART_BASE_CSV_PATH))
+        self.verticalLayout_results_situation.addWidget(
+            self._situation_selector, alignment=Qt.AlignLeft
+        )
 
+        self._situation_chart.load_csv(str(SITUATION_CHART_BASE_CSV_PATH))
         situation_tool_bar: ChartToolBarWithColormap = ChartToolBarWithColormap(
             self._situation_chart, self
         )
         situation_tool_bar.setMaximumSize(16777215, 60)
-        # adding canvas to the layout
         self.verticalLayout_results_situation.addWidget(
             self._situation_chart.get_canvas()
         )
         self.verticalLayout_results_situation.addWidget(situation_tool_bar)
+
+    def filter_situation_chart_by_situation_selection(
+        self, situation_selection: SituationSelection
+    ) -> None:
+        """filter situation chart by situation selection"""
+        self._situation_chart.filter_by_situation_selection(situation_selection)
 
     def setup_evolution_grain_chart(self) -> None:
         """setup exploitation situation result graph"""
@@ -111,6 +134,7 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self.label_results_exploitation_id.setText(
             f"Résultats pour l'exploitation {self.comboBox_id_exploitation.currentText()}"
         )
+
         # filter results by id_exploitation
         results: list[ScenarioResult] = []
 

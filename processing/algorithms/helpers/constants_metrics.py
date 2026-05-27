@@ -22,6 +22,7 @@ TYPES_OF_METRICS: dict[str, list[str]] = {
         "HET",
         "HET-frag",
         "SHDI",
+        "SHDI-frag",
         "SHEI",
     ],
     "patch metrics": [

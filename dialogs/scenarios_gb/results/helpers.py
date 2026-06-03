@@ -17,6 +17,8 @@ def analyse_results_directory(results_directory: Path) -> list[ScenarioResult]:
         # if the file is empty, skip it
         if file.stat().st_size == 0:
             continue
+        if not file.name.startswith("diag_") or file.name.startswith("diag_secteur_"):
+            continue
         try:
             df = pd.read_csv(
                 file,

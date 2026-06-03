@@ -177,8 +177,7 @@ class SituationChart:
             self._canvas.draw()
             return
 
-        # Create a 2D histogram density plot
-        bins = 50  # Adjust bin size for better resolution
+        bins = 50
         hist, x_edges, y_edges = np.histogram2d(x, y, bins=bins, density=True)
 
         # Plot heatmap using imshow with 'Blues' colormap
@@ -190,7 +189,6 @@ class SituationChart:
         #     interpolation="bilinear",
         #     aspect="auto",
         # )
-        # Plot heatmap using imshow with 'Blues' colormap
         hb = self._ax.hexbin(
             x,
             y,
@@ -200,50 +198,54 @@ class SituationChart:
             edgecolors="none",
             alpha=1,
         )
-        # add median line of the hb values
+
         median_x = np.median(x)
         median_y = np.median(y)
         self._ax.axvline(x=median_x, color="grey", linestyle="--", linewidth=1)
         self._ax.axhline(y=median_y, color="grey", linestyle="--", linewidth=1)
-        # Overlay the specific point if set
+
         if self._highlight_points:
             for point in self._highlight_points:
-                # show point with coordinates as label
-
                 hx, hy = point.x, point.y
                 self._ax.axvline(hx, color="black", linestyle="-", linewidth=1)
                 self._ax.axhline(hy, color="black", linestyle="-", linewidth=1)
                 self._ax.scatter(hx, hy, color="black", s=100, label=point.label)
-                # Add x value at x-axis level
-                self._ax.text(
-                    hx,
-                    self._ax.get_ylim()[0],
-                    f"{hx:.2f}",
-                    fontsize=8,
-                    ha="center",
-                    va="top",
-                    rotation=45,
-                    style="italic",
-                )
-                # Add y value at y-axis level
-                self._ax.text(
-                    self._ax.get_xlim()[0],
-                    hy,
-                    f"{hy:.2f}",
-                    fontsize=8,
-                    ha="right",
-                    va="center",
-                    rotation=0,
-                    style="italic",
-                )
 
         # Labels and title
         self._ax.set_xlabel("Taux de boisement externe")
         self._ax.set_ylabel("Taux de boisement interne")
         self._ax.set_title("Situation de l'exploitation")
-        # Add legend
         self._ax.legend()
         self._figure.tight_layout()
+
+        if self._highlight_points:
+            self._figure.subplots_adjust(right=0.88, top=0.88)
+            for point in self._highlight_points:
+                hx, hy = point.x, point.y
+                self._ax.text(
+                    hx,
+                    1.05,
+                    f"{hx:.2f}",
+                    transform=self._ax.get_xaxis_transform(),
+                    fontsize=8,
+                    ha="center",
+                    va="bottom",
+                    style="italic",
+                    clip_on=False,
+                )
+                self._ax.annotate(
+                    f"{hy:.2f}",
+                    xy=(1, hy),
+                    xycoords=self._ax.get_yaxis_transform(),
+                    xytext=(8, 0),
+                    textcoords="offset points",
+                    fontsize=8,
+                    ha="left",
+                    va="center",
+                    style="italic",
+                    annotation_clip=False,
+                )
+
         self._canvas.draw()
 
     def set_colormap(self, colormap: str) -> None:

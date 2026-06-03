@@ -43,8 +43,7 @@ class Chloe5Plugin:
         self.actions: list[QAction] = []
 
         self.menu = QMenu(self.iface.mainWindow())
-        self.menu_name: str = self.tr("Chloe")
-        self.grain_bocager_menu: QMenu = None
+        self.menu_name: str = self.tr("Chloe - landscape metrics")
 
         # NO TOOLBAR YET
         # self.toolbar = self.iface.addToolBar("&Chloe")

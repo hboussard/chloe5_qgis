@@ -315,7 +315,7 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         #     Path(self.mQgsFileWidget_resultDir.filePath())
         # )
         self.mQgsFileWidget_result_directory_selector.setFilePath(
-            Path(self.mQgsFileWidget_resultDir.filePath())
+            self.mQgsFileWidget_resultDir.filePath()
         )
         self.results_viewer_tab.set_selected_exploitation_id(
             self.id_exploitation_combobox.currentText()

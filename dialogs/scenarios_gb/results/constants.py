@@ -1,6 +1,5 @@
 from pathlib import Path
 
-# SITUATION_CHART_BASE_CSV_PATH: Path = Path(__file__).parent / "analyse_bretagne_ref.csv"
 SITUATION_CHART_BASE_CSV_PATH: Path = (
     Path(__file__).parent / "exploitations_rpg20224_grain_bocager.csv"
 )

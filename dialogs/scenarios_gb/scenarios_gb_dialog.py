@@ -300,7 +300,6 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         self.tab_journal.update()
         self.tab_journal.repaint()
 
-        print("run grain bocager")
         # create properties file from parameters
         scenario_name_input: str = self.lineEdit_resultPrefix.text()
         properties: Properties = self.create_properties_file(scenario_name_input)
@@ -311,21 +310,26 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
 
         run_command(command_line=command, feedback=self._logger)
         # wait for process to finish
-        # self.results_viewer_tab.set_result_directory_path(
-        #     Path(self.mQgsFileWidget_resultDir.filePath())
-        # )
         self.mQgsFileWidget_result_directory_selector.setFilePath(
             self.mQgsFileWidget_resultDir.filePath()
         )
-        self.results_viewer_tab.set_selected_exploitation_id(
-            self.id_exploitation_combobox.currentText()
-        )
+        # if the result directory did not change
+        if (
+            self.mQgsFileWidget_resultDir.filePath()
+            == self.mQgsFileWidget_result_directory_selector.filePath()
+        ):
+            self.results_viewer_tab.update_results()
 
     def on_result_directory_changed(self) -> None:
         """on result directory changed"""
         self.results_viewer_tab.set_result_directory_path(
             Path(self.mQgsFileWidget_result_directory_selector.filePath())
         )
+
+        if self.id_exploitation_combobox.currentIndex() > -1:
+            self.results_viewer_tab.set_selected_exploitation_id(
+                self.id_exploitation_combobox.currentText()
+            )
 
     def cancel_command(self) -> None:
         self._logger.set_is_canceled(True)

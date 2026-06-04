@@ -6,7 +6,6 @@ from .constants import (
     RESULT_CSV_MANDATORY_ID_EXPLOITATION_COLUMN,
     RESULT_CSV_MANDATORY_NUMERIC_COLUMNS,
 )
-from ..dataclasses import ScenarioResult
 
 
 def analyse_results_directory(results_directory: Path) -> list[ScenarioResult]:
@@ -32,16 +31,13 @@ def analyse_results_directory(results_directory: Path) -> list[ScenarioResult]:
             if not has_mandatory_columns(df.columns.to_list()):
                 # print(f"File {file} does not have the mandatory columns")
                 continue  # check if the mandatory fields exists and the expected types are correct
-            # check if the column id_exploitation is equal to the id_exploitation parameter
-            # only work with the first row
-            data_row = df.iloc[0]
-
-            # check if all the columns are of numeric type if not exit the file loop
-            for column in RESULT_CSV_MANDATORY_NUMERIC_COLUMNS:
-                if not pd.api.types.is_numeric_dtype(data_row[column].dtype):
-                    break
-            else:
-                # create a ScenarioResult object and append to the results list
+            # check if all the columns are of numeric type if not skip the file
+            if not all(
+                pd.api.types.is_numeric_dtype(df[column])
+                for column in RESULT_CSV_MANDATORY_NUMERIC_COLUMNS
+            ):
+                continue
+            for _, data_row in df.iterrows():
                 result = ScenarioResult(
                     id_exploitation=str(
                         data_row[RESULT_CSV_MANDATORY_ID_EXPLOITATION_COLUMN]
@@ -70,12 +66,4 @@ def analyse_results_directory(results_directory: Path) -> list[ScenarioResult]:
 
 def has_mandatory_columns(columns: list[str]) -> bool:
     # check if all the mandatory columns are at least in the columns list
-
     return all(column in columns for column in RESULT_CSV_MANDATORY_COLUMNS)
-    # missing_columns = [
-    #     column for column in RESULT_CSV_MANDATORY_COLUMNS if column not in columns
-    # ]
-    # if missing_columns:
-    #     print(f"Missing mandatory columns: {missing_columns}")
-    #     return False
-    # return True

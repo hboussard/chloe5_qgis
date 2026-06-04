@@ -51,7 +51,7 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self.results_table_model = ResultsTableModel()
         self.results: list[ScenarioResult] = []
         self.result_directory_path: Path = Path()
-
+        self.results: list[ScenarioResult] = []
         # Setup Ui
         self.setupUi(self)
         self.setup_gui()
@@ -62,7 +62,7 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self.setup_evolution_grain_chart()
         self.setup_results_table()
         self.comboBox_id_exploitation.currentIndexChanged.connect(
-            self.refresh_results_tab
+            self.refresh_exploitation_results_tab
         )
         self._situation_selector.selection_changed.connect(
             self.filter_situation_chart_by_situation_selection
@@ -112,6 +112,10 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
     def set_result_directory_path(self, result_directory_path: Path) -> None:
         """Set the result directory path"""
         self.result_directory_path = result_directory_path
+        self.update_results()
+
+    def update_results(self) -> None:
+        """Refresh results"""
         # set results by analysing the files in the result directory so the results can be used to populate the id_exploitation_combobox
         self.set_results()
         #  get list of id exploitation
@@ -122,31 +126,22 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         if id_exploitation not in set(
             [result.id_exploitation for result in self.results]
         ):
-            # print(f"id_exploitation {id_exploitation} not in {self.results}")
             self.comboBox_id_exploitation.setCurrentIndex(-1)
             return
         self.comboBox_id_exploitation.setCurrentText(id_exploitation)
 
-    def refresh_results_tab(self):
+    def refresh_exploitation_results_tab(self):
         """Update results tab with the results of the last process"""
         # reset results to refresh results if any scenario has been added meanwhile
-        self.set_results()
+        if self.comboBox_id_exploitation.currentIndex() == -1:
+            return
+        id_exploitation: str = self.comboBox_id_exploitation.currentText()
         self.label_results_exploitation_id.setText(
-            f"Résultats pour l'exploitation {self.comboBox_id_exploitation.currentText()}"
+            f"Résultats pour l'exploitation {id_exploitation}"
         )
-
-        # filter results by id_exploitation
-        results: list[ScenarioResult] = []
-
-        if self.comboBox_id_exploitation.currentIndex() > -1:
-            results = [
-                result
-                for result in self.results
-                if result.id_exploitation == self.comboBox_id_exploitation.currentText()
-            ]
-        self.update_evolution_chart_from_results(results)
-        self.update_situation_chart_from_results(results)
-        self.update_results_table(results)
+        self.update_evolution_chart_from_results(id_exploitation)
+        self.update_situation_chart_from_results(id_exploitation)
+        self.update_results_table(id_exploitation)
 
     def set_results(self) -> None:
         # reset results to empty list
@@ -157,25 +152,29 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
                 results_directory=self.result_directory_path,
             )
 
-    def update_evolution_chart_from_results(self, results: list[ScenarioResult]):
+    def update_evolution_chart_from_results(self, id_exploitation: str):
         """Update graph from results"""
         highlight_points_evolution: list[HighlightPoint] = []
-        for result in results:
-            highlight_points_evolution.append(
-                HighlightPoint(
-                    result.delta_gb,
-                    result.delta_seuil_gb,
-                    result.scenario_name,
+        for result in self.results:
+            if result.id_exploitation == id_exploitation:
+                highlight_points_evolution.append(
+                    HighlightPoint(
+                        result.delta_gb,
+                        result.delta_seuil_gb,
+                        result.scenario_name,
+                    )
                 )
-            )
         self._evolution_chart.set_highlight_points(highlight_points_evolution)
         self._evolution_chart.draw_chart()
 
-    def update_situation_chart_from_results(self, results: list[ScenarioResult]):
+    def update_situation_chart_from_results(self, id_exploitation: str):
         """Update graph from results"""
         highlight_points_situation: list[HighlightPoint] = []
-        for result in results:
-            if result.scenario_name == "initial":
+        for result in self.results:
+            if (
+                result.id_exploitation == id_exploitation
+                and result.scenario_name == "initial"
+            ):
                 highlight_points_situation.append(
                     HighlightPoint(
                         result.tx_boisement_externe,
@@ -186,8 +185,13 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self._situation_chart.set_highlight_points(highlight_points_situation)
         self._situation_chart.draw_chart()
 
-    def update_results_table(self, results: list[ScenarioResult]):
+    def update_results_table(self, id_exploitation: str):
         """Update results table"""
+        results: list[ScenarioResult] = [
+            result
+            for result in self.results
+            if result.id_exploitation == id_exploitation
+        ]
         self.results_table_model.set_data(results)
 
     def populate_id_exploitation_combobox(self) -> None:
@@ -199,3 +203,5 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         )
 
         self.comboBox_id_exploitation.addItems(id_exploitation_set)
+        # by default select the first item (because the user has not selected an exploitation yet)
+        # self.comboBox_id_exploitation.setCurrentIndex(0)

@@ -80,7 +80,7 @@ class Chloe5Plugin:
         grainIcon_path = Path(__file__).resolve().parent / "images" / "chloe_icon.png"
         grain_icon = QIcon(str(grainIcon_path))
 
-        self.grain_bocager_menu = QMenu(self.tr("Grain bocager"), self.menu)
+        self.grain_bocager_menu = QMenu(self.tr("Grain Bocager"), self.menu)
         self.grain_bocager_menu.setIcon(grain_icon)
         self.menu.addMenu(self.grain_bocager_menu)
 

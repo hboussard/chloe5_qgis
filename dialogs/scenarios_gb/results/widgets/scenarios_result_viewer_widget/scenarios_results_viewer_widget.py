@@ -147,13 +147,12 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self.update_results_table(id_exploitation)
 
     def set_results(self) -> None:
-        # reset results to empty list
-        self._results = []
-
         if self._result_directory_path.exists():
             self._results = analyse_results_directory(
                 results_directory=self._result_directory_path,
             )
+        else:
+            self._results = []
 
     def update_evolution_chart_from_results(self, id_exploitation: str):
         """Update graph from results"""

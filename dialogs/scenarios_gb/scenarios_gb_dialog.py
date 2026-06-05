@@ -167,7 +167,7 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         fields: QgsFields = self.mFieldComboBox_exploitation_id_field.fields()
         # force reset field because it is not updated when layer is changed in the InputLayerFileWidget if the user select the layer from the select file dialog
         self.mFieldComboBox_exploitation_id_field.setFields(fields)
-        self.mFieldComboBox_exploitation_id_field.setCurrentIndex(0)
+        self.mFieldComboBox_exploitation_id_field.setCurrentIndex(-1)
 
     def on_exploitation_id_field_changed(self) -> None:
         """exploitation id field changed action"""

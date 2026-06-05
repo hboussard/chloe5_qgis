@@ -9,12 +9,8 @@ from qgis.PyQt import uic
 from qgis.core import (
     QgsMapLayerProxyModel,
     QgsVectorLayer,
-    QgsProcessingFeedback,
     QgsFields,
 )
-
-
-from .results.charts import SituationChart
 from .dataclasses import ScenarioGBProperties, ScenarioResult
 from .widgets.completer_combobox_widget import CompleterComboBox
 from .helpers.helpers import (
@@ -41,13 +37,13 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         QgsProcessingFeedback.__init__(self)
 
         self._parent = parent
-        self.input_bocage_raster_layer_selector: InputLayerFileWidget
-        self.input_exploitation_vector_layer_selector: InputLayerFileWidget
-        self.input_amenagements_vector_layer_selector: InputLayerFileWidget
-        self.id_exploitation_combobox: CompleterComboBox
+        self._input_bocage_raster_layer_selector: InputLayerFileWidget
+        self._input_exploitation_vector_layer_selector: InputLayerFileWidget
+        self._input_amenagements_vector_layer_selector: InputLayerFileWidget
+        self._id_exploitation_combobox: CompleterComboBox
         self._logger: CustomLogger
-        self.results_viewer_tab = ScenariosResultViewerWidget(self)
-        self.results: list[ScenarioResult] = []
+        self._results_viewer_tab = ScenariosResultViewerWidget(self)
+        self._results: list[ScenarioResult] = []
 
         # Setup Ui
         self.setupUi(self)
@@ -70,22 +66,22 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
 
     def setup_definition_exploitation_gui(self) -> None:
         """setup gui widget properties"""
-        self.input_exploitation_vector_layer_selector = InputLayerFileWidget(self)
-        self.input_exploitation_vector_layer_selector.setFilters(
+        self._input_exploitation_vector_layer_selector = InputLayerFileWidget(self)
+        self._input_exploitation_vector_layer_selector.setFilters(
             QgsMapLayerProxyModel.VectorLayer
         )
         self.groupBox_definition_exploitation.layout().addWidget(
-            self.input_exploitation_vector_layer_selector, 0, 1
+            self._input_exploitation_vector_layer_selector, 0, 1
         )
-        self.input_exploitation_vector_layer_selector.setComboboxIndex(-1)
+        self._input_exploitation_vector_layer_selector.setComboboxIndex(-1)
 
         # create commune completer combobox and add it to the layout
-        self.id_exploitation_combobox = CompleterComboBox()
+        self._id_exploitation_combobox = CompleterComboBox()
 
         self.groupBox_definition_exploitation.layout().addWidget(
-            self.id_exploitation_combobox, 2, 1
+            self._id_exploitation_combobox, 2, 1
         )
-        self.input_exploitation_vector_layer_selector.mlcb.layerChanged.connect(
+        self._input_exploitation_vector_layer_selector.mlcb.layerChanged.connect(
             self.on_input_exploitation_layer_changed
         )
         self.mFieldComboBox_exploitation_id_field.fieldChanged.connect(
@@ -94,29 +90,29 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
 
     def setup_definition_bocage_gui(self) -> None:
         """setup gui widget properties"""
-        self.input_bocage_raster_layer_selector = InputLayerFileWidget(self)
-        self.input_bocage_raster_layer_selector.setFilters(
+        self._input_bocage_raster_layer_selector = InputLayerFileWidget(self)
+        self._input_bocage_raster_layer_selector.setFilters(
             QgsMapLayerProxyModel.RasterLayer
         )
         self.groupBox_MNHC.layout().addWidget(
-            self.input_bocage_raster_layer_selector, 0, 0
+            self._input_bocage_raster_layer_selector, 0, 0
         )
-        self.input_bocage_raster_layer_selector.setComboboxIndex(-1)
+        self._input_bocage_raster_layer_selector.setComboboxIndex(-1)
 
     def setup_amenagements_gui(self) -> None:
         """setup gui widget properties"""
 
         self.lineEdit_resultPrefix.setText("initial")
-        self.input_amenagements_vector_layer_selector = InputLayerFileWidget(self)
-        self.input_amenagements_vector_layer_selector.setFilters(
+        self._input_amenagements_vector_layer_selector = InputLayerFileWidget(self)
+        self._input_amenagements_vector_layer_selector.setFilters(
             QgsMapLayerProxyModel.VectorLayer
         )
         self.groupBox_amenagements.layout().addWidget(
-            self.input_amenagements_vector_layer_selector, 1, 1
+            self._input_amenagements_vector_layer_selector, 1, 1
         )
-        self.input_amenagements_vector_layer_selector.setComboboxIndex(-1)
+        self._input_amenagements_vector_layer_selector.setComboboxIndex(-1)
 
-        self.input_amenagements_vector_layer_selector.mlcb.layerChanged.connect(
+        self._input_amenagements_vector_layer_selector.mlcb.layerChanged.connect(
             self.on_input_amenagement_layer_changed
         )
         self.mFieldComboBox_scenarios.fieldChanged.connect(
@@ -138,7 +134,7 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
 
     def setup_results_viewer_tab(self) -> None:
         """setup exploitation situation result viewer"""
-        self.gridLayout_result_viewer.addWidget(self.results_viewer_tab)
+        self.gridLayout_result_viewer.addWidget(self._results_viewer_tab)
         self.mQgsFileWidget_result_directory_selector.fileChanged.connect(
             self.on_result_directory_changed
         )
@@ -146,9 +142,9 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
     def on_input_exploitation_layer_changed(self) -> None:
         """input exploitation layer changed action"""
         self.mFieldComboBox_exploitation_id_field.clear()
-        self.id_exploitation_combobox.clear()
+        self._id_exploitation_combobox.clear()
         current_layer: QgsVectorLayer = (
-            self.input_exploitation_vector_layer_selector.currentLayer()
+            self._input_exploitation_vector_layer_selector.currentLayer()
         )
         self.mFieldComboBox_exploitation_id_field.setLayer(current_layer)
         fields: QgsFields = self.mFieldComboBox_exploitation_id_field.fields()
@@ -159,20 +155,20 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
     def on_exploitation_id_field_changed(self) -> None:
         """exploitation id field changed action"""
 
-        self.id_exploitation_combobox.clear()
+        self._id_exploitation_combobox.clear()
 
         id_exploitations: list[str] = get_distinct_attributes_values_from_layer(
-            self.input_exploitation_vector_layer_selector.currentLayer(),
+            self._input_exploitation_vector_layer_selector.currentLayer(),
             self.mFieldComboBox_exploitation_id_field.currentField(),
         )
-        self.id_exploitation_combobox.addItems(id_exploitations)
+        self._id_exploitation_combobox.addItems(id_exploitations)
 
     def on_input_amenagement_layer_changed(self) -> None:
         """input amenagement layer changed action"""
         # check if the layer has a at least a field name "initial" that is a numeric field
         self.mFieldComboBox_scenarios.clear()
         selected_layer: QgsVectorLayer = (
-            self.input_amenagements_vector_layer_selector.currentLayer()
+            self._input_amenagements_vector_layer_selector.currentLayer()
         )
         self.mFieldComboBox_scenarios.setLayer(selected_layer)
         fields: QgsFields = self.mFieldComboBox_scenarios.fields()
@@ -185,7 +181,7 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         """amenagement scenario field changed action"""
         # check if the select field is a number field
         selected_layer: QgsVectorLayer = (
-            self.input_amenagements_vector_layer_selector.currentLayer()
+            self._input_amenagements_vector_layer_selector.currentLayer()
         )
         selected_field: str = self.mFieldComboBox_scenarios.currentField()
         if not vector_layer_field_is_numeric(selected_layer, selected_field):
@@ -193,7 +189,6 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
             self.lineEdit_resultPrefix.setText("")
             return
         self.lineEdit_resultPrefix.setText(f"{selected_field}")
-        # if not, show an error message and set the index to -1
 
     def check_mandatory_inputs(self) -> bool:
         """Inputs validation. Checks if mandatory inputs are valid values"""
@@ -201,7 +196,7 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
 
         if not input_vector_validator(
             "couche exploitation",
-            Path(self.input_exploitation_vector_layer_selector.currentFilePath()),
+            Path(self._input_exploitation_vector_layer_selector.currentFilePath()),
         ):
             return False
         # input exploitation id field must be set
@@ -213,7 +208,7 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
             )
             return False
         # id exploitation combobox must be set
-        if self.id_exploitation_combobox.currentIndex() == -1:
+        if self._id_exploitation_combobox.currentIndex() == -1:
             QMessageBox.warning(
                 self,
                 "Erreur",
@@ -224,14 +219,14 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         if not path_validator(
             "Couche bocage",
             "couche raster bocage",
-            Path(self.input_bocage_raster_layer_selector.currentFilePath()),
+            Path(self._input_bocage_raster_layer_selector.currentFilePath()),
         ):
             return False
         # if amenagements radio button is checked, input aménagements layer must be set and valid path
         if self.radioButton_scenario.isChecked():
             if not input_vector_validator(
                 "couche aménagements",
-                Path(self.input_amenagements_vector_layer_selector.currentFilePath()),
+                Path(self._input_amenagements_vector_layer_selector.currentFilePath()),
             ):
                 return False
             if self.mFieldComboBox_scenarios.currentIndex() == -1:
@@ -316,17 +311,17 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
             self.mQgsFileWidget_resultDir.filePath()
             == self.mQgsFileWidget_result_directory_selector.filePath()
         ):
-            self.results_viewer_tab.update_results()
+            self._results_viewer_tab.update_results()
 
     def on_result_directory_changed(self) -> None:
         """on result directory changed"""
-        self.results_viewer_tab.set_result_directory_path(
+        self._results_viewer_tab.set_result_directory_path(
             Path(self.mQgsFileWidget_result_directory_selector.filePath())
         )
 
-        if self.id_exploitation_combobox.currentIndex() > -1:
-            self.results_viewer_tab.set_selected_exploitation_id(
-                self.id_exploitation_combobox.currentText()
+        if self._id_exploitation_combobox.currentIndex() > -1:
+            self._results_viewer_tab.set_selected_exploitation_id(
+                self._id_exploitation_combobox.currentText()
             )
 
     def cancel_command(self) -> None:

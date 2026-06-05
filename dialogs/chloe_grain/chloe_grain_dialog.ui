@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <property name="tabBarAutoHide">
       <bool>false</bool>
@@ -171,16 +171,16 @@
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Grain bocager&lt;/span&gt;&lt;/h1&gt;
-&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:medium; font-weight:600;&quot;&gt;Pourquoi le grain bocager ?&lt;/span&gt;&lt;/h4&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:600;&quot;&gt;Grain bocager&lt;/span&gt;&lt;/h1&gt;
+&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:600;&quot;&gt;Pourquoi le grain bocager ?&lt;/span&gt;&lt;/h4&gt;
 &lt;hr /&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L’écologie du paysage étudie les relations entre des structures paysagères et des processus écologiques. Le grain bocager a l’avantage de prendre en compte à la fois la densité de haies, et la configuration spatiale du réseau bocager.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain bocager repose sur les résultats des climatologues. Ils ont montré l’effet microclimatique des haies individuelles : l’effet brise-vent est ressenti jusqu’à dix fois leur hauteur. Il existe aussi un effet paysager dû à l’accumulation des effets des haies individuelles. En partant de la distance aux haies, le grain prend aussi en compte la forme des parcelles. Dans une parcelle rectangulaire, la proportion de surface proche des haies et autres boisements est beaucoup plus grande que dans une parcelle carrée. &lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain est un indice qui varie entre 0 et 1 ; pour un paysage entièrement boisé, la valeur est 0, pour un paysage sans aucun boisement, elle est de 1. &lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L’analyse de relevés de coléoptères carabiques dans 116 haies bretonnes a mis en évidence l’effet du grain, les captures étant trois fois plus nombreuses en deçà du seuil de 0,33.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Il peut être utilisé dans diverses situations d’action ; gestion des haies d’exploitations agricoles, politique Trame Verte et Bleue des EPCI, aménagements de périmètres de protection de captage d’eau potable, atlas de biodiversité communal… avec l’objectif de maintenir les zones favorables, renforcer les zones sensibles et reconstruire les zones dégradées.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain bocager est un paramètre essentiel pour apprécier la capacité d’accueil de la biodiversité en agro-système bocager, en complément de la qualité intrinsèque de la haie évaluée par les indicateurs du plan de gestion durable des haies (PGDH). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;L’écologie du paysage étudie les relations entre des structures paysagères et des processus écologiques. Le grain bocager a l’avantage de prendre en compte à la fois la densité de haies, et la configuration spatiale du réseau bocager.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain bocager repose sur les résultats des climatologues. Ils ont montré l’effet microclimatique des haies individuelles : l’effet brise-vent est ressenti jusqu’à dix fois leur hauteur. Il existe aussi un effet paysager dû à l’accumulation des effets des haies individuelles. En partant de la distance aux haies, le grain prend aussi en compte la forme des parcelles. Dans une parcelle rectangulaire, la proportion de surface proche des haies et autres boisements est beaucoup plus grande que dans une parcelle carrée. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain est un indice qui varie entre 0 et 1 ; pour un paysage entièrement boisé, la valeur est 0, pour un paysage sans aucun boisement, elle est de 1. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;L’analyse de relevés de coléoptères carabiques dans 116 haies bretonnes a mis en évidence l’effet du grain, les captures étant trois fois plus nombreuses en deçà du seuil de 0,33.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Il peut être utilisé dans diverses situations d’action ; gestion des haies d’exploitations agricoles, politique Trame Verte et Bleue des EPCI, aménagements de périmètres de protection de captage d’eau potable, atlas de biodiversité communal… avec l’objectif de maintenir les zones favorables, renforcer les zones sensibles et reconstruire les zones dégradées.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain bocager est un paramètre essentiel pour apprécier la capacité d’accueil de la biodiversité en agro-système bocager, en complément de la qualité intrinsèque de la haie évaluée par les indicateurs du plan de gestion durable des haies (PGDH). &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -225,7 +225,7 @@ p, li { white-space: pre-wrap; }
                  <property name="text">
                   <string>Hauteur de canopée :</string>
                  </property>
-				 <property name="checked">
+                 <property name="checked">
                   <bool>true</bool>
                  </property>
                  <attribute name="buttonGroup">
@@ -233,17 +233,17 @@ p, li { white-space: pre-wrap; }
                  </attribute>
                 </widget>
                </item>
-			   <item>
+               <item>
                 <widget class="QDoubleSpinBox" name="doubleSpinBox_hauteurVegetation">
                  <property name="decimals">
-				 <number>1</number>
-				 </property>
-				 <property name="value">
-				  <double>10.0</double>
+                  <number>1</number>
+                 </property>
+                 <property name="value">
+                  <double>10.000000000000000</double>
                  </property>
                 </widget>
                </item>
-			  </layout>
+              </layout>
              </widget>
             </item>
             <item>
@@ -322,16 +322,16 @@ p, li { white-space: pre-wrap; }
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Grain bocager&lt;/span&gt;&lt;/h1&gt;
-&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:medium; font-weight:600;&quot;&gt;Pourquoi le grain bocager ?&lt;/span&gt;&lt;/h4&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:600;&quot;&gt;Grain bocager&lt;/span&gt;&lt;/h1&gt;
+&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:600;&quot;&gt;Pourquoi le grain bocager ?&lt;/span&gt;&lt;/h4&gt;
 &lt;hr /&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L’écologie du paysage étudie les relations entre des structures paysagères et des processus écologiques. Le grain bocager a l’avantage de prendre en compte à la fois la densité de haies, et la configuration spatiale du réseau bocager.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain bocager repose sur les résultats des climatologues. Ils ont montré l’effet microclimatique des haies individuelles : l’effet brise-vent est ressenti jusqu’à dix fois leur hauteur. Il existe aussi un effet paysager dû à l’accumulation des effets des haies individuelles. En partant de la distance aux haies, le grain prend aussi en compte la forme des parcelles. Dans une parcelle rectangulaire, la proportion de surface proche des haies et autres boisements est beaucoup plus grande que dans une parcelle carrée. &lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain est un indice qui varie entre 0 et 1 ; pour un paysage entièrement boisé, la valeur est 0, pour un paysage sans aucun boisement, elle est de 1. &lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L’analyse de relevés de coléoptères carabiques dans 116 haies bretonnes a mis en évidence l’effet du grain, les captures étant trois fois plus nombreuses en deçà du seuil de 0,33.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Il peut être utilisé dans diverses situations d’action ; gestion des haies d’exploitations agricoles, politique Trame Verte et Bleue des EPCI, aménagements de périmètres de protection de captage d’eau potable, atlas de biodiversité communal… avec l’objectif de maintenir les zones favorables, renforcer les zones sensibles et reconstruire les zones dégradées.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain bocager est un paramètre essentiel pour apprécier la capacité d’accueil de la biodiversité en agro-système bocager, en complément de la qualité intrinsèque de la haie évaluée par les indicateurs du plan de gestion durable des haies (PGDH). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;L’écologie du paysage étudie les relations entre des structures paysagères et des processus écologiques. Le grain bocager a l’avantage de prendre en compte à la fois la densité de haies, et la configuration spatiale du réseau bocager.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain bocager repose sur les résultats des climatologues. Ils ont montré l’effet microclimatique des haies individuelles : l’effet brise-vent est ressenti jusqu’à dix fois leur hauteur. Il existe aussi un effet paysager dû à l’accumulation des effets des haies individuelles. En partant de la distance aux haies, le grain prend aussi en compte la forme des parcelles. Dans une parcelle rectangulaire, la proportion de surface proche des haies et autres boisements est beaucoup plus grande que dans une parcelle carrée. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain est un indice qui varie entre 0 et 1 ; pour un paysage entièrement boisé, la valeur est 0, pour un paysage sans aucun boisement, elle est de 1. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;L’analyse de relevés de coléoptères carabiques dans 116 haies bretonnes a mis en évidence l’effet du grain, les captures étant trois fois plus nombreuses en deçà du seuil de 0,33.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Il peut être utilisé dans diverses situations d’action ; gestion des haies d’exploitations agricoles, politique Trame Verte et Bleue des EPCI, aménagements de périmètres de protection de captage d’eau potable, atlas de biodiversité communal… avec l’objectif de maintenir les zones favorables, renforcer les zones sensibles et reconstruire les zones dégradées.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain bocager est un paramètre essentiel pour apprécier la capacité d’accueil de la biodiversité en agro-système bocager, en complément de la qualité intrinsèque de la haie évaluée par les indicateurs du plan de gestion durable des haies (PGDH). &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -381,7 +381,7 @@ p, li { white-space: pre-wrap; }
              <string>Grain bocager</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_2">
-			 <item row="0" column="0">
+             <item row="0" column="0">
               <widget class="QLabel" name="label_10">
                <property name="text">
                 <string>Taille de pixel</string>
@@ -401,7 +401,7 @@ p, li { white-space: pre-wrap; }
                </property>
               </widget>
              </item>
-			 <item row="1" column="0">
+             <item row="1" column="0">
               <widget class="QLabel" name="label_12">
                <property name="text">
                 <string>Rayon</string>
@@ -427,7 +427,7 @@ p, li { white-space: pre-wrap; }
             </layout>
            </widget>
           </item>
-		  <item>
+          <item>
            <widget class="QGroupBox" name="groupBox_seuils">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -527,24 +527,24 @@ p, li { white-space: pre-wrap; }
              <bool>false</bool>
             </property>
             <layout class="QGridLayout" name="gridLayout">
-			 <item row="0" column="0">
+             <item row="0" column="0">
               <widget class="QLabel" name="label_8">
                <property name="text">
                 <string>Taille de pixel</string>
                </property>
               </widget>
              </item>
-			 <item row="0" column="1">
+             <item row="0" column="1">
               <widget class="QSpinBox" name="doubleSpinBox_pixelEnjeux">
+               <property name="maximum">
+                <number>1000</number>
+               </property>
                <property name="value">
                 <number>50</number>
                </property>
-			   <property name="maximum">
-                <number>1000</number>
-               </property>
               </widget>
              </item>
-			 <item row="1" column="0">
+             <item row="1" column="0">
               <widget class="QLabel" name="label_7">
                <property name="text">
                 <string>Rayon</string>
@@ -592,16 +592,16 @@ p, li { white-space: pre-wrap; }
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Grain bocager&lt;/span&gt;&lt;/h1&gt;
-&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:medium; font-weight:600;&quot;&gt;Pourquoi le grain bocager ?&lt;/span&gt;&lt;/h4&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:600;&quot;&gt;Grain bocager&lt;/span&gt;&lt;/h1&gt;
+&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:600;&quot;&gt;Pourquoi le grain bocager ?&lt;/span&gt;&lt;/h4&gt;
 &lt;hr /&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L’écologie du paysage étudie les relations entre des structures paysagères et des processus écologiques. Le grain bocager a l’avantage de prendre en compte à la fois la densité de haies, et la configuration spatiale du réseau bocager.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain bocager repose sur les résultats des climatologues. Ils ont montré l’effet microclimatique des haies individuelles : l’effet brise-vent est ressenti jusqu’à dix fois leur hauteur. Il existe aussi un effet paysager dû à l’accumulation des effets des haies individuelles. En partant de la distance aux haies, le grain prend aussi en compte la forme des parcelles. Dans une parcelle rectangulaire, la proportion de surface proche des haies et autres boisements est beaucoup plus grande que dans une parcelle carrée. &lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain est un indice qui varie entre 0 et 1 ; pour un paysage entièrement boisé, la valeur est 0, pour un paysage sans aucun boisement, elle est de 1. &lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L’analyse de relevés de coléoptères carabiques dans 116 haies bretonnes a mis en évidence l’effet du grain, les captures étant trois fois plus nombreuses en deçà du seuil de 0,33.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Il peut être utilisé dans diverses situations d’action ; gestion des haies d’exploitations agricoles, politique Trame Verte et Bleue des EPCI, aménagements de périmètres de protection de captage d’eau potable, atlas de biodiversité communal… avec l’objectif de maintenir les zones favorables, renforcer les zones sensibles et reconstruire les zones dégradées.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain bocager est un paramètre essentiel pour apprécier la capacité d’accueil de la biodiversité en agro-système bocager, en complément de la qualité intrinsèque de la haie évaluée par les indicateurs du plan de gestion durable des haies (PGDH). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;L’écologie du paysage étudie les relations entre des structures paysagères et des processus écologiques. Le grain bocager a l’avantage de prendre en compte à la fois la densité de haies, et la configuration spatiale du réseau bocager.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain bocager repose sur les résultats des climatologues. Ils ont montré l’effet microclimatique des haies individuelles : l’effet brise-vent est ressenti jusqu’à dix fois leur hauteur. Il existe aussi un effet paysager dû à l’accumulation des effets des haies individuelles. En partant de la distance aux haies, le grain prend aussi en compte la forme des parcelles. Dans une parcelle rectangulaire, la proportion de surface proche des haies et autres boisements est beaucoup plus grande que dans une parcelle carrée. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain est un indice qui varie entre 0 et 1 ; pour un paysage entièrement boisé, la valeur est 0, pour un paysage sans aucun boisement, elle est de 1. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;L’analyse de relevés de coléoptères carabiques dans 116 haies bretonnes a mis en évidence l’effet du grain, les captures étant trois fois plus nombreuses en deçà du seuil de 0,33.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Il peut être utilisé dans diverses situations d’action ; gestion des haies d’exploitations agricoles, politique Trame Verte et Bleue des EPCI, aménagements de périmètres de protection de captage d’eau potable, atlas de biodiversité communal… avec l’objectif de maintenir les zones favorables, renforcer les zones sensibles et reconstruire les zones dégradées.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain bocager est un paramètre essentiel pour apprécier la capacité d’accueil de la biodiversité en agro-système bocager, en complément de la qualité intrinsèque de la haie évaluée par les indicateurs du plan de gestion durable des haies (PGDH). &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -710,9 +710,9 @@ p, li { white-space: pre-wrap; }
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
             <property name="spacing">
-             <number>-1</number>
+             <number>6</number>
             </property>
-			<item>
+            <item>
              <widget class="QCheckBox" name="checkBox_hauteurBoisements">
               <property name="text">
                <string>Hauteurs de boisements</string>
@@ -722,7 +722,7 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
-			 <item>
+            <item>
              <widget class="QCheckBox" name="checkBox_typesBoisements">
               <property name="text">
                <string>Types de boisements</string>
@@ -732,7 +732,7 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
-			<item>
+            <item>
              <widget class="QCheckBox" name="checkBox_distanceInfluence">
               <property name="text">
                <string>Distances d'influence</string>
@@ -778,7 +778,7 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>Grain bocager à quatre classes</string>
               </property>
-			  <property name="checked">
+              <property name="checked">
                <bool>true</bool>
               </property>
              </widget>
@@ -788,7 +788,7 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>Masque de grain bocager fonctionnel</string>
               </property>
-			  <property name="checked">
+              <property name="checked">
                <bool>true</bool>
               </property>
              </widget>
@@ -798,7 +798,7 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>Clusters fonctionnels</string>
               </property>
-			  <property name="checked">
+              <property name="checked">
                <bool>true</bool>
               </property>
              </widget>
@@ -808,7 +808,7 @@ p, li { white-space: pre-wrap; }
               <property name="text">
                <string>Carte des enjeux globaux</string>
               </property>
-			  <property name="checked">
+              <property name="checked">
                <bool>true</bool>
               </property>
              </widget>
@@ -837,16 +837,16 @@ p, li { white-space: pre-wrap; }
           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:xx-large; font-weight:600;&quot;&gt;Grain bocager&lt;/span&gt;&lt;/h1&gt;
-&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:medium; font-weight:600;&quot;&gt;Pourquoi le grain bocager ?&lt;/span&gt;&lt;/h4&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;h1 style=&quot; margin-top:18px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:600;&quot;&gt;Grain bocager&lt;/span&gt;&lt;/h1&gt;
+&lt;h4 style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt; font-weight:600;&quot;&gt;Pourquoi le grain bocager ?&lt;/span&gt;&lt;/h4&gt;
 &lt;hr /&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L’écologie du paysage étudie les relations entre des structures paysagères et des processus écologiques. Le grain bocager a l’avantage de prendre en compte à la fois la densité de haies, et la configuration spatiale du réseau bocager.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain bocager repose sur les résultats des climatologues. Ils ont montré l’effet microclimatique des haies individuelles : l’effet brise-vent est ressenti jusqu’à dix fois leur hauteur. Il existe aussi un effet paysager dû à l’accumulation des effets des haies individuelles. En partant de la distance aux haies, le grain prend aussi en compte la forme des parcelles. Dans une parcelle rectangulaire, la proportion de surface proche des haies et autres boisements est beaucoup plus grande que dans une parcelle carrée. &lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain est un indice qui varie entre 0 et 1 ; pour un paysage entièrement boisé, la valeur est 0, pour un paysage sans aucun boisement, elle est de 1. &lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L’analyse de relevés de coléoptères carabiques dans 116 haies bretonnes a mis en évidence l’effet du grain, les captures étant trois fois plus nombreuses en deçà du seuil de 0,33.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Il peut être utilisé dans diverses situations d’action ; gestion des haies d’exploitations agricoles, politique Trame Verte et Bleue des EPCI, aménagements de périmètres de protection de captage d’eau potable, atlas de biodiversité communal… avec l’objectif de maintenir les zones favorables, renforcer les zones sensibles et reconstruire les zones dégradées.&lt;/p&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Le grain bocager est un paramètre essentiel pour apprécier la capacité d’accueil de la biodiversité en agro-système bocager, en complément de la qualité intrinsèque de la haie évaluée par les indicateurs du plan de gestion durable des haies (PGDH). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;L’écologie du paysage étudie les relations entre des structures paysagères et des processus écologiques. Le grain bocager a l’avantage de prendre en compte à la fois la densité de haies, et la configuration spatiale du réseau bocager.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain bocager repose sur les résultats des climatologues. Ils ont montré l’effet microclimatique des haies individuelles : l’effet brise-vent est ressenti jusqu’à dix fois leur hauteur. Il existe aussi un effet paysager dû à l’accumulation des effets des haies individuelles. En partant de la distance aux haies, le grain prend aussi en compte la forme des parcelles. Dans une parcelle rectangulaire, la proportion de surface proche des haies et autres boisements est beaucoup plus grande que dans une parcelle carrée. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain est un indice qui varie entre 0 et 1 ; pour un paysage entièrement boisé, la valeur est 0, pour un paysage sans aucun boisement, elle est de 1. &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;L’analyse de relevés de coléoptères carabiques dans 116 haies bretonnes a mis en évidence l’effet du grain, les captures étant trois fois plus nombreuses en deçà du seuil de 0,33.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Il peut être utilisé dans diverses situations d’action ; gestion des haies d’exploitations agricoles, politique Trame Verte et Bleue des EPCI, aménagements de périmètres de protection de captage d’eau potable, atlas de biodiversité communal… avec l’objectif de maintenir les zones favorables, renforcer les zones sensibles et reconstruire les zones dégradées.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'.AppleSystemUIFont'; font-size:13pt;&quot;&gt;Le grain bocager est un paramètre essentiel pour apprécier la capacité d’accueil de la biodiversité en agro-système bocager, en complément de la qualité intrinsèque de la haie évaluée par les indicateurs du plan de gestion durable des haies (PGDH). &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -858,7 +858,11 @@ p, li { white-space: pre-wrap; }
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QTextEdit" name="textEdit_journal"/>
+        <widget class="QTextEdit" name="textEdit_journal">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QWidget" name="widget" native="true">

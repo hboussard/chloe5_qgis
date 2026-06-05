@@ -31,9 +31,7 @@ from ..helpers.custom_logger import CustomLogger
 from ...helpers.helpers import run_command, get_console_command
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
-FORM_CLASS, _ = uic.loadUiType(
-    Path(__file__).parent / "dialogs" / "scenarios_gb_dialog.ui"
-)
+FORM_CLASS, _ = uic.loadUiType(Path(__file__).parent / "ui" / "scenarios_gb_dialog.ui")
 
 
 class ScenariosGBDialog(QDialog, FORM_CLASS):

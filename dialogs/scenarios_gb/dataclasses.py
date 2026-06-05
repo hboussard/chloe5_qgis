@@ -21,7 +21,7 @@ class ScenarioResult:
 
 
 @dataclass
-class Properties:
+class ScenarioGBProperties:
     scenario_name: str
     parcellaire: Path
     attribut_code_ea: str

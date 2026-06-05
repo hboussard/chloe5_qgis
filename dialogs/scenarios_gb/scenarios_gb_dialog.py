@@ -15,7 +15,7 @@ from qgis.core import (
 
 
 from .results.charts import SituationChart
-from .dataclasses import Properties, ScenarioResult
+from .dataclasses import ScenarioGBProperties, ScenarioResult
 from .widgets.completer_combobox_widget import CompleterComboBox
 from .helpers.helpers import (
     get_distinct_attributes_values_from_layer,
@@ -258,22 +258,22 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
             return False
         return True
 
-    def create_properties_file(self, scenario_name_input: str) -> Properties:
+    def properties_factory(self, scenario_name_input: str) -> ScenarioGBProperties:
         """create properties file"""
-        return Properties(
+        return ScenarioGBProperties(
             scenario_name=scenario_name_input,
             parcellaire=Path(
-                rf"{self.input_exploitation_vector_layer_selector.currentFilePath()}"
+                rf"{self._input_exploitation_vector_layer_selector.currentFilePath()}"
             ),
             attribut_code_ea=self.mFieldComboBox_exploitation_id_field.currentField(),
-            code_ea=self.id_exploitation_combobox.currentText(),
+            code_ea=self._id_exploitation_combobox.currentText(),
             bocage=Path(
-                rf"{self.input_bocage_raster_layer_selector.currentFilePath()}"
+                rf"{self._input_bocage_raster_layer_selector.currentFilePath()}"
             ),
             # conditional value for amenagement
             amenagement=(
                 Path(
-                    rf"{self.input_amenagements_vector_layer_selector.currentFilePath()}"
+                    rf"{self._input_amenagements_vector_layer_selector.currentFilePath()}"
                 )
                 if self.radioButton_scenario.isChecked()
                 else Path()
@@ -300,7 +300,7 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
 
         # create properties file from parameters
         scenario_name_input: str = self.lineEdit_resultPrefix.text()
-        properties: Properties = self.create_properties_file(scenario_name_input)
+        properties: ScenarioGBProperties = self.properties_factory(scenario_name_input)
         properties.create_properties_file()
         file_path: Path = properties.get_properties_file_path()
         command: str = get_console_command(str(file_path))

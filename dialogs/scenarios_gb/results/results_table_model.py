@@ -36,12 +36,16 @@ class ResultsTableModel(QStandardItemModel):
         self.setRowCount(0)
         for result in self._data:
             row: list[QStandardItem] = []
-            # create a standard item for each property of the ScenarioResult object
             row.append(QStandardItem(str(result.scenario_name)))
-            row.append(QStandardItem(str(result.tx_boisement_externe)))
-            row.append(QStandardItem(str(result.tx_boisement_interne)))
-            row.append(QStandardItem(str(result.delta_gb)))
-            row.append(QStandardItem(str(result.delta_seuil_gb)))
+            for value in (
+                result.tx_boisement_externe,
+                result.tx_boisement_interne,
+                result.delta_gb,
+                result.delta_seuil_gb,
+            ):
+                item = QStandardItem()
+                item.setData(float(value), Qt.DisplayRole)
+                row.append(item)
             self.appendRow(row)
 
     def get_data(self) -> list[ScenarioResult]:

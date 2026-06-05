@@ -290,8 +290,8 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
                 )
 
             # self.checkBox_scenarioDiffs.isChecked()
-
             f.write("treatment=" + treatment + "\n")
+            f.write("force=true\n")
 
         f.close()
         return prop_file

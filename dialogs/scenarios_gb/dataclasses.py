@@ -56,6 +56,7 @@ class ScenarioGBProperties:
             f"thresholds={{{';'.join(map(str, self.grain_bocager_thresholds))}}}",
             f"output_folder={output_folder}",
             f"scenario={self.scenario_name}",
+            "force=true",
         ]
 
         if self.amenagement != Path():

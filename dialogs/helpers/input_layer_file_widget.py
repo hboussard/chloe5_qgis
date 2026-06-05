@@ -2,9 +2,6 @@ from qgis.core import QgsMapLayerProxyModel, QgsVectorLayer
 from qgis.PyQt.QtWidgets import QWidget, QHBoxLayout, QPushButton, QFileDialog
 from qgis.gui import QgsMapLayerComboBox
 from pathlib import Path
-from ...helpers.constants import CHLOE_JAR_PATH
-
-from ...settings.helpers import check_java_path, get_java_path
 
 
 class InputLayerFileWidget(QWidget):
@@ -62,6 +59,10 @@ class InputLayerFileWidget(QWidget):
             return layer.source().replace("\\", "/")
         else:
             return self.currentText().replace("\\", "/")
+
+    def clear(self) -> None:
+        self.mlcb.setCurrentIndex(-1)
+        self.mlcb.setAdditionalItems([])
 
     def connectLayerChangedSlot(self, setLayerSlot):
         self.mlcb.layerChanged.connect(setLayerSlot)

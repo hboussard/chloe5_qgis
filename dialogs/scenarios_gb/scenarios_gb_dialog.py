@@ -26,7 +26,7 @@ from .helpers.helpers import (
 from .results.widgets.scenarios_result_viewer_widget.scenarios_results_viewer_widget import (
     ScenariosResultViewerWidget,
 )
-from ..helpers.helpers import InputLayerFileWidget
+from ..helpers.input_layer_file_widget import InputLayerFileWidget
 from ..helpers.custom_logger import CustomLogger
 from ...helpers.helpers import run_command, get_console_command
 

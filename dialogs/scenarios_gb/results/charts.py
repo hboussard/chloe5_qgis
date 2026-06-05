@@ -260,6 +260,11 @@ class SituationChart:
         """get toolbar"""
         return self._toolbar
 
+    def clear_highlight_points(self) -> None:
+        """clear the highlight points"""
+        self._highlight_points = []
+        self.draw_chart()
+
 
 class EvolutionChart:
     """Chart base class for matplotlib pcolormesh heatmap"""
@@ -346,6 +351,11 @@ class EvolutionChart:
     def get_toolbar(self) -> NavigationToolbar:
         """get toolbar"""
         return self._toolbar
+
+    def clear_highlight_points(self) -> None:
+        """clear the chart"""
+        self._highlight_point = []
+        self.draw_chart()
 
 
 class ChartToolBarWithColormap(QWidget):

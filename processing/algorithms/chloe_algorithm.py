@@ -138,7 +138,8 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         self.set_properties_values(parameters, context, feedback)
         self.create_properties_file(self.get_properties_lines())
         command: str = get_console_command(self.get_properties_file_path(parameters))
-        run_command(command_line=command, feedback=feedback)
+        if run_command(command_line=command, feedback=feedback):
+            feedback.pushInfo("Exécution terminée avec succès.")
 
         results: dict[str, Any] = {}
         for definition in self.outputDefinitions():

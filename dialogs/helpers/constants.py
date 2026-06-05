@@ -1,0 +1,2 @@
+ALGORITHM_NAME_GRAIN_BOCAGER = "grain bocager"
+ALGORITHM_NAME_SCENARIOS = "scénarios"

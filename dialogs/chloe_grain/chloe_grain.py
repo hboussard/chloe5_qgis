@@ -26,11 +26,13 @@ import os, datetime
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
-from qgis.core import QgsMapLayerProxyModel, QgsProcessingFeedback
+from qgis.core import QgsMapLayerProxyModel
 from qgis.PyQt.QtWidgets import QPushButton, QDialogButtonBox
-from qgis.PyQt.QtGui import QTextCursor
-from ..helpers.helpers import InputLayerFileWidget
-from ...helpers.helpers import run_command, get_console_command
+from ..helpers.input_layer_file_widget import InputLayerFileWidget
+from ..helpers.constants import ALGORITHM_NAME_GRAIN_BOCAGER
+from ..helpers.custom_logger import CustomLogger
+from ...helpers.helpers import get_console_command
+from ..helpers.command_worker import BackgroundCommandExecutor
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 GRAIN_FORM_CLASS, _ = uic.loadUiType(
@@ -42,11 +44,10 @@ def s(path):
     return path.replace(os.sep, "/")
 
 
-class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedback):
+class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(ChloeGrainDialog, self).__init__(parent)
-        QgsProcessingFeedback.__init__(self)
         # Set up the user interface from Designer through FORM_CLASS.
         # After self.setupUi() you can access any designer object by doing
         # self.<objectname>, and you can use autoconnect slots - see
@@ -78,12 +79,15 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
         self.groupBox_enjeux.toggled.connect(self.setEnjeux)
         self.setEnjeux()
 
-        self.cursor = QTextCursor(self.textEdit_journal.document())
+        self._logger = CustomLogger(self.textEdit_journal, self.progressBar)
         self.pushButton_interrupt.clicked.connect(self.interruptWork)
 
         self.pushButton_run = QPushButton("Run")
         self.button_box.addButton(self.pushButton_run, QDialogButtonBox.ActionRole)
         self.pushButton_run.clicked.connect(self.run_grain)
+
+        self._command_executor = BackgroundCommandExecutor(self)
+        self._command_executor.finished.connect(self._on_command_finished)
 
         # self.mMapLayerComboBox_Plantations.mMapLayer.setFilters(QgsMapLayerProxyModel.VectorLayer)
         # self.mMapLayerComboBox_Plantations.layerChanged.connect(self.mFieldComboBox_hauteurVegetation.setLayer)
@@ -309,45 +313,44 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS, QgsProcessingFeedbac
             return errors
 
     def run_grain(self) -> None:
-        # init
-        self.isInterrupted = False
-        self.pushButton_interrupt.setEnabled(True)
+        if self._command_executor.is_running():
+            return
+
         self.textEdit_journal.clear()
+        self._logger.setProgress(0)
         self.tabWidget.setCurrentIndex(4)
         self.tab_journal.show()
-        self.tab_journal.update()
-        self.tab_journal.repaint()
 
-        # control and run
         errors = self.control_parameters()
         if errors:
-            self.pushInfo("Input errors :")
-            self.pushInfo(errors)
-        else:
-            # run
-            prop_file: str = self.create_properties_file()
-            command: str = get_console_command(prop_file)
-            run_command(command_line=command, feedback=self)
+            self._logger.reportError("Erreurs de saisie :")
+            self._logger.reportError(errors.replace("<br/>", "\n"))
+            return
 
-        # end
+        prop_file: str = self.create_properties_file()
+        try:
+            command: str = get_console_command(prop_file)
+        except RuntimeError as error:
+            self._logger.reportError(str(error))
+            return
+
+        if command is None:
+            return
+
+        self._logger.begin_execution(ALGORITHM_NAME_GRAIN_BOCAGER)
+        if not self._command_executor.start(command, self._logger):
+            return
+
+        self.pushButton_interrupt.setEnabled(True)
+        self.pushButton_run.setEnabled(False)
+
+    def _on_command_finished(self, ok: bool) -> None:
         self.pushButton_interrupt.setEnabled(False)
-        self.setProgress(0)
+        self.pushButton_run.setEnabled(True)
+        self._logger.setProgress(0)
+        if ok:
+            self._logger.pushSuccess("Exécution terminée avec succès.")
 
     def interruptWork(self) -> None:
-        self.isInterrupted = True
+        self._command_executor.cancel()
         self.pushButton_interrupt.setEnabled(False)
-
-    def pushInfo(self, message: str) -> None:
-        self.cursor.insertHtml(message + "<br/>\n")
-
-    def pushCommandInfo(self, message: str) -> None:
-        self.pushInfo('<span style="color:blue">' + message + "</span>\n")
-
-    def pushConsoleInfo(self, message: str) -> None:
-        self.pushInfo('<span style="color:grey">' + message + "</span>\n")
-
-    def setProgress(self, progress: float) -> None:
-        self.progressBar.setValue(int(progress))
-
-    def isCanceled(self) -> bool:
-        return self.isInterrupted

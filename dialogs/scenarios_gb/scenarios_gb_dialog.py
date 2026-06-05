@@ -23,8 +23,10 @@ from .results.widgets.scenarios_result_viewer_widget.scenarios_results_viewer_wi
     ScenariosResultViewerWidget,
 )
 from ..helpers.input_layer_file_widget import InputLayerFileWidget
+from ..helpers.constants import ALGORITHM_NAME_SCENARIOS
 from ..helpers.custom_logger import CustomLogger
-from ...helpers.helpers import run_command, get_console_command
+from ...helpers.helpers import get_console_command
+from ..helpers.command_worker import BackgroundCommandExecutor
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(Path(__file__).parent / "ui" / "scenarios_gb_dialog.ui")
@@ -34,9 +36,10 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """constructor"""
         super(ScenariosGBDialog, self).__init__(parent)
-        QgsProcessingFeedback.__init__(self)
 
         self._parent = parent
+        self._command_executor = BackgroundCommandExecutor(self)
+        self._command_executor.finished.connect(self._on_command_finished)
         self._input_bocage_raster_layer_selector: InputLayerFileWidget
         self._input_exploitation_vector_layer_selector: InputLayerFileWidget
         self._input_amenagements_vector_layer_selector: InputLayerFileWidget
@@ -63,6 +66,20 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
     def setup_logger(self) -> None:
         self._logger = CustomLogger(self.textEdit_journal, self.progressBar)
         self.pushButton_interrupt.clicked.connect(self.cancel_command)
+
+    def reject(self) -> None:
+        if self._command_executor.is_running():
+            self._command_executor.cancel()
+        self._logger.clear_log()
+        # clear all widgets
+        self._input_exploitation_vector_layer_selector.clear()
+        self._input_bocage_raster_layer_selector.clear()
+        self._input_amenagements_vector_layer_selector.clear()
+        self._id_exploitation_combobox.clear()
+        self.mQgsFileWidget_resultDir.setFilePath("")
+        self.mQgsFileWidget_result_directory_selector.setFilePath("")
+        self.tabWidget.setCurrentIndex(0)
+        super().reject()
 
     def setup_definition_exploitation_gui(self) -> None:
         """setup gui widget properties"""
@@ -287,22 +304,43 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
     def run_scenario(self) -> None:
         if not self.check_mandatory_inputs():
             return
-        # run grain bocager
+        if self._command_executor.is_running():
+            return
+
         self.tabWidget.setCurrentIndex(5)
         self.tab_journal.show()
-        self.tab_journal.update()
-        self.tab_journal.repaint()
 
-        # create properties file from parameters
+        self._logger.set_is_canceled(False)
+        self._logger.setProgress(0)
+
         scenario_name_input: str = self.lineEdit_resultPrefix.text()
         properties: ScenarioGBProperties = self.properties_factory(scenario_name_input)
         properties.create_properties_file()
         file_path: Path = properties.get_properties_file_path()
-        command: str = get_console_command(str(file_path))
-        # run process with properties file
 
-        run_command(command_line=command, feedback=self._logger)
-        # wait for process to finish
+        try:
+            command: str | None = get_console_command(str(file_path))
+        except RuntimeError as error:
+            self._logger.reportError(str(error))
+            QMessageBox.warning(self, "Erreur", str(error))
+            return
+        if command is None:
+            return
+
+        self._logger.begin_execution(ALGORITHM_NAME_SCENARIOS)
+        if not self._command_executor.start(command, self._logger):
+            return
+
+        self.pushButton_run.setEnabled(False)
+        self.pushButton_interrupt.setEnabled(True)
+
+    def _on_command_finished(self, ok: bool) -> None:
+        self.pushButton_interrupt.setEnabled(False)
+        self.pushButton_run.setEnabled(True)
+        self._logger.set_is_canceled(False)
+        if ok:
+            self._logger.pushSuccess("Exécution terminée avec succès.")
+
         self.mQgsFileWidget_result_directory_selector.setFilePath(
             self.mQgsFileWidget_resultDir.filePath()
         )
@@ -325,4 +363,4 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
             )
 
     def cancel_command(self) -> None:
-        self._logger.set_is_canceled(True)
+        self._command_executor.cancel()

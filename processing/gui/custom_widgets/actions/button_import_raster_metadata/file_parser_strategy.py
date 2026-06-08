@@ -161,7 +161,9 @@ class RasterFileParser:
             width = int(dataset.RasterXSize)
             height = int(dataset.RasterYSize)
             xmin = float(dataset.GetGeoTransform()[0])
-            ymin = float(dataset.GetGeoTransform()[3])
+            ymin = float(dataset.GetGeoTransform()[3]) + height * float(
+                dataset.GetGeoTransform()[5]
+            )
             cell_size = int(dataset.GetGeoTransform()[1])
             nodata_value: int | None = dataset.GetRasterBand(1).GetNoDataValue()
             crs: SpatialReference = dataset.GetSpatialRef()

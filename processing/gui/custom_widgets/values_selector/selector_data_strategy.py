@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Protocol, Union
+from typing import Any, Protocol
 from re import Pattern, match
 from .....helpers.helpers import (
     get_raster_nodata_value,
@@ -17,18 +17,15 @@ from ...custom_widgets.helpers import (
 class ValueSelectorStrategy(Protocol):
     """Strategy abstract class for getting the values for the value selector panel"""
 
-    def get_data(self) -> list[str]:
-        ...
+    def get_data(self) -> list[str]: ...
 
     def convert_selected_values_to_properties_file_element(
         self, selected_values: list[str]
-    ) -> str:
-        ...
+    ) -> str: ...
 
     def get_current_selected_values_from_line_edit(
         self, line_edit_text: str
-    ) -> list[str]:
-        ...
+    ) -> list[str]: ...
 
 
 RASTER_NO_DATA_VALUE_INDICATOR: str = "(No data)"
@@ -80,7 +77,7 @@ class RasterValueSelectorStrategy:
         raster_values: list[float] = get_unique_raster_values(
             raster_file_path=raster_file_path, as_int=True
         )
-        nodata_value: Union[float, None] = get_raster_nodata_value(
+        nodata_value: float | None = get_raster_nodata_value(
             raster_file_path=raster_file_path
         )
 
@@ -129,7 +126,7 @@ class RasterValueSelectorStrategy:
 
         raster_file_path: str = self.get_raster_input_path()
 
-        nodata_value: Union[float, None] = get_raster_nodata_value(
+        nodata_value: float | None = get_raster_nodata_value(
             raster_file_path=raster_file_path
         )
 
@@ -158,7 +155,7 @@ class CSVHeaderValueSelectorStrategy:
         self.input_csv_name: str = input_csv_name
         self.dialog_type: str = dialog_type
         self.algorithm_dialog = algorithm_dialog
-        self.skip_header_names_pattern: Union[Pattern, None] = None
+        self.skip_header_names_pattern: Pattern | None = None
 
     def set_skip_header_names_pattern(self, pattern: Pattern) -> None:
         """
@@ -176,9 +173,7 @@ class CSVHeaderValueSelectorStrategy:
         Returns:
             str: The path of the selected CSV file, or an empty string if no file was selected.
         """
-        csv_file: Union[
-            Any, None
-        ] = get_parameter_value_from_batch_standard_algorithm_dialog(
+        csv_file: Any | None = get_parameter_value_from_batch_standard_algorithm_dialog(
             dialog_type=self.dialog_type,
             param_name=self.input_csv_name,
             algorithm_dialog=self.algorithm_dialog,

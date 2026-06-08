@@ -1,4 +1,3 @@
-from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterNumber,
@@ -291,15 +290,13 @@ class SelectedAlgorithm(ChloeAlgorithm):
             parameters, INPUT_RASTER, context
         ).source()
 
-        print(self.input_raster_layer)
-
     def set_properties_algorithm_values(self, parameters, context, feedback):
         """Set algorithm parameters."""
         self.window_shape = enum_to_list(WindowShapeType)[
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+        friction_layer: QgsMapLayer | None = self.parameterAsLayer(
             parameters, FRICTION_FILE, context
         )
         self.friction_file = (
@@ -319,14 +316,13 @@ class SelectedAlgorithm(ChloeAlgorithm):
         )
 
         self.points_file = self.parameterAsFile(parameters, POINTS_FILE, context)
-        print(self.points_file)
         self.metrics = self.parameterAsString(parameters, METRICS, context)
 
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
-        self.output_csv = self.parameterAsString(parameters, OUTPUT_CSV, context)
+        self.output_csv = self.parameterAsFileOutput(parameters, OUTPUT_CSV, context)
 
-        self.output_windows_path_dir = self.parameterAsString(
+        self.output_windows_path_dir = self.parameterAsFileOutput(
             parameters, OUTPUT_WINDOWS_PATH_DIR, context
         )
         self.set_output_parameter_value(OUTPUT_CSV, self.output_csv)
@@ -335,7 +331,9 @@ class SelectedAlgorithm(ChloeAlgorithm):
                 OUTPUT_WINDOWS_PATH_DIR, self.output_windows_path_dir
             )
 
-        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
+        f_save_properties = self.parameterAsFileOutput(
+            parameters, SAVE_PROPERTIES, context
+        )
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 
     def set_properties_values(self, parameters, context, feedback):

@@ -1,5 +1,3 @@
-from typing import Union
-
 from qgis.core import (
     QgsProcessingParameterNumber,
     QgsProcessingParameterString,
@@ -49,12 +47,12 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
 
         self.input_csv: str = ""
         self.variables: str = ""
-        self.width: Union[int, None] = None
-        self.height: Union[int, None] = None
-        self.xmin: Union[float, None] = None
-        self.ymin: Union[float, None] = None
-        self.cellsize: Union[int, None] = None
-        self.nodata_value: Union[int, None] = None
+        self.width: int | None = None
+        self.height: int | None = None
+        self.xmin: float | None = None
+        self.ymin: float | None = None
+        self.cellsize: int | None = None
+        self.nodata_value: int | None = None
         self.output_crs: str = ""
         self.mime_type: str = ""
         self.output_file_prefix: str = ""
@@ -274,9 +272,12 @@ class FromCSVMultiAlgorithm(ChloeAlgorithm):
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
 
-        self.output_dir = self.parameterAsString(parameters, OUTPUT_DIR, context)
+        self.output_dir = self.parameterAsFileOutput(parameters, OUTPUT_DIR, context)
+        self.set_output_parameter_value(OUTPUT_DIR, self.output_dir)
 
-        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
+        f_save_properties = self.parameterAsFileOutput(
+            parameters, SAVE_PROPERTIES, context
+        )
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 
     def set_properties_values(self, parameters, context, feedback):

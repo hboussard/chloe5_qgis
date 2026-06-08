@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, Union
+from typing import Any
 from processing.gui.wrappers import (
     FileWidgetWrapper,
     BooleanWidgetWrapper,
@@ -41,7 +41,7 @@ class ChloeCheckboxUpdateStateWidgetWrapper(BooleanWidgetWrapper):
         """
         for enabled_widget_config in self.enabled_widgets_configs:
             # Find the wrapper for the parameter that will be impacted
-            wrapper: Union[WidgetWrapper, None] = get_widget_wrapper_from_param_name(
+            wrapper: WidgetWrapper | None = get_widget_wrapper_from_param_name(
                 wrappers, enabled_widget_config["param_name"]
             )
             if not wrapper:

@@ -147,7 +147,7 @@ class ClassificationAlgorithm(ChloeAlgorithm):
 
         # === SAVE_PROPERTIES
 
-        f_save_properties: str = self.parameterAsString(
+        f_save_properties: str = self.parameterAsFileOutput(
             parameters, SAVE_PROPERTIES, context
         )
 

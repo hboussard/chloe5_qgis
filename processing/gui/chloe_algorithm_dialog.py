@@ -17,6 +17,7 @@ from processing.gui.wrappers import (
 )
 
 from qgis.core import (
+    QgsProcessing,
     QgsProcessingFeedback,
     QgsProcessingParameterDefinition,
     QgsProcessingException,
@@ -58,7 +59,7 @@ class ChloeParametersPanel(ParametersPanel):
 
         w = QWidget()
         layout = QVBoxLayout()
-        layout.setMargin(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(6)
         label = QLabel()
         label.setText(self.tr("Chloe Command line"))
@@ -161,12 +162,21 @@ class ChloeParametersPanel(ParametersPanel):
                 else self.dialog.mainWidget().createProcessingParameters()
             )
             for output in self.algorithm().destinationParameterDefinitions():
-                if not output.name() in parameters or parameters[output.name()] is None:
+                value = parameters.get(output.name())
+                is_unset: bool = (
+                    output.name() not in parameters
+                    or value is None
+                    or value == ""
+                    or value == QgsProcessing.TEMPORARY_OUTPUT
+                )
+                if is_unset:
                     if (
                         not output.flags()
                         & QgsProcessingParameterDefinition.FlagOptional
                     ):
-                        parameters[output.name()] = self.tr("[temporary file]")
+                        parameters[output.name()] = self.tr(
+                            "<temporary file: {param}>"
+                        ).format(param=output.name())
             for p in self.algorithm().parameterDefinitions():
                 if p.flags() & QgsProcessingParameterDefinition.FlagHidden:
                     continue

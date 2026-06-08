@@ -110,7 +110,7 @@ class DialListCheckBox(QDialog):
 
     def run(self):
         self.setWindowTitle(self.tr("Select values"))
-        self.exec_()
+        self.exec()
         return self.return_values
 
     def tr(self, string, context=""):

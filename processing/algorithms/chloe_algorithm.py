@@ -5,12 +5,12 @@ from qgis.PyQt.QtCore import QCoreApplication, QLocale
 from qgis.PyQt.QtGui import QIcon
 
 from qgis.core import (
+    QgsProcessing,
     QgsProcessingContext,
     QgsRasterLayer,
     QgsProcessingAlgorithm,
     QgsProcessingException,
 )
-from processing.tools.system import getTempFilename
 
 from ...helpers.helpers import (
     RasterLoadConfig,
@@ -77,44 +77,35 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
 
     def create_properties_file(self, lines: "list[str]"):
         """Create Properties File."""
-        if self.output_values[SAVE_PROPERTIES]:
+        properties_file_path: str = self.output_values.get(SAVE_PROPERTIES, "")
+        if properties_file_path:
             s_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
             try:
-                with open(
-                    self.output_values[SAVE_PROPERTIES], "w+", encoding="utf-8"
-                ) as file:
+                with open(properties_file_path, "w+", encoding="utf-8") as file:
                     file.write(f"#{s_time}\n")
                     for line in lines:
                         file.write(f"{line}\n")
             except OSError as exc:
                 raise QgsProcessingException(
-                    self.tr(
-                        f"Cannot create properties file {self.output_values[SAVE_PROPERTIES]}"
-                    )
+                    self.tr(f"Cannot create properties file {properties_file_path}")
                 ) from exc
 
     def get_properties_file_path(self, parameters) -> str:
-        """Get properties file path."""
+        """Get properties file path.
 
-        properties_file_path: str = ""
+        Returns the value that will be appended to the Chloe Command line
+        preview and, at run time, the real .properties path that gets
+        written to disk and passed to the Chloe Java executable.
+        """
 
-        if SAVE_PROPERTIES in parameters:
-            properties_file_param_value: str = parameters[SAVE_PROPERTIES]
-        else:
-            properties_file_param_value = getTempFilename(ext="properties")
+        value = (
+            parameters.get(SAVE_PROPERTIES) if SAVE_PROPERTIES in parameters else None
+        )
 
-        if (
-            properties_file_param_value
-            and properties_file_param_value != "TEMPORARY_OUTPUT"
-        ):
-            # if f_path is defined in widget append to command line to show in command line prompt
-            properties_file_path = properties_file_param_value
-        else:
-            # if f_path is TEMPORARY get it from the self.output_values (values set when user click on execute algorithm) when Chloe command is executed
-            if SAVE_PROPERTIES in self.output_values:
-                properties_file_path = self.output_values[SAVE_PROPERTIES]
+        if value and value != QgsProcessing.TEMPORARY_OUTPUT:
+            return value
 
-        return properties_file_path
+        return self.output_values.get(SAVE_PROPERTIES, "")
 
     def set_output_parameter_value(
         self, parameter_name: str, parameter_value: Any
@@ -147,7 +138,8 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         self.set_properties_values(parameters, context, feedback)
         self.create_properties_file(self.get_properties_lines())
         command: str = get_console_command(self.get_properties_file_path(parameters))
-        run_command(command_line=command, feedback=feedback)
+        if run_command(command_line=command, feedback=feedback):
+            feedback.pushInfo("Exécution terminée avec succès.")
 
         results: dict[str, Any] = {}
         for definition in self.outputDefinitions():
@@ -156,7 +148,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         for param_name, param_value in self.output_values.items():
             results[param_name] = param_value
 
-        if OUTPUT_RASTER in parameters:
+        if OUTPUT_RASTER in parameters and self.output_values.get(OUTPUT_RASTER):
             # add custom style to OUTPUT_ASC parameter if is to load on completion
             output_raster_path: str = self.output_values[OUTPUT_RASTER]
             load_on_completion = (
@@ -170,15 +162,18 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
                     results=results,
                 )
 
-        if OUTPUT_WINDOWS_PATH_DIR in parameters:
+        if OUTPUT_WINDOWS_PATH_DIR in parameters and self.output_values.get(
+            OUTPUT_WINDOWS_PATH_DIR
+        ):
             output_dir: Path = Path(self.output_values[OUTPUT_WINDOWS_PATH_DIR])
-            output_dir_rasters_config: RasterLoadConfig = RasterLoadConfig(
-                raster_directory=output_dir,
-                group_name="Windows_paths",
-                raster_file_prefix="window",
-                qml_file_path=STYLES_PATH / "continuous.qml",
-            )
-            load_rasters_from_directory_to_qgis_instance(output_dir_rasters_config)
+            if output_dir.exists():
+                output_dir_rasters_config: RasterLoadConfig = RasterLoadConfig(
+                    raster_directory=output_dir,
+                    group_name="Windows_paths",
+                    raster_file_prefix="window",
+                    qml_file_path=STYLES_PATH / "continuous.qml",
+                )
+                load_rasters_from_directory_to_qgis_instance(output_dir_rasters_config)
 
         return results
 

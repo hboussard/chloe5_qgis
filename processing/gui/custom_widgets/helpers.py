@@ -1,6 +1,6 @@
 from csv import reader
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 from re import Pattern, match
 from qgis.core import QgsRasterLayer, QgsProject, QgsMessageLog, Qgis
 from qgis.gui import QgsAbstractProcessingParameterWidgetWrapper
@@ -34,7 +34,7 @@ def get_param_wrappers_from_algorithm_dialog(
 
 def get_widget_wrapper_from_param_name(
     wrappers: list[QgsAbstractProcessingParameterWidgetWrapper], param_name: str
-) -> Union[WidgetWrapper, None]:
+) -> WidgetWrapper | None:
     """Returns the WidgetWrapper object from a list of wrappers that matches the given parameter name.
 
     Args:
@@ -53,7 +53,7 @@ def get_widget_wrapper_from_param_name(
 
 def get_parameter_widget_wrapper_from_batch_panel(
     batch_panel: BatchPanel, parameter_name: str
-) -> Union[WidgetWrapper, None]:
+) -> WidgetWrapper | None:
     """Get a widget wrapper of a parameter from the processign batch panel"""
 
     for wrapper in batch_panel.wrappers[0]:
@@ -67,7 +67,7 @@ def get_parameter_widget_wrapper_from_batch_panel(
 
 def get_parameter_value_from_batch_panel(
     batch_panel: BatchPanel, parameter_name: str
-) -> Union[str, None]:
+) -> str | None:
     """Get the input raster layer parameter from the processign batch panel"""
 
     for wrapper in batch_panel.wrappers[0]:
@@ -87,8 +87,8 @@ def get_parameter_value_from_batch_panel(
 def get_parameter_value_from_panel(
     dialog_type: str,
     param_name: str,
-    parameters_panel: Union[BatchPanel, ChloeParametersPanel],
-) -> Union[str, None]:
+    parameters_panel: BatchPanel | ChloeParametersPanel,
+) -> str | None:
     """Get the input raster layer parameter"""
 
     if dialog_type == DIALOG_BATCH:
@@ -97,7 +97,7 @@ def get_parameter_value_from_panel(
         )
     else:
         widget = parameters_panel.wrappers[param_name]
-        value: Union[str, QVariant, None] = None
+        value: str | QVariant | None = None
         try:
             value = widget.value()
         except AttributeError:
@@ -111,15 +111,13 @@ def get_parameter_value_from_panel(
 
 def get_parameter_value_from_batch_standard_algorithm_dialog(
     dialog_type: str, param_name: str, algorithm_dialog
-) -> Union[Any, None]:
+) -> Any | None:
     """Get the value of a given parameter name in the algorithm dialog"""
     # TODO : implement for modeler dialog
     if dialog_type == DIALOG_MODELER:
         return ""
 
-    parameters_panel: Union[
-        BatchPanel, ChloeParametersPanel
-    ] = algorithm_dialog.mainWidget()
+    parameters_panel: BatchPanel | ChloeParametersPanel = algorithm_dialog.mainWidget()
 
     if not parameters_panel:
         return ""
@@ -164,12 +162,12 @@ def replace_param_widget_value(
             )
 
 
-def extract_raster_layer_path(input_raster_layer_param_value: Union[str, None]) -> str:
+def extract_raster_layer_path(input_raster_layer_param_value: str | None) -> str:
     """
     Extracts the raster layer path based on the parameter value.
 
     Args:
-        input_raster_layer_param_value (Union[str, None]): The input raster layer parameter value.
+        input_raster_layer_param_value (str | None): The input raster layer parameter value.
 
     Returns:
         str: The raster layer path.
@@ -198,7 +196,7 @@ def get_input_raster_param_path(
     if dialog_type == DIALOG_MODELER:
         return ""
 
-    widget: Union[BatchPanel, ChloeParametersPanel] = algorithm_dialog.mainWidget()
+    widget: BatchPanel | ChloeParametersPanel = algorithm_dialog.mainWidget()
 
     if not widget:
         return ""

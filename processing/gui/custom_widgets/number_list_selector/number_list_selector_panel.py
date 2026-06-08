@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Union
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import (
@@ -34,15 +33,15 @@ class NumberListSelectionPanel(BASE, WIDGET):
         """Init the gui"""
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-    def set_spinbox_value(self, value: Union[int, float]):
+    def set_spinbox_value(self, value: int | float):
         """Set the spinbox value"""
         self.spinbox.setValue(value)
 
-    def set_spinbox_minimum_value(self, value: Union[int, float]):
+    def set_spinbox_minimum_value(self, value: int | float):
         """Set the spinbox minimum value"""
         self.spinbox.setMinimum(value)
 
-    def set_spinbox_maximum_value(self, value: Union[int, float]):
+    def set_spinbox_maximum_value(self, value: int | float):
         """Set the spinbox minimum value"""
         self.spinbox.setMaximum(value)
 

@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterNumber,
@@ -411,7 +410,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+        friction_layer: QgsMapLayer | None = self.parameterAsLayer(
             parameters, FRICTION_FILE, context
         )
         self.friction_file = (
@@ -456,7 +455,7 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
-        self.output_csv = self.parameterAsString(parameters, OUTPUT_CSV, context)
+        self.output_csv = self.parameterAsFileOutput(parameters, OUTPUT_CSV, context)
         self.set_output_parameter_value(OUTPUT_CSV, self.output_csv)
 
         self.output_raster = self.parameterAsOutputLayer(
@@ -467,7 +466,9 @@ class SlidingAlgorithm(ChloeAlgorithm):
 
         # === SAVE_PROPERTIES
 
-        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
+        f_save_properties = self.parameterAsFileOutput(
+            parameters, SAVE_PROPERTIES, context
+        )
 
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 

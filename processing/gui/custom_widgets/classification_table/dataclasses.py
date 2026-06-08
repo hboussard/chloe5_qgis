@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Union
 from pandas import Interval
 from qgis.PyQt.QtCore import QRegExp
 from qgis.PyQt.QtWidgets import (
@@ -13,8 +12,8 @@ DOMAIN_REGEX: str = r"[\[\]](-?\d+\.?\d*)?,(-?\d+\.?\d*)?[\[\]]"
 
 @dataclass
 class DomainValue:
-    first_value: Union[float, None]
-    second_value: Union[float, None]
+    first_value: float | None
+    second_value: float | None
     left_bound: str
     right_bound: str
 
@@ -53,7 +52,7 @@ class DomainValue:
         return Interval(left=first_value, right=second_value, closed=closed)
 
 
-def from_string_to_domain(value: str) -> Union[DomainValue, None]:
+def from_string_to_domain(value: str) -> DomainValue | None:
     """
     Converts a string to a DomainValue object.
 

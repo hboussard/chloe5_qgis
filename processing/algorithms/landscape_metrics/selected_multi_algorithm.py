@@ -1,4 +1,3 @@
-from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsMapLayer,
@@ -290,7 +289,7 @@ class SelectedMultiAlgorithm(ChloeAlgorithm):
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+        friction_layer: QgsMapLayer | None = self.parameterAsLayer(
             parameters, FRICTION_FILE, context
         )
         self.friction_file = (
@@ -316,10 +315,10 @@ class SelectedMultiAlgorithm(ChloeAlgorithm):
 
     def set_properties_output_values(self, parameters, context, feedback):
         """Set output values."""
-        self.output_folder = self.parameterAsString(parameters, OUTPUT_DIR, context)
+        self.output_folder = self.parameterAsFileOutput(parameters, OUTPUT_DIR, context)
         self.set_output_parameter_value(OUTPUT_DIR, self.output_folder)
 
-        self.output_windows_path_dir = self.parameterAsString(
+        self.output_windows_path_dir = self.parameterAsFileOutput(
             parameters, OUTPUT_WINDOWS_PATH_DIR, context
         )
 
@@ -328,7 +327,9 @@ class SelectedMultiAlgorithm(ChloeAlgorithm):
                 OUTPUT_WINDOWS_PATH_DIR, self.output_windows_path_dir
             )
 
-        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
+        f_save_properties = self.parameterAsFileOutput(
+            parameters, SAVE_PROPERTIES, context
+        )
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 
     def set_properties_values(self, parameters, context, feedback):

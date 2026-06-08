@@ -1,4 +1,3 @@
-from typing import Union
 from qgis.core import (
     QgsProcessingParameterNumber,
     QgsProcessingParameterString,
@@ -197,7 +196,7 @@ class DistanceAlgorithm(ChloeAlgorithm):
             ]
         )
 
-        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+        friction_layer: QgsMapLayer | None = self.parameterAsLayer(
             parameters, FRICTION_FILE, context
         )
         self.friction_file = (
@@ -220,7 +219,9 @@ class DistanceAlgorithm(ChloeAlgorithm):
 
         # === SAVE_PROPERTIES
 
-        f_save_properties = self.parameterAsString(parameters, SAVE_PROPERTIES, context)
+        f_save_properties = self.parameterAsFileOutput(
+            parameters, SAVE_PROPERTIES, context
+        )
 
         self.set_output_parameter_value(SAVE_PROPERTIES, f_save_properties)
 

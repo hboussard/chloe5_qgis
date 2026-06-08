@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 from qgis.PyQt.QtWidgets import QPushButton, QFileDialog, QMessageBox
 from .....algorithms.helpers.constants import (
     WIDTH,
@@ -58,7 +58,7 @@ class ChloeImportRasterMetadataButtonWidgetWrapper(ChloeActionWidgetWrapper):
 
         file_names: list[str] = []
 
-        if file_dialog.exec_():
+        if file_dialog.exec():
             file_names: list[str] = file_dialog.selectedFiles()
 
         if not file_names:
@@ -85,17 +85,15 @@ class ChloeImportRasterMetadataButtonWidgetWrapper(ChloeActionWidgetWrapper):
             )
             return
 
-        raster_metadata: Union[
-            RasterMetadataData, None
-        ] = self.get_file_raster_metadata(file_path)
+        raster_metadata: RasterMetadataData | None = self.get_file_raster_metadata(
+            file_path
+        )
         # replace widget values with the data
         if raster_metadata is None:
             return
         self.replace_algorithm_param_widgets_values(raster_metadata)
 
-    def get_file_raster_metadata(
-        self, file_path: Path
-    ) -> Union[RasterMetadataData, None]:
+    def get_file_raster_metadata(self, file_path: Path) -> RasterMetadataData | None:
         """
         Analyzes the file at the given file path and returns its raster metadata.
 
@@ -103,7 +101,7 @@ class ChloeImportRasterMetadataButtonWidgetWrapper(ChloeActionWidgetWrapper):
             file_path (Path): The path to the file to parse.
 
         Returns:
-            Union[RasterMetadataData, None]: The raster metadata extracted from the file, or None if no metadata is found.
+            RasterMetadataData | None: The raster metadata extracted from the file, or None if no metadata is found.
         """
         file_extension: str = file_path.suffix
 

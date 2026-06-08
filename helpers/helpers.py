@@ -3,10 +3,9 @@ import os
 
 from pathlib import Path
 import signal
-import platform
-from typing import Protocol, Union
+from typing import Protocol
 from re import search
-from subprocess import Popen, PIPE, STDOUT, DEVNULL
+from subprocess import Popen, PIPE, STDOUT, DEVNULL, call
 import numpy as np
 from math import floor
 from osgeo import gdal
@@ -39,21 +38,30 @@ class CustomFeedback(Protocol):
 
     def pushConsoleInfo(self, message: str) -> None: ...
 
+    def reportError(self, message: str, fatalError: bool = False) -> None: ...
+
     def setProgress(self, progress: float) -> None: ...
 
     def isCanceled(self) -> bool: ...
 
 
+def _report_feedback_error(feedback: CustomFeedback, message: str) -> None:
+    feedback.reportError(message)
+
+
 def run_command(
     command_line: str,
-    feedback: Union[CustomFeedback, None] = None,
-) -> None:
+    feedback: CustomFeedback | None = None,
+) -> bool:
     """
     Runs a command line command and logs the output.
 
     Args:
         command_line (str): The command line command to run.
-        feedback (Union[CustomFeedback, None], optional): The feedback object to use for logging. Defaults to None.
+        feedback (CustomFeedback | None, optional): The feedback object to use for logging. Defaults to None.
+
+    Returns:
+        bool: True if the process exited with code 0 and was not canceled.
     """
 
     if feedback is None:
@@ -64,27 +72,28 @@ def run_command(
     feedback.pushCommandInfo(command_line)
     feedback.pushInfo("CHLOE command output:")
 
-    success = False
+    iteration_done = False
     retry_count = 0
-    while not success:
+    while not iteration_done:
         loglines = []
         loglines.append("CHLOE execution console output")
         try:
-            with Popen(
-                command_line,
-                shell=True,
-                stdout=PIPE,
-                stdin=DEVNULL,
-                stderr=STDOUT,
-                # universal_newlines=True,
-                cwd=str(CHLOE_WORKING_DIRECTORY_PATH),
-            ) as process:
-                success = True
+            popen_kwargs: dict = {
+                "shell": True,
+                "stdout": PIPE,
+                "stdin": DEVNULL,
+                "stderr": STDOUT,
+                "cwd": str(CHLOE_WORKING_DIRECTORY_PATH),
+            }
+            # Linux and macOS (Darwin): new session so killpg() stops shell + Java children.
+            if os.name != "nt":
+                popen_kwargs["start_new_session"] = True
 
+            with Popen(command_line, **popen_kwargs) as process:
                 for byte_line in process.stdout:
                     if feedback.isCanceled():
-                        if platform.system() == "Windows":
-                            os.call(
+                        if os.name == "nt":
+                            call(
                                 [
                                     "taskkill",
                                     "/F",
@@ -94,8 +103,11 @@ def run_command(
                                 ]
                             )
                         else:
-                            os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-                        return
+                            try:
+                                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+                            except ProcessLookupError:
+                                pass
+                        return False
                     line = byte_line.decode("utf8", errors="backslashreplace").replace(
                         "\r", ""
                     )
@@ -105,17 +117,30 @@ def run_command(
                     progress_value: float = get_progress_value_from_line(line)
                     feedback.setProgress(progress_value)
 
+                if process.returncode not in (0, None):
+                    _report_feedback_error(
+                        feedback,
+                        f"La commande CHLOE s'est terminée avec le code {process.returncode}.",
+                    )
+                    return False
+
+                iteration_done = True
+
         except IOError as error:
             if retry_count < 5:
                 # print('retry ' + str(retry_count))
                 retry_count += 1
             else:
-                raise IOError(
+                error_message = (
                     str(error)
                     + f'\nTried 5 times without success. Last iteration stopped after reading {len(loglines)} line(s).\nLast line(s):\n{",".join(loglines[-10:])}'
-                ) from error
+                )
+                _report_feedback_error(feedback, error_message)
+                raise IOError(error_message) from error
 
         QgsMessageLog.logMessage("\n".join(loglines), "Processing", Qgis.Info)
+
+    return True
 
 
 def get_progress_value_from_line(line: str) -> float:
@@ -126,7 +151,7 @@ def get_progress_value_from_line(line: str) -> float:
 
     if re_percent:
         try:
-            float(re_percent.group(1))
+            progress = float(re_percent.group(1))
         except ValueError:
             QgsMessageLog.logMessage(
                 f"Impossible de convertir en float le pourcentage de progression : {re_percent.group(1)}",
@@ -134,7 +159,7 @@ def get_progress_value_from_line(line: str) -> float:
     return progress
 
 
-def get_console_command(properties_file_path: str) -> str:
+def get_console_command(properties_file_path: str) -> str | None:
     """Get full console command to call Chloe
     Example of return : java -jar bin/chloe-4.0.jar /tmp/distance_paramsrrVtm9.properties
     """
@@ -144,13 +169,12 @@ def get_console_command(properties_file_path: str) -> str:
     java_path: Path = get_java_path()
 
     if not check_java_path(java_path):
-        arguments.append("")
-    else:
-        arguments.append(f'"{str(java_path)}"')
+        return
 
-    arguments.append(CHLOE_JAR_PATH)
-    arguments.append(properties_file_path)
-
+    arguments.append(f'"{str(java_path)}"')
+    arguments.append("-jar")
+    arguments.append(f'"{CHLOE_JAR_PATH}"')
+    arguments.append(f'"{properties_file_path}"')
     return " ".join(arguments)
 
 
@@ -249,7 +273,7 @@ def get_unique_raster_values(
     return [value for value in values if value != nodata_value]
 
 
-def get_raster_nodata_value(raster_file_path: str) -> Union[float, None]:
+def get_raster_nodata_value(raster_file_path: str) -> float | None:
     """
     Extract the nodata value from a raster layer and return it as an integer.
 
@@ -257,7 +281,7 @@ def get_raster_nodata_value(raster_file_path: str) -> Union[float, None]:
         raster_file_path (str): The file path of the raster layer.
 
     Returns:
-        Union[int,None]: The nodata value as an integer or None if the raster layer has no nodata value.
+        int | None: The nodata value as an integer or None if the raster layer has no nodata value.
     """
     if not os.path.exists(raster_file_path):
         return None
@@ -272,6 +296,7 @@ def get_raster_nodata_value(raster_file_path: str) -> Union[float, None]:
     return floor(nodata) if nodata is not None else None
 
 
+# TODO : move to processing helpers ??
 @dataclass
 class RasterLoadConfig:
     """Configuration for loading rasters from a directory to the QGIS instance."""
@@ -287,6 +312,7 @@ class RasterLoadConfig:
     qml_file_path: Path = Path()
 
 
+# TODO : move to processing helpers ??
 def load_rasters_from_directory_to_qgis_instance(config: RasterLoadConfig) -> None:
     """load rasters from a given directory to the QGIS instance."""
     qgs_project = QgsProject.instance()
@@ -332,14 +358,13 @@ def convert_int_to_odd(input_integer: int) -> int:
         return int(input_integer)
 
 
-def get_layer_name(
-    layer: Union[str, QgsRasterLayer], default_output: str = "output"
-) -> str:
+# TODO : move to processing helpers ??
+def get_layer_name(layer: str | QgsRasterLayer, default_output: str = "output") -> str:
     """
     Get the name of a QgsRasterLayer or a file path string.
 
     Args:
-        layer (Union[str, QgsRasterLayer]): A QgsRasterLayer object or a file path string.
+        layer (str | QgsRasterLayer): A QgsRasterLayer object or a file path string.
         default_output (str, optional): The default output name if layer is None. Defaults to "output".
 
     Returns:

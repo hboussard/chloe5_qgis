@@ -1,4 +1,3 @@
-from typing import Union
 from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterNumber,
@@ -291,15 +290,13 @@ class SelectedAlgorithm(ChloeAlgorithm):
             parameters, INPUT_RASTER, context
         ).source()
 
-        print(self.input_raster_layer)
-
     def set_properties_algorithm_values(self, parameters, context, feedback):
         """Set algorithm parameters."""
         self.window_shape = enum_to_list(WindowShapeType)[
             self.parameterAsEnum(parameters, WINDOW_SHAPE, context)
         ]
 
-        friction_layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+        friction_layer: QgsMapLayer | None = self.parameterAsLayer(
             parameters, FRICTION_FILE, context
         )
         self.friction_file = (
@@ -319,7 +316,6 @@ class SelectedAlgorithm(ChloeAlgorithm):
         )
 
         self.points_file = self.parameterAsFile(parameters, POINTS_FILE, context)
-        print(self.points_file)
         self.metrics = self.parameterAsString(parameters, METRICS, context)
 
     def set_properties_output_values(self, parameters, context, feedback):

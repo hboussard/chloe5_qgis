@@ -1,5 +1,3 @@
-from typing import Union
-
 from qgis.PyQt.QtGui import (
     QIntValidator,
     QRegExpValidator,
@@ -77,7 +75,7 @@ class DomainValueDelegate(QItemDelegate):
 
     def setModelData(self, editor, model, index):
         editor_value: str = editor.text()
-        domain_value: Union[DomainValue, None] = from_string_to_domain(editor_value)
+        domain_value: DomainValue | None = from_string_to_domain(editor_value)
         if domain_value is not None:
             # check if the domain value overlaps with another domain value in the table
             overlapping_domains: list[DomainValue] = model.domains_overlaps(

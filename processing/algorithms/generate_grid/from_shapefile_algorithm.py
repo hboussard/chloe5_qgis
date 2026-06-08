@@ -1,4 +1,3 @@
-from typing import Union
 from pathlib import Path
 from qgis.core import (
     QgsProcessingParameterNumber,
@@ -44,10 +43,10 @@ class FromShapefileAlgorithm(ChloeAlgorithm):
         super().__init__()
         self.input_shp: str = ""
         self.field: str = ""
-        self.cellsize: Union[float, None] = None
-        self.extent: Union[QgsRectangle, None] = None
-        self.nodata_value: Union[int, None] = None
-        self.fill_value: Union[float, None] = None
+        self.cellsize: float | None = None
+        self.extent: QgsRectangle | None = None
+        self.nodata_value: int | None = None
+        self.fill_value: float | None = None
         self.output_raster: str = ""
 
     def initAlgorithm(self, config=None):
@@ -180,7 +179,7 @@ class FromShapefileAlgorithm(ChloeAlgorithm):
     def set_properties_input_values(self, parameters, context, feedback):
         """Set input values."""
 
-        layer: Union[QgsMapLayer, None] = self.parameterAsLayer(
+        layer: QgsMapLayer | None = self.parameterAsLayer(
             parameters, INPUT_SHAPEFILE, context
         )
         if layer is None:

@@ -1,3 +1,4 @@
+from os import remove
 from pathlib import Path
 from qgis.core import QgsSettings
 from qgis.utils import iface
@@ -44,3 +45,16 @@ def check_java_path(java_path: Path) -> bool:
         return False
 
     return True
+
+
+def remove_temporary_file(file_path: Path) -> None:
+    """removes a temporary file"""
+    try:
+        remove(str(file_path))
+    except OSError:
+        QMessageBox.warning(
+            None,
+            "Erreur lors de la suppression du fichier temporaire",
+            "Erreur lors de la suppression du fichier temporaire",
+        )
+        return

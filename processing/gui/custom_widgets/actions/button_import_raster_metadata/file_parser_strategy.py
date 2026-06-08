@@ -1,6 +1,6 @@
 from pathlib import Path
 from dataclasses import dataclass
-from typing import Protocol, Union
+from typing import Protocol
 from qgis.PyQt.QtWidgets import QMessageBox
 from osgeo import gdal
 from osgeo.osr import SpatialReference
@@ -17,7 +17,7 @@ class RasterMetadataData:
         xmin (float): The minimum x-coordinate of the raster.
         ymin (float): The minimum y-coordinate of the raster.
         cell_size (float): raster cell size.
-        nodata_value (Union[int, None]): Raster nodata value , or None if not specified.
+        nodata_value (int | None): Raster nodata value , or None if not specified.
     """
 
     width: int
@@ -25,7 +25,7 @@ class RasterMetadataData:
     xmin: float
     ymin: float
     cell_size: float
-    nodata_value: Union[int, None]
+    nodata_value: int | None
     crs: str = "EPSG:2154"
 
 
@@ -35,14 +35,12 @@ class FileParserStrategy(Protocol):
 
     Methods:
     --------
-    get_raster_metadata(file_path: Path) -> Union[RasterMetadataData, None]:
+    get_raster_metadata(file_path: Path) -> RasterMetadataData | None:
         Analyzes the given file and returns the raster metadata extracted from this file, or None if the file
         does not contain metadata.
     """
 
-    def get_raster_metadata(
-        self, file_path: Path
-    ) -> Union[RasterMetadataData, None]: ...
+    def get_raster_metadata(self, file_path: Path) -> RasterMetadataData | None: ...
 
 
 class TxtFileParser:
@@ -52,12 +50,12 @@ class TxtFileParser:
         None
 
     Methods:
-        get_raster_metadata(file_path: Path) -> Union[RasterMetadataData, None]:
+        get_raster_metadata(file_path: Path) -> RasterMetadataData | None:
             Parses the raster metadata from the given txt file.
 
     """
 
-    def get_raster_metadata(self, file_path: Path) -> Union[RasterMetadataData, None]:
+    def get_raster_metadata(self, file_path: Path) -> RasterMetadataData | None:
         r"""Logic for parsing a txt file
          when reading the file it should have this format :
         #parameter file generated with APILand
@@ -78,7 +76,7 @@ class TxtFileParser:
         xmin: float = 0.0
         ymin: float = 0.0
         cell_size: float = 0.0
-        nodata_value: Union[int, None] = None
+        nodata_value: int | None = None
         crs: str = ""
 
         with open(str(file_path), "r", encoding="utf-8") as infile:
@@ -142,7 +140,7 @@ class RasterFileParser:
         get_raster_metadata: Extracts metadata from a raster file.
     """
 
-    def get_raster_metadata(self, file_path: Path) -> Union[RasterMetadataData, None]:
+    def get_raster_metadata(self, file_path: Path) -> RasterMetadataData | None:
         """
         Retrieves metadata of a raster file.
 
@@ -150,7 +148,7 @@ class RasterFileParser:
             file_path (Path): The path to the raster file.
 
         Returns:
-            Union[RasterMetadataData, None]: The raster metadata if successfully parsed, None otherwise.
+            RasterMetadataData | None: The raster metadata if successfully parsed, None otherwise.
         """
         # Logic for parsing a raster file
         if not file_path.exists():
@@ -163,9 +161,11 @@ class RasterFileParser:
             width = int(dataset.RasterXSize)
             height = int(dataset.RasterYSize)
             xmin = float(dataset.GetGeoTransform()[0])
-            ymin = float(dataset.GetGeoTransform()[3])
+            ymin = float(dataset.GetGeoTransform()[3]) + height * float(
+                dataset.GetGeoTransform()[5]
+            )
             cell_size = int(dataset.GetGeoTransform()[1])
-            nodata_value: Union[int, None] = dataset.GetRasterBand(1).GetNoDataValue()
+            nodata_value: int | None = dataset.GetRasterBand(1).GetNoDataValue()
             crs: SpatialReference = dataset.GetSpatialRef()
 
             raster_metadata: RasterMetadataData = RasterMetadataData(

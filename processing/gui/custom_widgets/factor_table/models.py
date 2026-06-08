@@ -1,4 +1,3 @@
-from typing import Union
 from pathlib import Path
 from qgis.PyQt.QtGui import QStandardItemModel, QStandardItem
 from qgis.PyQt.QtCore import Qt
@@ -33,7 +32,7 @@ class FactorTableModel(QStandardItemModel):
         )
 
     # "list[CombineFactorElement | list[str]]"
-    def set_data(self, data: list[Union[CombineFactorElement, list[str]]]) -> None:
+    def set_data(self, data: list[CombineFactorElement | list[str]]) -> None:
         """
         Sets the data in the model with a list of CombineFactorElement objects.
 
@@ -134,7 +133,7 @@ class FactorTableModel(QStandardItemModel):
 
     def get_combine_factor_elements(
         self, return_string: bool = False
-    ) -> list[Union[CombineFactorElement, list[str]]]:
+    ) -> list[CombineFactorElement | list[str]]:
         """Returns a list of CombineFactorElement objects representing each row in the model.
 
         Args:

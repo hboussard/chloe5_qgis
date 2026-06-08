@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Union
 from re import compile, IGNORECASE
 from processing.gui.wrappers import WidgetWrapper, DIALOG_MODELER
 from qgis.PyQt.QtWidgets import QLineEdit, QComboBox
@@ -62,12 +61,12 @@ class ChloeCsvHeadersComboboxWidgetWrapper(WidgetWrapper):
         """
 
         # get the csv input file param
-        input_csv_file: Union[
-            str, None
-        ] = get_parameter_value_from_batch_standard_algorithm_dialog(
-            dialog_type=self.dialogType,
-            param_name=self.input_csv_param_name,
-            algorithm_dialog=self.dialog,
+        input_csv_file: str | None = (
+            get_parameter_value_from_batch_standard_algorithm_dialog(
+                dialog_type=self.dialogType,
+                param_name=self.input_csv_param_name,
+                algorithm_dialog=self.dialog,
+            )
         )
 
         if input_csv_file is None or not input_csv_file:

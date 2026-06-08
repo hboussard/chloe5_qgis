@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Union
 import copy
 
 from jinja2 import Template
@@ -108,9 +107,7 @@ def file_get_content(filename, encoding="utf-8", context=None) -> str:
         return ""
 
 
-def enum_to_dict(
-    enum_class: Enum, values_only: bool = False
-) -> dict[str, Union[int, str]]:
+def enum_to_dict(enum_class: Enum, values_only: bool = False) -> dict[str, int | str]:
     """
     Converts an enum class to a dictionary where enum names are keys and enum values are values.
 
@@ -132,7 +129,7 @@ def enum_to_dict(
 
 def enum_to_list(
     enum_class: Enum, return_enum_names: bool = False
-) -> list[Union[str, int, float]]:
+) -> list[str | int | float]:
     """
     Convert an Enum class to a list of its values or names.
 
@@ -141,7 +138,7 @@ def enum_to_list(
         return_enum_names (bool, optional): Whether to return the names of the Enum elements instead of their values. Defaults to False.
 
     Returns:
-        list[Union[str, int, float]]: A list of the Enum elements' values or names.
+        list[str | int | float]: A list of the Enum elements' values or names.
     """
     if return_enum_names:
         return [element.name for element in enum_class]

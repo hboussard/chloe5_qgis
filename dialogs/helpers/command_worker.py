@@ -1,6 +1,10 @@
+import threading
+
+from subprocess import Popen
+
 from qgis.PyQt.QtCore import QObject, QThread, pyqtSignal
 
-from ...helpers.helpers import CustomFeedback, run_command
+from ...helpers.helpers import CustomFeedback, kill_process_tree, run_command
 
 
 class SignalFeedback(QObject):
@@ -45,17 +49,46 @@ class CommandWorker(QObject):
         super().__init__()
         self._command_line = command_line
         self._feedback = feedback
+        self._lock = threading.Lock()
+        self._process: Popen | None = None
+        self._canceled: bool = False
 
     def run(self) -> None:
         ran_successfully: bool = False
         try:
             ran_successfully = run_command(
-                command_line=self._command_line, feedback=self._feedback
+                command_line=self._command_line,
+                feedback=self._feedback,
+                on_process_started=self._on_process_started,
             )
         except IOError:
             ran_successfully = False
         finally:
+            with self._lock:
+                self._process = None
             self.finished.emit(ran_successfully)
+
+    def _on_process_started(self, process: Popen) -> None:
+        """Called on the worker thread once the process is live."""
+        with self._lock:
+            self._process = process
+            cancel_requested = self._canceled
+        # Honor a cancel that arrived before the process had started.
+        if cancel_requested:
+            kill_process_tree(process)
+
+    def cancel(self) -> None:
+        """
+        Kill the running process tree directly.
+
+        Called from the GUI thread, so it does not depend on the worker's
+        blocking stdout read reaching the cooperative ``isCanceled()`` check.
+        """
+        with self._lock:
+            self._canceled = True
+            process = self._process
+        if process is not None:
+            kill_process_tree(process)
 
 
 class BackgroundCommandExecutor(QObject):
@@ -106,8 +139,13 @@ class BackgroundCommandExecutor(QObject):
         return True
 
     def cancel(self) -> None:
+        # Set the cooperative flag (so run_command bails out cleanly)...
         if self._signal_feedback is not None:
             self._signal_feedback.set_canceled(True)
+        # ...and kill the process tree immediately, without waiting for the
+        # worker's blocking stdout read to notice the flag.
+        if self._worker is not None:
+            self._worker.cancel()
 
     def _on_worker_finished(self, ok: bool) -> None:
         if self._signal_feedback is not None:

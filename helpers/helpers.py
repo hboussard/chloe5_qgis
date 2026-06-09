@@ -3,7 +3,7 @@ import os
 
 from pathlib import Path
 import signal
-from typing import Protocol
+from typing import Callable, Protocol
 from re import search
 from subprocess import Popen, PIPE, STDOUT, DEVNULL, call
 import numpy as np
@@ -49,9 +49,29 @@ def _report_feedback_error(feedback: CustomFeedback, message: str) -> None:
     feedback.reportError(message)
 
 
+def kill_process_tree(process: "Popen") -> None:
+    """
+    Forcibly terminates a process and all of its children (the shell launched
+    with ``shell=True`` and the Java process it spawned).
+
+    Safe to call from any thread and more than once.
+    """
+    if process is None:
+        return
+    try:
+        if os.name == "nt":
+            # taskkill /T walks the whole process tree (cmd.exe -> java).
+            call(["taskkill", "/F", "/T", "/PID", str(process.pid)])
+        else:
+            os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+    except (ProcessLookupError, OSError):
+        pass
+
+
 def run_command(
     command_line: str,
     feedback: CustomFeedback | None = None,
+    on_process_started: Callable[[Popen], None] | None = None,
 ) -> bool:
     """
     Runs a command line command and logs the output.
@@ -59,6 +79,11 @@ def run_command(
     Args:
         command_line (str): The command line command to run.
         feedback (CustomFeedback | None, optional): The feedback object to use for logging. Defaults to None.
+        on_process_started (Callable[[Popen], None] | None, optional): Callback
+            invoked with the live ``Popen`` object right after the process is
+            launched. Lets callers keep a handle on the process so they can kill
+            it directly (e.g. from a cancel button) instead of waiting for the
+            cooperative ``isCanceled()`` check between output lines.
 
     Returns:
         bool: True if the process exited with code 0 and was not canceled.
@@ -90,23 +115,11 @@ def run_command(
                 popen_kwargs["start_new_session"] = True
 
             with Popen(command_line, **popen_kwargs) as process:
+                if on_process_started is not None:
+                    on_process_started(process)
                 for byte_line in process.stdout:
                     if feedback.isCanceled():
-                        if os.name == "nt":
-                            call(
-                                [
-                                    "taskkill",
-                                    "/F",
-                                    "/T",
-                                    "/PID",
-                                    str(process.pid),
-                                ]
-                            )
-                        else:
-                            try:
-                                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-                            except ProcessLookupError:
-                                pass
+                        kill_process_tree(process)
                         return False
                     line = byte_line.decode("utf8", errors="backslashreplace").replace(
                         "\r", ""

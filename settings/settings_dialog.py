@@ -60,6 +60,12 @@ class SettingsDialog(QDialog, FORM_CLASS):
             self.on_apply_geographic_context_button_clicked
         )
 
+    def showEvent(self, event) -> None:
+        """Refresh widget values each time the dialog is opened."""
+        super().showEvent(event)
+        self.set_widget_values_from_settings()
+        self.enable_apply_geographic_context_button()
+
     def setup_gui(self) -> None:
         """setup gui widget properties"""
         self.populate_geographic_context_combobox()

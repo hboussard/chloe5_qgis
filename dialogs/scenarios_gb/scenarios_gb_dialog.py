@@ -337,9 +337,11 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
     def _on_command_finished(self, ok: bool) -> None:
         self.pushButton_interrupt.setEnabled(False)
         self.pushButton_run.setEnabled(True)
-        self._logger.set_is_canceled(False)
         if ok:
             self._logger.pushSuccess("Exécution terminée avec succès.")
+        elif self._logger.isCanceled():
+            self._logger.reportError("Exécution interrompue par l'utilisateur.")
+        self._logger.set_is_canceled(False)
 
         self.mQgsFileWidget_result_directory_selector.setFilePath(
             self.mQgsFileWidget_resultDir.filePath()
@@ -363,4 +365,5 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
             )
 
     def cancel_command(self) -> None:
+        self._logger.set_is_canceled(True)
         self._command_executor.cancel()

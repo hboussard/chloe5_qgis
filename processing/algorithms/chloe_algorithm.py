@@ -7,6 +7,7 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.core import (
     QgsProcessing,
     QgsProcessingContext,
+    QgsProcessingLayerPostProcessorInterface,
     QgsRasterLayer,
     QgsProcessingAlgorithm,
     QgsProcessingException,
@@ -36,10 +37,20 @@ from .helpers.constants import (
 )
 
 
+class ChloeRasterStylePostProcessor(QgsProcessingLayerPostProcessorInterface):
+    def __init__(self, qml_file_path: Path):
+        super().__init__()
+        self.qml_file_path = qml_file_path
+
+    def postProcessLayer(self, layer, _context, _feedback) -> None:
+        set_raster_layer_symbology(layer=layer, qml_file_path=self.qml_file_path)
+
+
 class ChloeAlgorithm(QgsProcessingAlgorithm):
     def __init__(self):
         super().__init__()
         self.output_values: dict[str, Any] = {}
+        self._layer_post_processors: list[ChloeRasterStylePostProcessor] = []
 
     def icon(self):
         icon_path: Path = CHLOE_PLUGIN_PATH / "images" / "chloe.png"
@@ -201,16 +212,16 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             layer=raster_layer, default_output=self.name()
         )
 
-        set_raster_layer_symbology(
-            layer=raster_layer, qml_file_path=STYLES_PATH / "continuous.qml"
-        )
-        context.temporaryLayerStore().addMapLayer(raster_layer)
         raster_layer_details = QgsProcessingContext.LayerDetails(
             raster_layer_name, context.project(), OUTPUT_RASTER
         )
+        post_processor = ChloeRasterStylePostProcessor(STYLES_PATH / "continuous.qml")
+        self._layer_post_processors.append(post_processor)
+        raster_layer_details.setPostProcessor(post_processor)
 
-        context.addLayerToLoadOnCompletion(raster_layer.id(), raster_layer_details)
-        results[OUTPUT_RASTER] = raster_layer.id()
+        context.addLayerToLoadOnCompletion(output_raster_path, raster_layer_details)
+
+        results[OUTPUT_RASTER] = output_raster_path
 
     def helpUrl(self) -> str:
         localeName = QLocale.system().name()
@@ -237,7 +248,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
         # print(helpfile)
         content = file_get_content(helpfile, encoding="utf-8", context=context)
 
-        if not (content is None):
+        if content is not None:
             return content
         else:
             return self.tr("No help available for this algorithm")

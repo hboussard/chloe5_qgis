@@ -350,7 +350,11 @@ class ChloeGrainDialog(QtWidgets.QDialog, GRAIN_FORM_CLASS):
         self._logger.setProgress(0)
         if ok:
             self._logger.pushSuccess("Exécution terminée avec succès.")
+        elif self._logger.isCanceled():
+            self._logger.reportError("Exécution interrompue par l'utilisateur.")
+        self._logger.set_is_canceled(False)
 
     def interruptWork(self) -> None:
+        self._logger.set_is_canceled(True)
         self._command_executor.cancel()
         self.pushButton_interrupt.setEnabled(False)

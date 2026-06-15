@@ -30,7 +30,7 @@ def check_java_path(java_path: Path) -> bool:
         )
         return False
 
-    if not get_java_path().exists():
+    if not java_path.exists():
         error_message: str = "Le chemin vers Java n'est pas valide"
         QMessageBox.warning(
             None,

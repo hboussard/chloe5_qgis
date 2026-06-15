@@ -146,6 +146,7 @@ class ChloeAlgorithm(QgsProcessingAlgorithm):
             dict: A dictionary of output parameters.
         """
 
+        self._layer_post_processors.clear()
         self.set_properties_values(parameters, context, feedback)
         self.create_properties_file(self.get_properties_lines())
         command: str = get_console_command(self.get_properties_file_path(parameters))

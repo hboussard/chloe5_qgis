@@ -119,7 +119,6 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
     def setup_amenagements_gui(self) -> None:
         """setup gui widget properties"""
 
-        self.lineEdit_resultPrefix.setText("initial")
         self._input_amenagements_vector_layer_selector = InputLayerFileWidget(self)
         self._input_amenagements_vector_layer_selector.setFilters(
             QgsMapLayerProxyModel.VectorLayer
@@ -139,15 +138,18 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         self.radioButton_initial.toggled.connect(self.on_initial_radio_button_clicked)
 
         self.radioButton_initial.setChecked(True)
-        self.on_scenario_radio_button_clicked()
 
     def on_scenario_radio_button_clicked(self) -> None:
         """scenario radio button clicked action"""
-        self.groupBox_amenagements.setEnabled(self.radioButton_scenario.isChecked())
+        self.groupBox_amenagements.setEnabled(True)
+        self.lineEdit_resultPrefix.setText("")
+        self.lineEdit_resultPrefix.setEnabled(True)
 
     def on_initial_radio_button_clicked(self) -> None:
         """initial radio button clicked action"""
+        self.groupBox_amenagements.setEnabled(False)
         self.lineEdit_resultPrefix.setText("initial")
+        self.lineEdit_resultPrefix.setEnabled(False)
 
     def setup_results_viewer_tab(self) -> None:
         """setup exploitation situation result viewer"""

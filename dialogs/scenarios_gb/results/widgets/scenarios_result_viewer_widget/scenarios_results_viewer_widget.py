@@ -204,4 +204,4 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
             result.id_exploitation for result in self._results
         )
 
-        self.comboBox_id_exploitation.addItems(id_exploitation_set)
+        self.comboBox_id_exploitation.addItems(sorted(id_exploitation_set))

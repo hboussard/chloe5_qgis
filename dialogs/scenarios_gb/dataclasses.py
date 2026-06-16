@@ -69,10 +69,13 @@ class ScenarioGBProperties:
         return self._file_path
 
     def create_properties_file(self):
+
+        properties_folder: Path = self.output_folder / self.code_ea
+        properties_folder.mkdir(parents=True, exist_ok=True)
         suffix: str = datetime.now().strftime("%d-%m-%Y_%H-%M-%S.%f")
         file_path: Path = (
-            self.output_folder / f"{self.scenario_name}_{suffix}.properties"
+            properties_folder / f"{self.scenario_name}_{suffix}.properties"
         )
         self._file_path = file_path
-        with open(self.get_properties_file_path(), "w", encoding="utf-8") as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write("\n".join(self.create_properties()))

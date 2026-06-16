@@ -293,7 +293,7 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
                 else Path()
             ),
             attribut_scenario=self.mFieldComboBox_scenarios.currentField(),
-            output_folder=Path(rf"{self.mQgsFileWidget_resultDir.filePath()}"),
+            output_folder=Path(self.mQgsFileWidget_resultDir.filePath()),
             grain_bocager_cellsize=self.doubleSpinBox_pixelSize.value(),
             grain_bocager_window_radius=self.spinBox_radius.value(),
             grain_bocager_thresholds=[

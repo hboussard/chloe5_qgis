@@ -336,10 +336,10 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         self.pushButton_run.setEnabled(False)
         self.pushButton_interrupt.setEnabled(True)
 
-    def _on_command_finished(self, ok: bool) -> None:
+    def _on_command_finished(self, finished: bool) -> None:
         self.pushButton_interrupt.setEnabled(False)
         self.pushButton_run.setEnabled(True)
-        if ok:
+        if finished:
             self._logger.pushSuccess("Exécution terminée avec succès.")
         elif self._logger.isCanceled():
             self._logger.reportError("Exécution interrompue par l'utilisateur.")
@@ -354,6 +354,10 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
             == self.mQgsFileWidget_result_directory_selector.filePath()
         ):
             self._results_viewer_tab.update_results()
+        if finished and self._id_exploitation_combobox.currentIndex() > -1:
+            self._results_viewer_tab.set_selected_exploitation_id(
+                self._id_exploitation_combobox.currentText()
+            )
 
     def on_result_directory_changed(self) -> None:
         """on result directory changed"""

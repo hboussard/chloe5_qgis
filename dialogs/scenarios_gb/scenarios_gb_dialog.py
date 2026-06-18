@@ -18,6 +18,7 @@ from .helpers.helpers import (
     input_vector_validator,
     path_validator,
     vector_layer_field_is_numeric,
+    sanitize_scenario_name,
 )
 from .results.widgets.scenarios_result_viewer_widget.scenarios_results_viewer_widget import (
     ScenariosResultViewerWidget,
@@ -209,7 +210,8 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
             self.mFieldComboBox_scenarios.setCurrentIndex(-1)
             self.lineEdit_resultPrefix.setText("")
             return
-        self.lineEdit_resultPrefix.setText(f"{selected_field}")
+
+        self.lineEdit_resultPrefix.setText(f"{sanitize_scenario_name(selected_field)}")
 
     def check_mandatory_inputs(self) -> bool:
         """Inputs validation. Checks if mandatory inputs are valid values"""

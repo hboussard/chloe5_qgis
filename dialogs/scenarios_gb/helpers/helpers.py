@@ -1,3 +1,5 @@
+import re
+
 from qgis.core import QgsVectorLayer
 from qgis.PyQt.QtWidgets import (
     QMessageBox,
@@ -10,6 +12,7 @@ from qgis.core import (
 )
 from qgis.utils import iface
 from pathlib import Path
+from .constants import FORBIDDEN_SCENARIO_NAMES_WORDS
 
 
 def layer_field_index(layer: QgsVectorLayer, field_name: str) -> int:
@@ -72,6 +75,25 @@ def vector_layer_field_is_numeric(
         )
         return False
     return True
+
+
+def sanitize_scenario_name(scenario_name: str) -> str:
+    """Sanitize the scenario name."""
+    normalized_name = scenario_name.replace(" ", "_")
+    forbidden_pattern = (
+        r"(^|_)"
+        + "("
+        + "|".join(re.escape(word) for word in FORBIDDEN_SCENARIO_NAMES_WORDS)
+        + r")($|_)"
+    )
+    if re.search(forbidden_pattern, normalized_name, re.IGNORECASE):
+        QMessageBox.warning(
+            None,
+            "Erreur",
+            f"Le nom du scénario ne peut pas contenir les mots suivants: {', '.join(FORBIDDEN_SCENARIO_NAMES_WORDS)}",
+        )
+        return normalized_name[:-1]
+    return normalized_name
 
 
 def path_validator(title_name: str, name_msg: str, folder_path: Path) -> bool:

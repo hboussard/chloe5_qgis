@@ -70,14 +70,14 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
     def reject(self) -> None:
         if self._command_executor.is_running():
             self._command_executor.cancel()
-        self._logger.clear_log()
+        # self._logger.clear_log()
         # clear all widgets
-        self._input_exploitation_vector_layer_selector.clear()
-        self._input_bocage_raster_layer_selector.clear()
-        self._input_amenagements_vector_layer_selector.clear()
-        self._id_exploitation_combobox.clear()
-        self.mQgsFileWidget_resultDir.setFilePath("")
-        self.mQgsFileWidget_result_directory_selector.setFilePath("")
+        # self._input_exploitation_vector_layer_selector.clear()
+        # self._input_bocage_raster_layer_selector.clear()
+        # self._input_amenagements_vector_layer_selector.clear()
+        # self._id_exploitation_combobox.clear()
+        # self.mQgsFileWidget_resultDir.setFilePath("")
+        # self.mQgsFileWidget_result_directory_selector.setFilePath("")
         self.tabWidget.setCurrentIndex(0)
         super().reject()
 

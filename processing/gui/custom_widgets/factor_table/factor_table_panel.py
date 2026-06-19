@@ -16,7 +16,7 @@
 from pathlib import Path
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtWidgets import QMessageBox, QHeaderView
+from qgis.PyQt.QtWidgets import QHeaderView
 
 
 from qgis.core import QgsProcessingParameterDefinition, QgsMessageLog, Qgis
@@ -197,6 +197,7 @@ class FactorTablePanel(BASE, WIDGET):
                 )
             )
 
+        list_layers.sort(key=lambda layer: get_layer_name(layer.layer_path).casefold())
         return list_layers
 
     def populate_table_model_with_data(self, list_layers: list[LayerInfo]) -> None:
@@ -211,34 +212,28 @@ class FactorTablePanel(BASE, WIDGET):
         """
         factor_elements: list[CombineFactorElement] = []
 
-        # If the list of layers is empty, show an error message and return.
-        if not list_layers:
-            QMessageBox.critical(self, tr("Select rasters"), tr("No rasters selected"))
-            return
-        else:
-            # For each layer in the list of layers, create a CombineFactorElement object and append it to the factor_elements list.
-            for i, layer in enumerate(list_layers):
-                if self.is_modeler_dialog:
-                    # if the layer id is not empty, it means that the layer is a modeler input, set the path to an empty string. It will be resolved in the processAlgorithm
-                    if layer.modeler_input_id != "":
-                        layer_name = layer.layer_path
-                        layer_path: str = ""
-                    # if the layer id is empty, it means that the layer is a selected layer. Set the path to the actual path of the layer
-                    else:
-                        layer_name: str = get_layer_name(layer.layer_path)
-                        layer_path = layer.layer_path
+        for i, layer in enumerate(list_layers):
+            if self.is_modeler_dialog:
+                # if the layer id is not empty, it means that the layer is a modeler input, set the path to an empty string. It will be resolved in the processAlgorithm
+                if layer.modeler_input_id != "":
+                    layer_name = layer.layer_path
+                    layer_path: str = ""
+                # if the layer id is empty, it means that the layer is a selected layer. Set the path to the actual path of the layer
                 else:
-                    layer_name = get_layer_name(layer.layer_path)
+                    layer_name: str = get_layer_name(layer.layer_path)
                     layer_path = layer.layer_path
+            else:
+                layer_name = get_layer_name(layer.layer_path)
+                layer_path = layer.layer_path
 
-                factor_elements.append(
-                    CombineFactorElement(
-                        factor_name=f"m{i+1}",
-                        layer_name=layer_name,
-                        layer_path=Path(layer_path),
-                        layer_id=layer.modeler_input_id,
-                    ),
-                )
+            factor_elements.append(
+                CombineFactorElement(
+                    factor_name=f"m{i+1}",
+                    layer_name=layer_name,
+                    layer_path=Path(layer_path),
+                    layer_id=layer.modeler_input_id,
+                ),
+            )
 
         self._table_model.set_data(data=factor_elements)
 

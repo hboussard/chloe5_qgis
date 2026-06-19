@@ -15,6 +15,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QPushButton" name="button_load_layers">
+     <property name="text">
+      <string>load layers</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QTableView" name="tableView"/>
    </item>
    <item>
@@ -24,13 +31,6 @@
        <width>16777215</width>
        <height>100</height>
       </size>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="button_load_layers">
-     <property name="text">
-      <string>load layers</string>
      </property>
     </widget>
    </item>

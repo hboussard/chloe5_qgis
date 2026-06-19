@@ -33,3 +33,18 @@ RESULT_CSV_MANDATORY_COLUMNS: list[str] = [
     RESULT_CSV_MANDATORY_ID_EXPLOITATION_COLUMN,
     "scenario",
 ] + RESULT_CSV_MANDATORY_NUMERIC_COLUMNS
+
+RESULT_LAYER_RASTER_PREFIXES: list[str] = [
+    "grain_bocager_4classes",
+    "type_boisement",
+]
+RESULT_EA_RASTER_PREFIX: str = "ea_"
+
+RESULT_LAYER_RASTER_EXTENSIONS: list[str] = [".tif"]
+
+RESULT_LAYERS_ROOT_GROUP_NAME: str = "grain bocager exploitation"
+RESULT_EXTERNE_FOLDER_NAME: str = "externe"
+RESULT_INITIAL_FOLDER_NAME: str = "initial"
+RESULT_EXTERNE_GROUP_LABEL: str = "Externe"
+RESULT_INITIAL_GROUP_LABEL: str = "Initial"
+RESULT_EA_GROUP_LABEL: str = "EA"

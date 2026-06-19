@@ -309,6 +309,14 @@ def get_raster_nodata_value(raster_file_path: str) -> float | None:
     return floor(nodata) if nodata is not None else None
 
 
+def get_or_create_group(parent, name: str) -> QgsLayerTreeGroup:
+    """Return an existing layer tree group or create it under parent."""
+    existing_group: QgsLayerTreeGroup | None = parent.findGroup(name)
+    if existing_group is not None:
+        return existing_group
+    return parent.addGroup(name)
+
+
 # TODO : move to processing helpers ??
 @dataclass
 class RasterLoadConfig:

@@ -5,6 +5,8 @@ from pathlib import Path
 
 from qgis.PyQt.QtWidgets import (
     QWidget,
+    QPushButton,
+    QMessageBox,
 )
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt, QSortFilterProxyModel
@@ -19,6 +21,11 @@ from ...charts import (
     ChartToolBar,
 )
 from ...helpers import analyse_results_directory
+from ...result_layers_importer import (
+    SelectableFolder,
+    get_selectable_folders,
+    import_result_layers,
+)
 from ....dataclasses import ScenarioResult
 from ...results_table_model import ResultsTableModel
 
@@ -27,6 +34,9 @@ from ..situation_selector_widget.situation_selector_widget import (
 )
 from ...widgets.situation_selector_widget.situation_entities import (
     SituationSelection,
+)
+from ......processing.gui.custom_widgets.custom_dialogs.DialListCheckBox import (
+    DialListCheckBox,
 )
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -51,6 +61,7 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self._results_table_model = ResultsTableModel()
         self._results: list[ScenarioResult] = []
         self._result_directory_path: Path = Path()
+        self._push_button_load_layers: QPushButton | None = None
         # Setup Ui
         self.setupUi(self)
         self.setup_gui()
@@ -60,6 +71,7 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self.setup_exploitation_situation_chart()
         self.setup_evolution_grain_chart()
         self.setup_results_table()
+        self.setup_load_layers_button()
         self.comboBox_id_exploitation.currentIndexChanged.connect(
             self.refresh_exploitation_results_tab
         )
@@ -67,6 +79,68 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self._situation_selector.selection_changed.connect(
             self.filter_situation_chart_by_situation_selection
         )
+
+    def setup_load_layers_button(self) -> None:
+        """Add the load-layers button next to the exploitation combobox."""
+        self._push_button_load_layers = QPushButton("Charger les couches", self)
+        self._push_button_load_layers.clicked.connect(self.on_load_layers_clicked)
+        self.horizontalLayout.insertWidget(2, self._push_button_load_layers)
+
+    def on_load_layers_clicked(self) -> None:
+        """Load result rasters for the currently selected exploitation."""
+        if self.comboBox_id_exploitation.currentIndex() == -1:
+            QMessageBox.warning(
+                self,
+                "Erreur",
+                "Veuillez sélectionner une exploitation.",
+            )
+            return
+
+        id_exploitation: str = self.comboBox_id_exploitation.currentText()
+        exploitation_folder: Path | None = self._resolve_exploitation_folder(
+            id_exploitation
+        )
+        if exploitation_folder is None:
+            QMessageBox.warning(
+                self,
+                "Erreur",
+                f"Dossier de résultats introuvable pour l'exploitation {id_exploitation}.",
+            )
+            return
+
+        selectable_folders: list[SelectableFolder] = get_selectable_folders(
+            exploitation_folder
+        )
+        if not selectable_folders:
+            QMessageBox.warning(
+                self,
+                "Erreur",
+                "Aucun dossier de résultats disponible à charger.",
+            )
+            return
+
+        labels: list[str] = [folder.label for folder in selectable_folders]
+        selected_labels: list[str] = DialListCheckBox(labels, labels).run()
+        if not selected_labels:
+            return
+
+        selected_folders: list[SelectableFolder] = [
+            folder for folder in selectable_folders if folder.label in selected_labels
+        ]
+        import_result_layers(
+            id_exploitation=id_exploitation,
+            selected_folders=selected_folders,
+        )
+
+    def _resolve_exploitation_folder(self, id_exploitation: str) -> Path | None:
+        """Resolve the exploitation folder from the configured result directory."""
+        if not self._result_directory_path.exists():
+            return None
+
+        exploitation_folder = self._result_directory_path / id_exploitation
+        if exploitation_folder.is_dir():
+            return exploitation_folder
+        return None
 
     def setup_exploitation_situation_chart(self) -> None:
         """setup exploitation situation chart"""

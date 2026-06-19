@@ -63,6 +63,7 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self.comboBox_id_exploitation.currentIndexChanged.connect(
             self.refresh_exploitation_results_tab
         )
+        self.set_selected_exploitation_label(None)
         self._situation_selector.selection_changed.connect(
             self.filter_situation_chart_by_situation_selection
         )
@@ -139,9 +140,7 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
             self._results_table_model.clear_data()
             return
         id_exploitation: str = self.comboBox_id_exploitation.currentText()
-        self.label_results_exploitation_id.setText(
-            f"Résultats pour l'exploitation {id_exploitation}"
-        )
+        self.set_selected_exploitation_label(id_exploitation)
         self.update_evolution_chart_from_results(id_exploitation)
         self.update_situation_chart_from_results(id_exploitation)
         self.update_results_table(id_exploitation)
@@ -196,8 +195,20 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         ]
         self._results_table_model.set_data(results)
 
+    def set_selected_exploitation_label(self, id_exploitation: str | None) -> None:
+        """Set the selected exploitation label"""
+        if id_exploitation is None:
+            self.label_results_exploitation_id.setText(
+                "Aucune exploitation sélectionnée"
+            )
+            return
+        self.label_results_exploitation_id.setText(
+            f"Résultats pour l'exploitation {id_exploitation}"
+        )
+
     def populate_id_exploitation_combobox(self) -> None:
         """populate id exploitation combobox"""
+        self.set_selected_exploitation_label(None)
         self.comboBox_id_exploitation.clear()
         # get a set of id_exploitation
         id_exploitation_set: set[str] = set(

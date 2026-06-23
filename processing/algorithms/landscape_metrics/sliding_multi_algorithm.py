@@ -12,8 +12,6 @@ from qgis.core import (
 
 from processing.tools.system import isWindows
 
-from ....helpers.helpers import convert_int_to_odd
-
 from ...gui.custom_parameters.chloe_raster_parameter_file_input import (
     ChloeRasterParameterFileInput,
 )

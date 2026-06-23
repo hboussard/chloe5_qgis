@@ -1,5 +1,4 @@
 from ..dataclasses import ScenarioResult
-from ..results.constants import RESULT_CSV_MANDATORY_COLUMNS
 from qgis.PyQt.QtGui import (
     QStandardItemModel,
     QStandardItem,

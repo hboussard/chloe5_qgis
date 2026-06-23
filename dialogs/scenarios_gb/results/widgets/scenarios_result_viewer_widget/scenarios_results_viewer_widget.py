@@ -5,6 +5,8 @@ from pathlib import Path
 
 from qgis.PyQt.QtWidgets import (
     QWidget,
+    QPushButton,
+    QMessageBox,
 )
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt, QSortFilterProxyModel
@@ -19,6 +21,11 @@ from ...charts import (
     ChartToolBar,
 )
 from ...helpers import analyse_results_directory
+from ...result_layers_importer import (
+    SelectableFolder,
+    get_selectable_folders,
+    import_selected_result_layers,
+)
 from ....dataclasses import ScenarioResult
 from ...results_table_model import ResultsTableModel
 
@@ -27,6 +34,9 @@ from ..situation_selector_widget.situation_selector_widget import (
 )
 from ...widgets.situation_selector_widget.situation_entities import (
     SituationSelection,
+)
+from ..result_layers_selector_widget.result_layers_selector_dialog import (
+    ResultLayersSelectorDialog,
 )
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -51,6 +61,10 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self._results_table_model = ResultsTableModel()
         self._results: list[ScenarioResult] = []
         self._result_directory_path: Path = Path()
+        self._push_button_load_layers: QPushButton | None = None
+        self._result_layers_selector_dialog: ResultLayersSelectorDialog = (
+            ResultLayersSelectorDialog(self)
+        )
         # Setup Ui
         self.setupUi(self)
         self.setup_gui()
@@ -60,12 +74,76 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self.setup_exploitation_situation_chart()
         self.setup_evolution_grain_chart()
         self.setup_results_table()
+        self.setup_load_layers_button()
         self.comboBox_id_exploitation.currentIndexChanged.connect(
             self.refresh_exploitation_results_tab
         )
+        self.set_selected_exploitation_label(None)
         self._situation_selector.selection_changed.connect(
             self.filter_situation_chart_by_situation_selection
         )
+
+    def setup_load_layers_button(self) -> None:
+        """Add the load-layers button ."""
+
+        self._push_button_load_layers = QPushButton("Charger les couches", self)
+        self._push_button_load_layers.clicked.connect(self.on_load_layers_clicked)
+        self.horizontalLayout.insertWidget(2, self._push_button_load_layers)
+
+    def on_load_layers_clicked(self) -> None:
+        """Load result rasters for the currently selected exploitation."""
+        if self.comboBox_id_exploitation.currentIndex() == -1:
+            QMessageBox.warning(
+                self,
+                "Erreur",
+                "Veuillez sélectionner une exploitation.",
+            )
+            return
+
+        id_exploitation: str = self.comboBox_id_exploitation.currentText()
+        exploitation_folder: Path | None = self._resolve_exploitation_folder(
+            id_exploitation
+        )
+        if exploitation_folder is None:
+            QMessageBox.warning(
+                self,
+                "Erreur",
+                f"Dossier de résultats introuvable pour l'exploitation {id_exploitation}.",
+            )
+            return
+
+        selectable_folders: list[SelectableFolder] = get_selectable_folders(
+            exploitation_folder
+        )
+        if not selectable_folders:
+            QMessageBox.warning(
+                self,
+                "Erreur",
+                "Aucun dossier de résultats disponible à charger.",
+            )
+            return
+
+        selections = self._result_layers_selector_dialog.run(
+            id_exploitation=id_exploitation,
+            folders=selectable_folders,
+        )
+        if not selections:
+            return
+
+        import_selected_result_layers(
+            id_exploitation=id_exploitation,
+            selections=selections,
+        )
+
+    def _resolve_exploitation_folder(self, id_exploitation: str) -> Path | None:
+        """Resolve the exploitation folder from the configured result directory."""
+        if not self._result_directory_path.exists():
+            return None
+
+        exploitation_folder = self._result_directory_path / id_exploitation
+        if exploitation_folder.is_dir():
+            return exploitation_folder
+        return None
 
     def setup_exploitation_situation_chart(self) -> None:
         """setup exploitation situation chart"""
@@ -139,9 +217,7 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
             self._results_table_model.clear_data()
             return
         id_exploitation: str = self.comboBox_id_exploitation.currentText()
-        self.label_results_exploitation_id.setText(
-            f"Résultats pour l'exploitation {id_exploitation}"
-        )
+        self.set_selected_exploitation_label(id_exploitation)
         self.update_evolution_chart_from_results(id_exploitation)
         self.update_situation_chart_from_results(id_exploitation)
         self.update_results_table(id_exploitation)
@@ -196,8 +272,20 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         ]
         self._results_table_model.set_data(results)
 
+    def set_selected_exploitation_label(self, id_exploitation: str | None) -> None:
+        """Set the selected exploitation label"""
+        if id_exploitation is None:
+            self.label_results_exploitation_id.setText(
+                "Aucune exploitation sélectionnée"
+            )
+            return
+        self.label_results_exploitation_id.setText(
+            f"Résultats pour l'exploitation {id_exploitation}"
+        )
+
     def populate_id_exploitation_combobox(self) -> None:
         """populate id exploitation combobox"""
+        self.set_selected_exploitation_label(None)
         self.comboBox_id_exploitation.clear()
         # get a set of id_exploitation
         id_exploitation_set: set[str] = set(

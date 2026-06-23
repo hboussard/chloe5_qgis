@@ -1,4 +1,13 @@
+from dataclasses import dataclass
 from pathlib import Path
+
+
+@dataclass(frozen=True, slots=True)
+class ResultLayerSubgroup:
+    keyword: str
+    label: str
+    checked_by_default: bool = True
+
 
 SITUATION_CHART_BASE_CSV_PATH: Path = (
     Path(__file__).parent / "exploitations_rpg20224_grain_bocager.csv"
@@ -34,10 +43,19 @@ RESULT_CSV_MANDATORY_COLUMNS: list[str] = [
     "scenario",
 ] + RESULT_CSV_MANDATORY_NUMERIC_COLUMNS
 
-RESULT_LAYER_RASTER_PREFIXES: list[str] = [
-    "grain_bocager_4classes",
-    "type_boisement",
+
+RESULT_LAYER_SUBGROUPS: list[ResultLayerSubgroup] = [
+    ResultLayerSubgroup("type_boisement", "type boisement"),
+    ResultLayerSubgroup(
+        "hauteur_boisement", "hauteur boisement", checked_by_default=False
+    ),
+    ResultLayerSubgroup("grain_bocager_4classes", "grain bocager 4 classes"),
+    ResultLayerSubgroup("grain_bocager", "grain bocager", checked_by_default=False),
 ]
+RESULT_LAYER_RASTER_PREFIXES: list[str] = [
+    subgroup.keyword for subgroup in RESULT_LAYER_SUBGROUPS
+]
+
 RESULT_EA_RASTER_PREFIX: str = "ea_"
 
 RESULT_LAYER_RASTER_EXTENSIONS: list[str] = [".tif"]

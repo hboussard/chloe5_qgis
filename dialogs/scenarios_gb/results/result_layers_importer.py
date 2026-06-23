@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -6,12 +7,12 @@ from qgis.core import (
     Qgis,
     QgsLayerTreeGroup,
     QgsLayerTreeLayer,
+    QgsMapLayer,
     QgsProject,
     QgsRasterLayer,
 )
 from qgis.utils import iface
 
-from ....helpers.helpers import get_or_create_group
 from .constants import (
     RESULT_EA_GROUP_LABEL,
     RESULT_EA_RASTER_PREFIX,
@@ -21,7 +22,9 @@ from .constants import (
     RESULT_INITIAL_GROUP_LABEL,
     RESULT_LAYER_RASTER_EXTENSIONS,
     RESULT_LAYER_RASTER_PREFIXES,
+    RESULT_LAYER_SUBGROUPS,
     RESULT_LAYERS_ROOT_GROUP_NAME,
+    ResultLayerSubgroup,
 )
 
 
@@ -34,6 +37,18 @@ class SelectableFolderKind(Enum):
     EA = "ea"
 
 
+_SPECIAL_FOLDER_BY_NAME: dict[str, tuple[str, SelectableFolderKind]] = {
+    RESULT_EXTERNE_FOLDER_NAME: (
+        RESULT_EXTERNE_GROUP_LABEL,
+        SelectableFolderKind.EXTERNE,
+    ),
+    RESULT_INITIAL_FOLDER_NAME: (
+        RESULT_INITIAL_GROUP_LABEL,
+        SelectableFolderKind.INITIAL,
+    ),
+}
+
+
 @dataclass(frozen=True)
 class SelectableFolder:
     """A loadable result folder or virtual EA group within an exploitation directory."""
@@ -41,6 +56,101 @@ class SelectableFolder:
     label: str
     kind: SelectableFolderKind
     path: Path
+
+
+@dataclass(frozen=True)
+class SelectableLayer:
+    """A loadable raster within a result folder."""
+
+    label: str
+    path: Path
+    is_loaded: bool
+    subgroup: ResultLayerSubgroup | None = None
+
+
+@dataclass(frozen=True)
+class SelectableLayerGroup:
+    """A subgroup of loadable rasters within a result folder.
+
+    A None label means the layers are placed directly under the folder.
+    """
+
+    label: str | None
+    layers: list[SelectableLayer]
+
+
+def get_or_create_group(parent, name: str) -> QgsLayerTreeGroup:
+    """Return an existing layer tree group or create it under parent."""
+    existing_group: QgsLayerTreeGroup | None = parent.findGroup(name)
+    if existing_group is not None:
+        return existing_group
+    return parent.addGroup(name)
+
+
+def matches_prefixes(stem: str, prefixes: list[str]) -> bool:
+    """Check if the stem matches any of the prefixes."""
+    return any(stem.startswith(prefix) for prefix in prefixes)
+
+
+def normalize_source_path(source: Path | str) -> str:
+    """Return a resolved, comparable source path string."""
+    return str(Path(source).resolve())
+
+
+def layer_resolved_source(layer: QgsMapLayer | None) -> str | None:
+    """Return the resolved source path of a map layer, if available."""
+    if layer is None:
+        return None
+    return normalize_source_path(layer.source())
+
+
+def subgroup_label(subgroup: ResultLayerSubgroup | None) -> str | None:
+    """Return the display label for a subgroup config, if any."""
+    return subgroup.label if subgroup is not None else None
+
+
+def get_result_layer_subgroup(stem: str) -> ResultLayerSubgroup | None:
+    """Return the subgroup config for a raster stem, or ``None`` if unmatched.
+
+    Matching uses ``startswith`` to mirror :func:`matches_prefixes`. Order in
+    ``RESULT_LAYER_SUBGROUPS`` is significant: a more specific keyword (e.g.
+    ``grain_bocager_4classes``) must precede a prefix of it (``grain_bocager``).
+    """
+    for subgroup in RESULT_LAYER_SUBGROUPS:
+        if stem.startswith(subgroup.keyword):
+            return subgroup
+    return None
+
+
+def get_layer_subgroup_label(stem: str) -> str | None:
+    """Return the subgroup label for a raster stem, or ``None`` if unmatched."""
+    return subgroup_label(get_result_layer_subgroup(stem))
+
+
+def iter_loadable_rasters(
+    folder: Path,
+    prefixes: list[str],
+    allowed_paths: set[Path] | None = None,
+) -> Iterator[Path]:
+    """Yield loadable raster paths from a folder in sorted order."""
+    if not folder.is_dir():
+        return
+
+    for file_path in sorted(folder.iterdir(), key=lambda path: path.name):
+        if not file_path.is_file():
+            continue
+        if file_path.suffix.lower() not in RESULT_LAYER_RASTER_EXTENSIONS:
+            continue
+        if not matches_prefixes(file_path.stem, prefixes):
+            continue
+        if allowed_paths is not None and file_path.resolve() not in allowed_paths:
+            continue
+        yield file_path
+
+
+def has_ea_rasters(exploitation_folder: Path) -> bool:
+    """Check if the exploitation folder contains EA rasters."""
+    return any(iter_loadable_rasters(exploitation_folder, [RESULT_EA_RASTER_PREFIX]))
 
 
 def get_selectable_folders(exploitation_folder: Path) -> list[SelectableFolder]:
@@ -56,18 +166,14 @@ def get_selectable_folders(exploitation_folder: Path) -> list[SelectableFolder]:
         if not entry.is_dir():
             continue
         folder_name = entry.name.lower()
-        if folder_name == RESULT_EXTERNE_FOLDER_NAME:
-            externe_folder = SelectableFolder(
-                label=RESULT_EXTERNE_GROUP_LABEL,
-                kind=SelectableFolderKind.EXTERNE,
-                path=entry,
-            )
-        elif folder_name == RESULT_INITIAL_FOLDER_NAME:
-            initial_folder = SelectableFolder(
-                label=RESULT_INITIAL_GROUP_LABEL,
-                kind=SelectableFolderKind.INITIAL,
-                path=entry,
-            )
+        special_folder = _SPECIAL_FOLDER_BY_NAME.get(folder_name)
+        if special_folder is not None:
+            label, kind = special_folder
+            selectable_folder = SelectableFolder(label=label, kind=kind, path=entry)
+            if kind is SelectableFolderKind.EXTERNE:
+                externe_folder = selectable_folder
+            else:
+                initial_folder = selectable_folder
         else:
             ordered_folders.append(
                 SelectableFolder(
@@ -95,67 +201,164 @@ def get_selectable_folders(exploitation_folder: Path) -> list[SelectableFolder]:
     return ordered_folders
 
 
-def import_result_layers(
-    id_exploitation: str,
-    selected_folders: list[SelectableFolder],
-) -> None:
-    """Import selected result rasters into nested QGIS layer groups."""
-    if not selected_folders:
-        return
+def folder_raster_prefixes(folder: SelectableFolder) -> list[str]:
+    """Return raster filename prefixes for the given folder kind."""
+    if folder.kind == SelectableFolderKind.EA:
+        return [RESULT_EA_RASTER_PREFIX]
+    return RESULT_LAYER_RASTER_PREFIXES
 
+
+def list_folder_rasters(folder: SelectableFolder) -> list[Path]:
+    """List loadable raster paths for a selectable folder in sorted order."""
+    return list(iter_loadable_rasters(folder.path, folder_raster_prefixes(folder)))
+
+
+def resolve_folder_group(
+    id_exploitation: str, folder_label: str
+) -> QgsLayerTreeGroup | None:
+    """Resolve the QGIS layer tree group for a result folder, if it exists."""
+    layer_tree = QgsProject.instance().layerTreeRoot()
+    root_group = layer_tree.findGroup(RESULT_LAYERS_ROOT_GROUP_NAME)
+    if root_group is None:
+        return None
+    exploitation_group = root_group.findGroup(id_exploitation)
+    if exploitation_group is None:
+        return None
+    return exploitation_group.findGroup(folder_label)
+
+
+def collect_group_layer_sources(group: QgsLayerTreeGroup) -> set[str]:
+    """Recursively collect resolved source paths of rasters within a group."""
+    sources: set[str] = set()
+    for child in group.children():
+        if isinstance(child, QgsLayerTreeLayer):
+            source = layer_resolved_source(child.layer())
+            if source is not None:
+                sources.add(source)
+        elif isinstance(child, QgsLayerTreeGroup):
+            sources |= collect_group_layer_sources(child)
+    return sources
+
+
+def get_loaded_raster_sources(id_exploitation: str, folder_label: str) -> set[str]:
+    """Return resolved source paths of rasters already loaded in the target group."""
+    folder_group = resolve_folder_group(id_exploitation, folder_label)
+    if folder_group is None:
+        return set()
+    return collect_group_layer_sources(folder_group)
+
+
+def build_selectable_layers(
+    id_exploitation: str, folder: SelectableFolder
+) -> list[SelectableLayer]:
+    """Build selectable layer entries with loaded-state for a folder."""
+    loaded_sources: set[str] = get_loaded_raster_sources(id_exploitation, folder.label)
+    selectable_layers: list[SelectableLayer] = []
+    for raster_path in list_folder_rasters(folder):
+        subgroup = get_result_layer_subgroup(raster_path.stem)
+        selectable_layers.append(
+            SelectableLayer(
+                label=raster_path.stem,
+                path=raster_path,
+                is_loaded=normalize_source_path(raster_path) in loaded_sources,
+                subgroup=subgroup,
+            )
+        )
+    return selectable_layers
+
+
+def build_selectable_layer_groups(
+    id_exploitation: str, folder: SelectableFolder
+) -> list[SelectableLayerGroup]:
+    """Build subgroups of selectable layers for a folder, in display order.
+
+    Layers are grouped by their subgroup label. Subgroups are ordered following
+    ``RESULT_LAYER_SUBGROUPS`` and any unmatched layers are returned last in a
+    group with a ``None`` label (placed directly under the folder).
+    """
+    layers = build_selectable_layers(id_exploitation, folder)
+    if not layers:
+        return []
+
+    grouped: dict[str | None, list[SelectableLayer]] = {}
+    for layer in layers:
+        grouped.setdefault(subgroup_label(layer.subgroup), []).append(layer)
+
+    ordered_groups: list[SelectableLayerGroup] = []
+    for subgroup in RESULT_LAYER_SUBGROUPS:
+        subgroup_layers = grouped.pop(subgroup.label, None)
+        if subgroup_layers:
+            ordered_groups.append(
+                SelectableLayerGroup(label=subgroup.label, layers=subgroup_layers)
+            )
+
+    unmatched_layers = grouped.pop(None, None)
+    if unmatched_layers:
+        ordered_groups.append(SelectableLayerGroup(label=None, layers=unmatched_layers))
+
+    # Any remaining labels not declared in RESULT_LAYER_SUBGROUPS.
+    for remaining_label, remaining_layers in grouped.items():
+        ordered_groups.append(
+            SelectableLayerGroup(label=remaining_label, layers=remaining_layers)
+        )
+
+    return ordered_groups
+
+
+def prepare_exploitation_group(
+    id_exploitation: str,
+) -> tuple[QgsProject, QgsLayerTreeGroup]:
+    """Create or resolve the nested QGIS groups for a result import."""
     qgs_project = QgsProject.instance()
     layer_tree = qgs_project.layerTreeRoot()
     root_group = get_or_create_group(layer_tree, RESULT_LAYERS_ROOT_GROUP_NAME)
     root_group.setExpanded(False)
     exploitation_group = get_or_create_group(root_group, id_exploitation)
     exploitation_group.setExpanded(False)
+    return qgs_project, exploitation_group
 
-    for selectable_folder in selected_folders:
+
+def import_result_folders(
+    id_exploitation: str,
+    folder_imports: list[tuple[SelectableFolder, set[Path] | None]],
+) -> None:
+    """Import rasters for each folder, optionally restricted to allowed paths."""
+    if not folder_imports:
+        return
+
+    qgs_project, exploitation_group = prepare_exploitation_group(id_exploitation)
+
+    for selectable_folder, allowed_paths in folder_imports:
+        if allowed_paths is not None and not allowed_paths:
+            continue
         target_group = get_or_create_group(exploitation_group, selectable_folder.label)
         target_group.setExpanded(False)
-        if selectable_folder.kind == SelectableFolderKind.EA:
-            load_rasters_into_group(
-                folder=selectable_folder.path,
-                group=target_group,
-                prefixes=[RESULT_EA_RASTER_PREFIX],
-                qgs_project=qgs_project,
-            )
-        else:
-            load_rasters_into_group(
-                folder=selectable_folder.path,
-                group=target_group,
-                prefixes=RESULT_LAYER_RASTER_PREFIXES,
-                qgs_project=qgs_project,
-            )
+        load_rasters_into_group(
+            folder=selectable_folder.path,
+            group=target_group,
+            prefixes=folder_raster_prefixes(selectable_folder),
+            qgs_project=qgs_project,
+            allowed_paths=allowed_paths,
+        )
 
 
-def has_ea_rasters(exploitation_folder: Path) -> bool:
-    """Check if the exploitation folder contains EA rasters."""
-    for file_path in exploitation_folder.iterdir():
-        if (
-            file_path.is_file()
-            and file_path.suffix.lower() in RESULT_LAYER_RASTER_EXTENSIONS
-            and file_path.stem.startswith(RESULT_EA_RASTER_PREFIX)
-        ):
-            return True
-    return False
-
-
-def matches_prefixes(stem: str, prefixes: list[str]) -> bool:
-    """Check if the stem matches any of the prefixes."""
-    return any(stem.startswith(prefix) for prefix in prefixes)
+def import_selected_result_layers(
+    id_exploitation: str,
+    selections: list[tuple[SelectableFolder, list[Path]]],
+) -> None:
+    """Import individually selected result rasters into nested QGIS layer groups."""
+    import_result_folders(
+        id_exploitation,
+        [(folder, {path.resolve() for path in paths}) for folder, paths in selections],
+    )
 
 
 def layer_exists_in_group(group: QgsLayerTreeGroup, file_path: Path) -> bool:
     """Check if a layer exists in a QGIS group."""
-    normalized_path = str(file_path.resolve())
+    normalized_path = normalize_source_path(file_path)
     for child in group.children():
         if isinstance(child, QgsLayerTreeLayer):
-            layer = child.layer()
-            if (
-                layer is not None
-                and str(Path(layer.source()).resolve()) == normalized_path
-            ):
+            if layer_resolved_source(child.layer()) == normalized_path:
                 return True
     return False
 
@@ -165,19 +368,17 @@ def load_rasters_into_group(
     group: QgsLayerTreeGroup,
     prefixes: list[str],
     qgs_project: QgsProject,
+    allowed_paths: set[Path] | None = None,
 ) -> None:
     """Load rasters into a QGIS group."""
-    if not folder.is_dir():
-        return
+    for file_path in iter_loadable_rasters(folder, prefixes, allowed_paths):
+        target_group = group
+        layer_subgroup_label = get_layer_subgroup_label(file_path.stem)
+        if layer_subgroup_label is not None:
+            target_group = get_or_create_group(group, layer_subgroup_label)
+            target_group.setExpanded(False)
 
-    for file_path in sorted(folder.iterdir(), key=lambda path: path.name):
-        if not file_path.is_file():
-            continue
-        if file_path.suffix.lower() not in RESULT_LAYER_RASTER_EXTENSIONS:
-            continue
-        if not matches_prefixes(file_path.stem, prefixes):
-            continue
-        if layer_exists_in_group(group, file_path):
+        if layer_exists_in_group(target_group, file_path):
             continue
 
         raster_layer = QgsRasterLayer(str(file_path), file_path.stem)
@@ -189,5 +390,5 @@ def load_rasters_into_group(
             )
             continue
         qgs_project.addMapLayer(raster_layer, False)
-        layer_node = group.addLayer(raster_layer)
+        layer_node = target_group.addLayer(raster_layer)
         layer_node.setExpanded(False)

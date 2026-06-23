@@ -24,7 +24,7 @@ from ...helpers import analyse_results_directory
 from ...result_layers_importer import (
     SelectableFolder,
     get_selectable_folders,
-    import_result_layers,
+    import_selected_result_layers,
 )
 from ....dataclasses import ScenarioResult
 from ...results_table_model import ResultsTableModel
@@ -35,8 +35,8 @@ from ..situation_selector_widget.situation_selector_widget import (
 from ...widgets.situation_selector_widget.situation_entities import (
     SituationSelection,
 )
-from ......processing.gui.custom_widgets.custom_dialogs.DialListCheckBox import (
-    DialListCheckBox,
+from ..result_layers_selector_widget.result_layers_selector_dialog import (
+    ResultLayersSelectorDialog,
 )
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
@@ -62,6 +62,9 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         self._results: list[ScenarioResult] = []
         self._result_directory_path: Path = Path()
         self._push_button_load_layers: QPushButton | None = None
+        self._result_layers_selector_dialog: ResultLayersSelectorDialog = (
+            ResultLayersSelectorDialog(self)
+        )
         # Setup Ui
         self.setupUi(self)
         self.setup_gui()
@@ -81,7 +84,8 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
         )
 
     def setup_load_layers_button(self) -> None:
-        """Add the load-layers button next to the exploitation combobox."""
+        """Add the load-layers button ."""
+
         self._push_button_load_layers = QPushButton("Charger les couches", self)
         self._push_button_load_layers.clicked.connect(self.on_load_layers_clicked)
         self.horizontalLayout.insertWidget(2, self._push_button_load_layers)
@@ -119,17 +123,16 @@ class ScenariosResultViewerWidget(QWidget, FORM_CLASS):
             )
             return
 
-        labels: list[str] = [folder.label for folder in selectable_folders]
-        selected_labels: list[str] = DialListCheckBox(labels, labels).run()
-        if not selected_labels:
+        selections = self._result_layers_selector_dialog.run(
+            id_exploitation=id_exploitation,
+            folders=selectable_folders,
+        )
+        if not selections:
             return
 
-        selected_folders: list[SelectableFolder] = [
-            folder for folder in selectable_folders if folder.label in selected_labels
-        ]
-        import_result_layers(
+        import_selected_result_layers(
             id_exploitation=id_exploitation,
-            selected_folders=selected_folders,
+            selections=selections,
         )
 
     def _resolve_exploitation_folder(self, id_exploitation: str) -> Path | None:

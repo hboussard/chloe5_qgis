@@ -1,13 +1,9 @@
 from qgis.core import (
-    QgsProcessingParameterNumber,
     QgsProcessingParameterString,
     QgsProcessingParameterFileDestination,
 )
 
 from processing.tools.system import isWindows
-from ...gui.custom_parameters.chloe_raster_parameter_file_destination import (
-    ChloeRasterParameterFileDestination,
-)
 from ...gui.custom_parameters.chloe_raster_parameter_file_input import (
     ChloeRasterParameterFileInput,
 )

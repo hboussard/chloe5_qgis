@@ -1,8 +1,6 @@
 from functools import partial
 from processing.gui.wrappers import (
     WidgetWrapper,
-    DIALOG_MODELER,
-    DIALOG_BATCH,
     DIALOG_STANDARD,
 )
 from .double_cmb_box_selection_panel import DoubleCmbBoxSelectionPanel

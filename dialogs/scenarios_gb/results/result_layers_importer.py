@@ -87,6 +87,37 @@ def get_or_create_group(parent, name: str) -> QgsLayerTreeGroup:
     return parent.addGroup(name)
 
 
+def get_or_create_ordered_group(
+    parent: QgsLayerTreeGroup, name: str, ordered_labels: list[str]
+) -> QgsLayerTreeGroup:
+    """Return an existing group or create it at its canonical position.
+
+    Unlike :func:`get_or_create_group`, which always appends new groups at the
+    end, this inserts a new group so siblings follow ``ordered_labels``. This
+    keeps incremental imports (e.g. loading ``scenario_0`` after other folders)
+    in the same order as a single-pass import. Labels absent from
+    ``ordered_labels`` are appended at the end.
+    """
+    existing_group: QgsLayerTreeGroup | None = parent.findGroup(name)
+    if existing_group is not None:
+        return existing_group
+
+    if name not in ordered_labels:
+        return parent.addGroup(name)
+
+    target_rank = ordered_labels.index(name)
+    insert_index = len(parent.children())
+    for index, child in enumerate(parent.children()):
+        if (
+            isinstance(child, QgsLayerTreeGroup)
+            and child.name() in ordered_labels
+            and ordered_labels.index(child.name()) > target_rank
+        ):
+            insert_index = index
+            break
+    return parent.insertGroup(insert_index, name)
+
+
 def matches_prefixes(stem: str, prefixes: list[str]) -> bool:
     """Check if the stem matches any of the prefixes."""
     return any(stem.startswith(prefix) for prefix in prefixes)
@@ -318,6 +349,17 @@ def prepare_exploitation_group(
     return qgs_project, exploitation_group
 
 
+def resolve_exploitation_folder(folder: SelectableFolder) -> Path:
+    """Return the exploitation directory a selectable folder belongs to.
+
+    For the virtual ``EA`` group the path is the exploitation folder itself;
+    for every other kind the rasters live in a direct subfolder of it.
+    """
+    if folder.kind is SelectableFolderKind.EA:
+        return folder.path
+    return folder.path.parent
+
+
 def import_result_folders(
     id_exploitation: str,
     folder_imports: list[tuple[SelectableFolder, set[Path] | None]],
@@ -328,10 +370,17 @@ def import_result_folders(
 
     qgs_project, exploitation_group = prepare_exploitation_group(id_exploitation)
 
+    exploitation_folder = resolve_exploitation_folder(folder_imports[0][0])
+    ordered_labels = [
+        folder.label for folder in get_selectable_folders(exploitation_folder)
+    ]
+
     for selectable_folder, allowed_paths in folder_imports:
         if allowed_paths is not None and not allowed_paths:
             continue
-        target_group = get_or_create_group(exploitation_group, selectable_folder.label)
+        target_group = get_or_create_ordered_group(
+            exploitation_group, selectable_folder.label, ordered_labels
+        )
         target_group.setExpanded(False)
         load_rasters_into_group(
             folder=selectable_folder.path,

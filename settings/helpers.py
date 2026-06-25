@@ -3,7 +3,11 @@ from pathlib import Path
 from qgis.core import QgsSettings
 from qgis.utils import iface
 from qgis.PyQt.QtWidgets import QMessageBox
-from .constants import SETTINGS_JAVA_PATH
+from .constants import (
+    DEFAULT_MEMORY_HEAP_SIZE,
+    SETTINGS_JAVA_PATH,
+    SETTINGS_MEMORY_HEAP_SIZE,
+)
 
 
 def get_java_path() -> Path:
@@ -58,3 +62,9 @@ def remove_temporary_file(file_path: Path) -> None:
             "Erreur lors de la suppression du fichier temporaire",
         )
         return
+
+
+def get_memory_heap_size() -> int:
+    """gets memory heap size from settings"""
+    s: QgsSettings = QgsSettings()
+    return int(s.value(SETTINGS_MEMORY_HEAP_SIZE, DEFAULT_MEMORY_HEAP_SIZE))

@@ -28,8 +28,10 @@ from qgis.core import QgsSettings
 from .constants import (
     AVAILABLE_GEOGRAPHIC_CONTEXTS,
     DEFAULT_GEOGRAPHIC_CONTEXT,
+    DEFAULT_MEMORY_HEAP_SIZE,
     SETTINGS_GEOGRAPHIC_CONTEXT,
     SETTINGS_JAVA_PATH,
+    SETTINGS_MEMORY_HEAP_SIZE,
 )
 
 FORM_CLASS, _ = uic.loadUiType(Path(__file__).parent / "settings_dialog.ui")
@@ -68,6 +70,10 @@ class SettingsDialog(QDialog, FORM_CLASS):
 
     def setup_gui(self) -> None:
         """setup gui widget properties"""
+        self.spinBox_memory_heap.setMinimum(1)
+        self.spinBox_memory_heap.setMaximum(64)
+        self.spinBox_memory_heap.setSingleStep(1)
+        self.spinBox_memory_heap.setValue(DEFAULT_MEMORY_HEAP_SIZE)
         self.populate_geographic_context_combobox()
         self.comboBox_geographic_context.currentIndexChanged.connect(
             self.enable_apply_geographic_context_button
@@ -175,6 +181,10 @@ class SettingsDialog(QDialog, FORM_CLASS):
             SETTINGS_JAVA_PATH,
             java_path,
         )
+        self.s.setValue(
+            SETTINGS_MEMORY_HEAP_SIZE,
+            self.spinBox_memory_heap.value(),
+        )
 
     def set_widget_values_from_settings(self) -> None:
         """Sets widget values from settings"""
@@ -183,6 +193,11 @@ class SettingsDialog(QDialog, FORM_CLASS):
 
         if java_path:
             self.mQgsFileWidget_java_path.setFilePath(java_path)
+
+        memory_heap: int = int(
+            self.s.value(SETTINGS_MEMORY_HEAP_SIZE, DEFAULT_MEMORY_HEAP_SIZE)
+        )
+        self.spinBox_memory_heap.setValue(memory_heap)
 
         geographic_context: str = self.s.value(SETTINGS_GEOGRAPHIC_CONTEXT, "")
         index = self.comboBox_geographic_context.findData(geographic_context)

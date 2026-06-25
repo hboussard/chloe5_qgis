@@ -28,7 +28,7 @@ from .constants import (
     CHLOE_JAR_PATH,
     CHLOE_RASTER_FILE_EXTENSIONS,
 )
-from ..settings.helpers import get_java_path, check_java_path
+from ..settings.helpers import get_java_path, check_java_path, get_memory_heap_size
 
 
 class CustomFeedback(Protocol):
@@ -180,11 +180,12 @@ def get_console_command(properties_file_path: str) -> str | None:
     arguments: list[str] = []
 
     java_path: Path = get_java_path()
-
+    memory_heap_size: int = get_memory_heap_size()
     if not check_java_path(java_path):
         return
 
     arguments.append(f'"{str(java_path)}"')
+    arguments.append(f"-Xmx{memory_heap_size}g")
     arguments.append("-jar")
     arguments.append(f'"{CHLOE_JAR_PATH}"')
     arguments.append(f'"{properties_file_path}"')

@@ -37,6 +37,10 @@ class SelectableFolderKind(Enum):
     EA = "ea"
 
 
+_RESULT_LAYER_SUBGROUP_LABELS: list[str] = [
+    subgroup.label for subgroup in RESULT_LAYER_SUBGROUPS
+]
+
 _SPECIAL_FOLDER_BY_NAME: dict[str, tuple[str, SelectableFolderKind]] = {
     RESULT_EXTERNE_FOLDER_NAME: (
         RESULT_EXTERNE_GROUP_LABEL,
@@ -424,7 +428,9 @@ def load_rasters_into_group(
         target_group = group
         layer_subgroup_label = get_layer_subgroup_label(file_path.stem)
         if layer_subgroup_label is not None:
-            target_group = get_or_create_group(group, layer_subgroup_label)
+            target_group = get_or_create_ordered_group(
+                group, layer_subgroup_label, _RESULT_LAYER_SUBGROUP_LABELS
+            )
             target_group.setExpanded(False)
 
         if layer_exists_in_group(target_group, file_path):

@@ -145,7 +145,7 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
     def on_scenario_radio_button_clicked(self) -> None:
         """scenario radio button clicked action"""
         self.groupBox_amenagements.setEnabled(True)
-        self.lineEdit_resultPrefix.setText("")
+        self.lineEdit_resultPrefix.setText("scenario")
         # self.lineEdit_resultPrefix.setEnabled(True)
 
     def on_initial_radio_button_clicked(self) -> None:
@@ -187,6 +187,10 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
 
     def on_input_amenagement_layer_changed(self) -> None:
         """input amenagement layer changed action"""
+        if self.radioButton_initial.isChecked():
+            return
+
+        self.lineEdit_resultPrefix.setText("scenario")
         # check if the layer has a at least a field name "initial" that is a numeric field
         self.mFieldComboBox_scenarios.clear()
         selected_layer: QgsVectorLayer = (
@@ -197,10 +201,13 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         # force reset field because it is not updated when layer is changed in the InputLayerFileWidget if the user select the layer from the select file dialog
         self.mFieldComboBox_scenarios.setFields(fields)
         self.mFieldComboBox_scenarios.setCurrentIndex(0)
-        self.lineEdit_resultPrefix.setText("")
 
     def on_amenagement_scenario_field_changed(self) -> None:
         """amenagement scenario field changed action"""
+        if self.radioButton_initial.isChecked():
+            self.lineEdit_resultPrefix.setText("initial")
+            return
+
         # check if the select field is a number field
         selected_layer: QgsVectorLayer = (
             self._input_amenagements_vector_layer_selector.currentLayer()
@@ -208,7 +215,7 @@ class ScenariosGBDialog(QDialog, FORM_CLASS):
         selected_field: str = self.mFieldComboBox_scenarios.currentField()
         if not vector_layer_field_is_numeric(selected_layer, selected_field):
             self.mFieldComboBox_scenarios.setCurrentIndex(-1)
-            self.lineEdit_resultPrefix.setText("")
+            self.lineEdit_resultPrefix.setText("scenario")
             return
 
         self.lineEdit_resultPrefix.setText(f"{sanitize_scenario_name(selected_field)}")

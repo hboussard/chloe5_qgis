@@ -137,14 +137,6 @@ def input_vector_validator(layer_name_msg: str, file_path: Path) -> bool:
             f"Fichier shapefile {layer_name_msg} est introuvable",
         )
         return False
-    # check if file path contains whitespaces
-    if " " in str(file_path):
-        QMessageBox.warning(
-            None,
-            msgbox_title,
-            f"Le chemin vers le fichier shapefile {layer_name_msg} contient des espaces",
-        )
-        return False
     # check if layer is valid
     layer: QgsVectorLayer = QgsVectorLayer(str(file_path), "input_vector_layer", "ogr")
 

@@ -103,14 +103,6 @@ def path_validator(title_name: str, name_msg: str, folder_path: Path) -> bool:
     if folder_path == Path():
         QMessageBox.warning(None, title_name, f"Choisir {name_msg}")
         return False
-    # check if file path contains whitespaces
-    if " " in str(folder_path):
-        QMessageBox.warning(
-            None,
-            title_name,
-            f"Le chemin vers {name_msg} contient des espaces",
-        )
-        return False
     # check if folder exists
 
     if not folder_path.exists():

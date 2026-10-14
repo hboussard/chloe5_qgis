@@ -121,9 +121,18 @@ class MappingTableModel(QStandardItemModel):
             return
         value_item = QStandardItem(value)
         # set the data of the item to the value to be able to sort the model by integer value
-        value_item.setData(int(value[0]), Qt.DisplayRole)
+        value_item.setData(int(value), Qt.DisplayRole)
         mapped_value_item = QStandardItem(mapped_value)
         self.appendRow([value_item, mapped_value_item])
+
+    def value_exists_in_column(self, value: str, column_index: int) -> bool:
+        """check if a value exists in a column of the model"""
+        for row in range(self.rowCount()):
+            item = self.item(row, column_index)
+            if item is not None and item.text():
+                if value == item.text():
+                    return True
+        return False
 
     def update_value_in_column(
         self,

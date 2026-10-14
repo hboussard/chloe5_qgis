@@ -264,6 +264,7 @@ class TableMappingPanel(BASE, WIDGET):
                         tr("Csv file value error"),
                         f"{tr('all values of')} {csv_file_path.stem} {tr('are not integers. Please check the csv file.')}",
                     )
+                    break
                     # TODO : return empty list to be more restrictive ?
 
         return csv_data
